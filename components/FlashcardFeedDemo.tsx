@@ -1,5 +1,5 @@
 //FlashcardFeedDemo.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -147,33 +147,18 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
     Animated.parallel([
       Animated.spring(scaleAnim, {
         toValue: 1,
-        delay: index * 100,
         useNativeDriver: true,
         tension: 50,
         friction: 7,
       }),
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 400,
-        delay: index * 100,
+        duration: 300,
         useNativeDriver: true,
       }),
     ]).start();
 
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(shimmerAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(shimmerAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
+    shimmerAnim.setValue(0.5);
   }, []);
 
   const handleFlip = () => {
@@ -428,6 +413,8 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
   );
 };
 
+const MemoizedFlashcardCard = React.memo(FlashcardCard);
+
 type CategoryType = 'unviewed' | 'viewed' | 'bookmarked';
 
 const FlashcardFeed: React.FC = () => {
@@ -576,6 +563,17 @@ const FlashcardFeed: React.FC = () => {
   const filteredFlashcards = getFilteredFlashcards();
   const hasFlashcards = filteredFlashcards.length > 0;
 
+  const renderCard = useCallback(({ item, index }: { item: any; index: number }) => (
+    <MemoizedFlashcardCard
+      item={item}
+      index={index}
+      subject={selectedSubject}
+      isBookmarked={flashcardStates.get(item.id)?.isBookmarked || false}
+      onView={handleView}
+      onBookmark={handleBookmark}
+    />
+  ), [selectedSubject, flashcardStates, handleView, handleBookmark]);
+
   return (
     <View style={styles.container}>
       <View>
@@ -663,21 +661,14 @@ const FlashcardFeed: React.FC = () => {
         <FlatList
           data={filteredFlashcards}
           keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
-            <FlashcardCard
-              item={item}
-              index={index}
-              subject={selectedSubject}
-              isBookmarked={flashcardStates.get(item.id)?.isBookmarked || false}
-              onView={handleView}
-              onBookmark={handleBookmark}
-            />
-          )}
+          renderItem={renderCard}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-          removeClippedSubviews={Platform.OS === 'android'}
-          maxToRenderPerBatch={5}
-          windowSize={5}
+          initialNumToRender={6}
+          maxToRenderPerBatch={4}
+          windowSize={7}
+          updateCellsBatchingPeriod={60}
+          removeClippedSubviews={true}
         />
       ) : (
         <View style={styles.placeholderContainer}>
