@@ -608,13 +608,6 @@ const FlashcardFeed: React.FC = () => {
   return (
     <View style={styles.container}>
       <View>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Flashcard Feed</Text>
-          <Text style={styles.headerSubtitle}>
-            {hasFlashcards ? `${filteredFlashcards.length} cards` : 'Select a subject'}
-          </Text>
-        </View>
-
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -718,24 +711,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0d0d0d',
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#0d0d0d',
-    borderBottomWidth: 1,
-    borderBottomColor: '#222',
-  },
-  headerTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#eaeaea',
-    marginBottom: 6,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: '#888',
   },
   listContent: {
     paddingVertical: 20,
@@ -905,7 +880,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
-    paddingVertical: 16,
+    paddingTop: 60,
+    paddingBottom: 16,
   },
   subjectScrollContent: {
     paddingHorizontal: 16,
