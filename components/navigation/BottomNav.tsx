@@ -49,9 +49,6 @@ const currentTab =
     : pathname.includes("/concept") ? "concept"
     : "practice");
 
-
-
-
 const allTabs = [
   { id: "practice", label: "Practice", Icon: BookOpen },
   { id: "concept", label: "Concept", Icon: FileText },
