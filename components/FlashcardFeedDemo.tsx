@@ -544,12 +544,12 @@ const FlashcardFeed: React.FC = () => {
   const handleBookmark = async (flashcardId: string, subject: string) => {
     if (!userId) return;
 
-    const { data, error } = await supabase.rpc("toggle_flashcard_bookmark_v3", {
+    const { data, error } = await supabase.rpc("toggle_flashcard_bookmark_v7", {
       p_student_id: userId,
       p_flashcard_id: flashcardId,
     });
     
-    console.log("Bookmark v3 result:", data, error);
+    console.log("Bookmark v7 result:", data, error);
     
     if (error) {
       console.error("BOOKMARK RPC ERROR:", error);
