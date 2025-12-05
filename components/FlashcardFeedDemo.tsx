@@ -544,7 +544,7 @@ const FlashcardFeed: React.FC = () => {
   const handleBookmark = async (flashcardId: string, subject: string) => {
     if (!userId) return;
 
-    const { data, error } = await supabase.rpc('toggle_flashcard_bookmark', {
+    const { data, error } = await supabase.rpc('toggle_flashcard_bookmark_v1', {
       p_student_id: userId,
       p_flashcard_id: flashcardId
     });
