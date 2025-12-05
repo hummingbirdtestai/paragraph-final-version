@@ -9,6 +9,8 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Bookmark } from 'lucide-react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -113,6 +115,12 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
   const flipAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
+
+  const isOddCard = index % 2 === 0;
+  const borderColors = isOddCard
+    ? ['#1e3a8a', '#3b82f6', '#60a5fa']
+    : ['#065f46', '#10b981', '#34d399'];
 
   useEffect(() => {
     Animated.parallel([
@@ -130,6 +138,21 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
         useNativeDriver: true,
       }),
     ]).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmerAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shimmerAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
   }, []);
 
   const handleFlip = () => {
@@ -180,6 +203,11 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
     outputRange: [0, 0, 1, 1],
   });
 
+  const shimmerOpacity = shimmerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.8],
+  });
+
   return (
     <Animated.View
       style={[
@@ -190,47 +218,124 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
         },
       ]}
     >
-      <TouchableWithoutFeedback
-        onPress={handleFlip}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-      >
-        <View style={styles.cardTouchable}>
-          <Animated.View
-            style={[
-              styles.cardFace,
-              styles.cardFront,
-              {
-                opacity: frontOpacity,
-                transform: [{ rotateY: frontInterpolate }],
-              },
-            ]}
-          >
-            <View style={styles.labelContainer}>
-              <Text style={styles.labelText}>QUESTION</Text>
-            </View>
-            <MarkupTextRenderer text={item.Question} style={styles.questionText} />
-            <Text style={styles.tapHint}>Tap to reveal answer</Text>
-          </Animated.View>
+      <View style={styles.cardWrapper}>
+        <Animated.View style={[styles.leftBorder, { opacity: shimmerOpacity }]}>
+          <LinearGradient
+            colors={borderColors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.leftBorderGradient}
+          />
+        </Animated.View>
 
-          <Animated.View
-            style={[
-              styles.cardFace,
-              styles.cardBack,
-              {
-                opacity: backOpacity,
-                transform: [{ rotateY: backInterpolate }],
-              },
-            ]}
-          >
-            <View style={[styles.labelContainer, styles.answerLabelContainer]}>
-              <Text style={[styles.labelText, styles.answerLabelText]}>ANSWER</Text>
-            </View>
-            <MarkupTextRenderer text={item.Answer} style={styles.answerText} />
-            <Text style={styles.tapHint}>Tap to flip back</Text>
-          </Animated.View>
-        </View>
-      </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={handleFlip}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+        >
+          <View style={styles.cardTouchable}>
+            <Animated.View
+              style={[
+                styles.cardFace,
+                styles.cardFront,
+                {
+                  opacity: frontOpacity,
+                  transform: [{ rotateY: frontInterpolate }],
+                },
+              ]}
+            >
+              <LinearGradient
+                colors={['#1a1a1a', '#141414', '#0f0f0f']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.cardGradient}
+              >
+                <View style={styles.topShine} />
+
+                <View style={styles.cardHeader}>
+                  <View style={styles.badgeRow}>
+                    <LinearGradient
+                      colors={['#3b82f6', '#2563eb', '#1d4ed8']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.badge}
+                    >
+                      <Text style={styles.badgeLetter}>Q</Text>
+                    </LinearGradient>
+                    <Text style={styles.badgeLabel}>QUESTION</Text>
+                  </View>
+                  <Bookmark size={20} color="#3b82f6" strokeWidth={2} />
+                </View>
+
+                <View style={styles.textBorderContainer}>
+                  <LinearGradient
+                    colors={['rgba(59, 130, 246, 0.3)', 'rgba(16, 185, 129, 0.3)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.textBorder}
+                  >
+                    <View style={styles.textContent}>
+                      <MarkupTextRenderer text={item.Question} style={styles.questionText} />
+                    </View>
+                  </LinearGradient>
+                </View>
+
+                <Text style={styles.tapHint}>Tap to reveal answer</Text>
+              </LinearGradient>
+            </Animated.View>
+
+            <Animated.View
+              style={[
+                styles.cardFace,
+                styles.cardBack,
+                {
+                  opacity: backOpacity,
+                  transform: [{ rotateY: backInterpolate }],
+                },
+              ]}
+            >
+              <LinearGradient
+                colors={['#1a1a1a', '#141414', '#0f0f0f']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.cardGradient}
+              >
+                <View style={styles.topShine} />
+
+                <View style={styles.cardHeader}>
+                  <View style={styles.badgeRow}>
+                    <LinearGradient
+                      colors={['#10b981', '#059669', '#047857']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.badge}
+                    >
+                      <Text style={styles.badgeLetter}>A</Text>
+                    </LinearGradient>
+                    <Text style={styles.badgeLabel}>ANSWER</Text>
+                  </View>
+                  <Bookmark size={20} color="#10b981" strokeWidth={2} fill="#10b981" />
+                </View>
+
+                <View style={[styles.textBorderContainer, styles.answerContainer]}>
+                  <LinearGradient
+                    colors={['rgba(16, 185, 129, 0.4)', 'rgba(5, 150, 105, 0.4)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.textBorder}
+                  >
+                    <View style={[styles.textContent, styles.answerBackground]}>
+                      <MarkupTextRenderer text={item.Answer} style={styles.answerText} />
+                    </View>
+                  </LinearGradient>
+                </View>
+
+                <Text style={styles.tapHint}>Tap to see question</Text>
+              </LinearGradient>
+            </Animated.View>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
     </Animated.View>
   );
 };
@@ -265,100 +370,172 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 16,
+    paddingBottom: 20,
     backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#eaeaea',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#888',
   },
   listContent: {
-    paddingVertical: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
   },
   cardContainer: {
-    marginHorizontal: 16,
-    marginVertical: 8,
+    marginBottom: 48,
+  },
+  cardWrapper: {
+    position: 'relative',
+    flexDirection: 'row',
+  },
+  leftBorder: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#3b82f6',
+        shadowOffset: { width: -2, height: 0 },
+        shadowOpacity: 0.6,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 8,
+      },
+      web: {
+        boxShadow: '-2px 0 12px rgba(59, 130, 246, 0.5)',
+      },
+    }),
+  },
+  leftBorderGradient: {
+    flex: 1,
+    width: '100%',
   },
   cardTouchable: {
-    position: 'relative',
-    width: '100%',
-    minHeight: 200,
+    flex: 1,
+    marginLeft: 16,
   },
   cardFace: {
-    position: 'absolute',
     width: '100%',
-    minHeight: 200,
-    backgroundColor: '#1a1a1a',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#222',
-    padding: 24,
+    borderColor: '#2a2a2a',
+    overflow: 'hidden',
     backfaceVisibility: 'hidden',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.4,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 6,
+        elevation: 8,
       },
       web: {
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.5)',
       },
     }),
   },
-  cardFront: {
+  cardFront: {},
+  cardBack: {},
+  cardGradient: {
+    padding: 24,
+    paddingTop: 20,
+  },
+  topShine: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  badge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#3b82f6',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.4,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 4,
+      },
+      web: {
+        boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)',
+      },
+    }),
   },
-  cardBack: {
-    justifyContent: 'center',
-  },
-  labelContainer: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#2a2a2a',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginBottom: 16,
-  },
-  labelText: {
-    fontSize: 11,
+  badgeLetter: {
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  badgeLabel: {
+    fontSize: 13,
+    fontWeight: '700',
     color: '#888',
-    letterSpacing: 1,
+    letterSpacing: 1.2,
   },
-  answerLabelContainer: {
-    backgroundColor: '#1a4d2e',
+  textBorderContainer: {
+    marginBottom: 20,
   },
-  answerLabelText: {
-    color: '#25D366',
+  textBorder: {
+    borderRadius: 12,
+    padding: 2,
+  },
+  textContent: {
+    backgroundColor: 'rgba(20, 20, 20, 0.8)',
+    borderRadius: 10,
+    padding: 18,
+  },
+  answerContainer: {},
+  answerBackground: {
+    backgroundColor: 'rgba(16, 185, 129, 0.08)',
   },
   questionText: {
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 26,
     color: '#eaeaea',
-    marginBottom: 16,
   },
   answerText: {
-    fontSize: 18,
-    lineHeight: 28,
-    color: '#25D366',
+    fontSize: 19,
+    lineHeight: 30,
+    color: '#10b981',
     fontWeight: '600',
-    marginBottom: 16,
   },
   tapHint: {
     fontSize: 13,
-    color: '#666',
+    color: '#555',
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 8,
