@@ -120,6 +120,8 @@ interface FlashcardCardProps {
     id: string;
     Question: string;
     Answer: string;
+    react_order_final?: number;
+    maximum_value?: number;
   };
   index: number;
   subject: string;
@@ -314,14 +316,21 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
                     </LinearGradient>
                     <Text style={styles.badgeLabel}>QUESTION</Text>
                   </View>
-                  <TouchableOpacity onPress={() => onBookmark(item.id, subject)}>
-                    <Bookmark
-                      size={20}
-                      color="#3b82f6"
-                      strokeWidth={2}
-                      fill={isBookmarked ? '#3b82f6' : 'transparent'}
-                    />
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {item.react_order_final !== undefined && item.maximum_value !== undefined && (
+                      <Text style={styles.progressText}>
+                        {item.react_order_final} / {item.maximum_value}
+                      </Text>
+                    )}
+                    <TouchableOpacity onPress={() => onBookmark(item.id, subject)}>
+                      <Bookmark
+                        size={20}
+                        color="#3b82f6"
+                        strokeWidth={2}
+                        fill={isBookmarked ? '#3b82f6' : 'transparent'}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
 
                 <View style={styles.textBorderContainer}>
@@ -372,14 +381,21 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
                     </LinearGradient>
                     <Text style={styles.badgeLabel}>ANSWER</Text>
                   </View>
-                  <TouchableOpacity onPress={() => onBookmark(item.id, subject)}>
-                    <Bookmark
-                      size={20}
-                      color="#10b981"
-                      strokeWidth={2}
-                      fill={isBookmarked ? '#10b981' : 'transparent'}
-                    />
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {item.react_order_final !== undefined && item.maximum_value !== undefined && (
+                      <Text style={styles.progressText}>
+                        {item.react_order_final} / {item.maximum_value}
+                      </Text>
+                    )}
+                    <TouchableOpacity onPress={() => onBookmark(item.id, subject)}>
+                      <Bookmark
+                        size={20}
+                        color="#10b981"
+                        strokeWidth={2}
+                        fill={isBookmarked ? '#10b981' : 'transparent'}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
 
                 <View style={[styles.textBorderContainer, styles.answerContainer]}>
@@ -904,6 +920,11 @@ const styles = StyleSheet.create({
   categoryIconSelected: {
     backgroundColor: '#10b981',
     borderColor: '#10b981',
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#999',
+    marginRight: 12,
   },
 });
 
