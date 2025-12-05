@@ -19,6 +19,23 @@ const [isSending, setIsSending] = React.useState(false);
 const [isTyping, setIsTyping] = React.useState(false);
   const { user } = useAuth();
 
+  // 🔵 DEBUG: Log concept/mcq IDs when card loads
+  React.useEffect(() => {
+    if (phase.phase_type === "concept") {
+      console.log("📗 [PracticeCard] Concept Loaded", {
+        concept_id: phase.id,
+      });
+    }
+
+    if (phase.phase_type === "mcq") {
+      console.log("📘 [PracticeCard] MCQ Loaded", {
+        mcq_id: phase.id,
+        concept_before: phase.concept_id_before_this_mcq,
+        correct_answer: phase.phase_json?.correct_answer,
+      });
+    }
+  }, [phase]);
+
   
 
 const ORCHESTRATOR_URL =
@@ -52,15 +69,24 @@ const ORCHESTRATOR_URL =
       {isMCQ && (
         <MCQChatScreen
           item={phase.phase_json}
-          studentId={null} // ✔ prevents Supabase RPC call
+
+          // 🔥 REQUIRED FOR RPC mark_mcq_submission_v6
+          conceptId={phase.concept_id_before_this_mcq}   // ⭐ previous concept
+          mcqId={phase.id}                               // ⭐ current MCQ
+          correctAnswer={phase.phase_json?.correct_answer} // ⭐ correct answer from DB
+
+          studentId={user?.id}
           isBookmarked={false}
-          reviewMode={false} // ✔ allow answering in practice
-          hideInternalNext={true} // ✔ no "Next" button
+          reviewMode={false}
+          hideInternalNext={true}
           phaseUniqueId={phase.id}
+
           onAnswered={(selected) => {
-            console.log("🧠 Stored locally in practice:", {
+            console.log("🧠 [PracticeCard] MCQ answered", {
               mcq_id: phase.id,
+              concept_before: phase.concept_id_before_this_mcq,
               selected,
+              correct: phase.phase_json?.correct_answer
             });
           }}
         />

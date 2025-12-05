@@ -26,6 +26,9 @@ export default function MCQChatScreen({
   item,
   onNext,
   studentId,
+  conceptId,
+  mcqId,
+  correctAnswer,
   reactOrderFinal,
   onAnswered,
   hideInternalNext = false,
@@ -38,6 +41,9 @@ export default function MCQChatScreen({
   item: MCQData;
   onNext?: () => void;
   studentId: string;
+  conceptId?: string;
+  mcqId?: string;
+  correctAnswer?: string;
   reactOrderFinal?: number;
   onAnswered?: () => void;
   hideInternalNext?: boolean;
@@ -50,6 +56,16 @@ export default function MCQChatScreen({
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  // 🟦 Log when MCQ screen mounts
+  useEffect(() => {
+    console.log("🟦 [MCQScreen] Mounted MCQ", {
+      mcqId,
+      conceptId,
+      correctAnswer,
+      mcqData: item,
+    });
+  }, []);
+
   useEffect(() => {
     if (selectedOption) {
       setTimeout(() => {
@@ -61,16 +77,23 @@ export default function MCQChatScreen({
 const handleOptionSelect = async (option: string) => {
   if (selectedOption) return;
 
+  // 🟧 Log when an option is selected
+  console.log("🟧 [MCQScreen] Option Selected", {
+    selected: option,
+    mcqId,
+    conceptId,
+  });
+
   setSelectedOption(option);
   onAnswered?.();
 
-  const correct_answer = item.correct_answer;
+  const correct_answer = correctAnswer || item.correct_answer;
   const is_correct = option === correct_answer;
 
   // ⭐ PRACTICE MODE — no RPC
   if (!studentId) {
     console.log("🧠 Practice Mode → Local Save", {
-      mcq_id: item.id,
+      mcq_id: mcqId || item.id,
       selected: option,
       correct_answer,
       is_correct,
@@ -78,14 +101,43 @@ const handleOptionSelect = async (option: string) => {
     return;
   }
 
-  // ⭐ NORMAL MODE — future RPC call (safe stub)
+  // ⭐ NORMAL MODE — Call mark_mcq_submission_v6 RPC
+  console.log("📤 [MCQScreen] Submitting MCQ RPC → mark_mcq_submission_v6", {
+    p_student_id: studentId,
+    p_concept_id: conceptId,
+    p_mcq_id: mcqId,
+    p_student_answer: option,
+    p_correct_answer: correct_answer,
+  });
+
   try {
-    console.log("📡 Would call RPC here with:", {
-      mcq_id: item.id,
-      student_answer: option,
+    const { data, error } = await supabase.rpc("mark_mcq_submission_v6", {
+      p_student_id: studentId,
+      p_concept_id: conceptId,
+      p_mcq_id: mcqId,
+      p_student_answer: option,
+      p_correct_answer: correct_answer,
     });
-  } catch (err) {
-    console.error("RPC ERROR:", err);
+
+    if (error) {
+      console.log("❌ [MCQScreen] RPC ERROR mark_mcq_submission_v6:", error);
+      return;
+    }
+
+    console.log("🟢 [MCQScreen] RPC SUCCESS", {
+      data,
+      out_is_correct: data?.[0]?.out_is_correct,
+      out_concept_id: data?.[0]?.out_concept_id,
+      out_mcq_id: data?.[0]?.out_mcq_id,
+    });
+
+    console.log("🎯 [MCQScreen] UI Updated After RPC", {
+      chosen_answer: option,
+      is_correct: data?.[0]?.out_is_correct,
+    });
+
+  } catch (exception) {
+    console.log("🔥 [MCQScreen] EXCEPTION during MCQ submit:", exception);
   }
 };
 
