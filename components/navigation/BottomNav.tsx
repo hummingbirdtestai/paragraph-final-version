@@ -82,10 +82,6 @@ const handleTabPress = (tab: string) => {
   setMoreVisible(false);
 };
 
-
-
-
-
   return (
     <>
       {/* Bottom Navigation */}
