@@ -850,6 +850,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 8,
     alignItems: 'center',
+    // Removed vertical padding → height is fixed now
   },
   subjectBubble: {
     paddingHorizontal: 20,
