@@ -331,7 +331,7 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
                     style={styles.textBorder}
                   >
                     <View style={styles.textContent}>
-                      <MarkupTextRenderer text={item.Question} style={styles.questionText} />
+                      <Markdown style={styles.questionText}>{item.Question}</Markdown>
                     </View>
                   </LinearGradient>
                 </View>
@@ -396,7 +396,7 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
                     style={styles.textBorder}
                   >
                     <View style={[styles.textContent, styles.answerBackground]}>
-                      <MarkupTextRenderer text={item.Answer} style={styles.answerText} />
+                      <Markdown style={styles.answerText}>{item.Answer}</Markdown>
                     </View>
                   </LinearGradient>
                 </View>
