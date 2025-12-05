@@ -651,6 +651,8 @@ const styles = StyleSheet.create({
     borderColor: '#10b981',
     backgroundColor: 'transparent',
     marginRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   subjectBubbleSelected: {
     backgroundColor: '#10b981',
@@ -660,6 +662,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#10b981',
+    textAlign: 'center',
+    lineHeight: 16,
   },
   subjectBubbleTextSelected: {
     color: '#ffffff',
