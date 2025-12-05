@@ -52,10 +52,10 @@ const currentTab =
 
 
 
-  // All available tabs
- const allTabs = [
+const allTabs = [
   { id: "practice", label: "Practice", Icon: BookOpen },
-  { id: "concept", label: "Concept", Icon: FileText },   // ✅ NEW TAB
+  { id: "concept", label: "Concept", Icon: FileText },
+  { id: "flash", label: "Flash", Icon: FileText },        // ⭐ ADDED
   { id: "flashcards", label: "Flashcards", Icon: FileText },
   { id: "mocktests", label: "Mock Tests", Icon: ClipboardList },
   { id: "battle", label: "Battle", Icon: Swords },
@@ -63,6 +63,7 @@ const currentTab =
   { id: "settings", label: "Settings", Icon: Settings },
   { id: "feed", label: "Feed", Icon: Newspaper },
 ];
+
 
 
   // Split for mobile
