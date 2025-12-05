@@ -876,9 +876,9 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   placeholderContainer: {
+    flex: 1,
     alignItems: 'center',
-    paddingVertical: 40,
-    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   placeholderText: {
     fontSize: 16,
