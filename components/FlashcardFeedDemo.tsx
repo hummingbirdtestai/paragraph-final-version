@@ -40,26 +40,6 @@ const SUBJECTS = [
   { subject: 'Radiology' },
 ];
 
-const PSYCHIATRY_FLASHCARDS = [
-  {
-    id: 'b8c3a6c2-1c4e-4e4e-8e3a-2208e6f3a111',
-    Question:
-      'Elderly woman (68 y) with advanced metastatic disease, progressive breathlessness, and poor functional status.\nWhat is the ethical next step?',
-    Answer: 'Family meeting → goals-of-care',
-  },
-  {
-    id: '0e7dd1e1-5f42-4a99-92e2-02ab5fa54212',
-    Question:
-      'Middle-aged man (55 y) with end-stage COPD, repeated ICU admissions, cachexia, CO₂ narcosis, and poor prognosis.\nWhat should the clinician prioritize?',
-    Answer: 'Honor prior wishes',
-  },
-  {
-    id: '6b9d13f4-d2e7-4da8-9edb-923f248aef13',
-    Question:
-      'Elderly patient (72 y) with advanced dementia, recurrent aspiration pneumonia, and bedbound status.\nWhat is the best ethical approach?',
-    Answer: 'Discuss prognosis & limits',
-  },
-];
 
 interface MarkupTextRendererProps {
   text: string;
@@ -427,6 +407,8 @@ const FlashcardFeed: React.FC = () => {
   const [selectedSubject, setSelectedSubject] = useState('Psychiatry');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
   const [userId, setUserId] = useState<string | null>(null);
+  const [flashcards, setFlashcards] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [flashcardStates, setFlashcardStates] = useState<Map<string, {
     isViewed: boolean;
     isBookmarked: boolean;
@@ -438,7 +420,7 @@ const FlashcardFeed: React.FC = () => {
 
   useEffect(() => {
     if (userId && selectedSubject) {
-      loadFlashcardStates();
+      fetchFlashcards();
     }
   }, [userId, selectedSubject]);
 
@@ -455,84 +437,89 @@ const FlashcardFeed: React.FC = () => {
     }
   };
 
-  const loadFlashcardStates = async () => {
-    if (!userId) return;
+  const fetchFlashcards = async () => {
+    if (!userId || !selectedSubject) return;
 
-    const { data, error } = await supabase
-      .from('flashcard_states')
-      .select('flashcard_id, is_viewed, is_bookmarked')
-      .eq('user_id', userId)
-      .eq('subject', selectedSubject);
+    setLoading(true);
 
-    if (data) {
-      const statesMap = new Map();
-      data.forEach((state) => {
-        statesMap.set(state.flashcard_id, {
-          isViewed: state.is_viewed,
-          isBookmarked: state.is_bookmarked,
-        });
-      });
-      setFlashcardStates(statesMap);
+    const { data, error } = await supabase.rpc('get_flashcards_v2', {
+      p_subject: selectedSubject,
+      p_student_id: userId,
+      p_limit: 100,
+      p_offset: 0
+    });
+
+    setLoading(false);
+
+    if (error) {
+      console.error('RPC ERROR:', error);
+      return;
     }
+
+    const formatted = data.map((row: any) => ({
+      id: row.flashcard_id,
+      Question: row.flash_card_manu?.Question || '',
+      Answer: row.flash_card_manu?.Answer || '',
+      react_order_final: row.react_order_final,
+      maximum_value: row.maximum_value,
+      isBookmarked: row.is_bookmarked,
+      isViewed: row.is_viewed
+    }));
+
+    setFlashcards(formatted);
+
+    const map = new Map();
+    data.forEach((row: any) => {
+      map.set(row.flashcard_id, {
+        isViewed: row.is_viewed,
+        isBookmarked: row.is_bookmarked
+      });
+    });
+
+    setFlashcardStates(map);
   };
 
   const handleView = async (flashcardId: string, subject: string) => {
     if (!userId) return;
 
     await supabase
-      .from('flashcard_states')
+      .from('student_flashcard_views')
       .upsert({
-        user_id: userId,
+        student_id: userId,
         flashcard_id: flashcardId,
-        subject: subject,
-        is_viewed: true,
-        updated_at: new Date().toISOString(),
+        viewed_at: new Date().toISOString()
       }, {
-        onConflict: 'user_id,flashcard_id,subject'
+        onConflict: 'student_id,flashcard_id'
       });
 
     setFlashcardStates((prev) => {
-      const newMap = new Map(prev);
-      const current = newMap.get(flashcardId) || { isViewed: false, isBookmarked: false };
-      newMap.set(flashcardId, { ...current, isViewed: true });
-      return newMap;
+      const map = new Map(prev);
+      const current = map.get(flashcardId) || { isViewed: false, isBookmarked: false };
+      map.set(flashcardId, { ...current, isViewed: true });
+      return map;
     });
   };
 
   const handleBookmark = async (flashcardId: string, subject: string) => {
     if (!userId) return;
 
-    const current = flashcardStates.get(flashcardId) || { isViewed: false, isBookmarked: false };
-    const newBookmarkState = !current.isBookmarked;
-
-    await supabase
-      .from('flashcard_states')
-      .upsert({
-        user_id: userId,
-        flashcard_id: flashcardId,
-        subject: subject,
-        is_bookmarked: newBookmarkState,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'user_id,flashcard_id,subject'
-      });
+    await supabase.rpc('toggle_flashcard_bookmark', {
+      p_student_id: userId,
+      p_flashcard_id: flashcardId
+    });
 
     setFlashcardStates((prev) => {
-      const newMap = new Map(prev);
-      newMap.set(flashcardId, { ...current, isBookmarked: newBookmarkState });
-      return newMap;
+      const map = new Map(prev);
+      const current = map.get(flashcardId) || { isViewed: false, isBookmarked: false };
+      map.set(flashcardId, { ...current, isBookmarked: !current.isBookmarked });
+      return map;
     });
   };
 
-  const getFlashcardsForSubject = (subject: string) => {
-    if (subject === 'Psychiatry') {
-      return PSYCHIATRY_FLASHCARDS;
-    }
-    return [];
-  };
+  const getFlashcardsForSubject = () => flashcards;
 
   const getFilteredFlashcards = () => {
-    const allFlashcards = getFlashcardsForSubject(selectedSubject);
+    const allFlashcards = getFlashcardsForSubject();
 
     return allFlashcards.filter((card) => {
       const state = flashcardStates.get(card.id) || { isViewed: false, isBookmarked: false };
@@ -550,15 +537,15 @@ const FlashcardFeed: React.FC = () => {
     });
   };
 
-  const flashcards = getFilteredFlashcards();
-  const hasFlashcards = flashcards.length > 0;
+  const filteredFlashcards = getFilteredFlashcards();
+  const hasFlashcards = filteredFlashcards.length > 0;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Flashcard Feed</Text>
         <Text style={styles.headerSubtitle}>
-          {hasFlashcards ? `${flashcards.length} cards` : 'Select a subject'}
+          {hasFlashcards ? `${filteredFlashcards.length} cards` : 'Select a subject'}
         </Text>
       </View>
 
@@ -636,7 +623,7 @@ const FlashcardFeed: React.FC = () => {
 
       {hasFlashcards ? (
         <FlatList
-          data={flashcards}
+          data={filteredFlashcards}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => (
             <FlashcardCard
@@ -657,7 +644,7 @@ const FlashcardFeed: React.FC = () => {
       ) : (
         <View style={styles.placeholderContainer}>
           <Text style={styles.placeholderText}>
-            No flashcards available for this subject.
+            {loading ? 'Loading flashcards...' : 'No flashcards available for this subject.'}
           </Text>
         </View>
       )}
