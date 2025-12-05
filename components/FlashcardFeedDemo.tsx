@@ -840,9 +840,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   subjectScrollContainer: {
-    maxHeight: 60,
+    height: 60,
     borderBottomWidth: 1,
     borderBottomColor: '#222',
+    backgroundColor: '#0d0d0d',
   },
   subjectScrollContent: {
     paddingHorizontal: 20,
