@@ -75,11 +75,13 @@ const handleTabPress = (tab: string) => {
   else {
     if (tab === "feed") router.push("/feed");
     else if (tab === "practice") router.push("/");
-    else if (tab === "concept") router.push("/practice");   // ✅ NEW ROUTE
+    else if (tab === "concept") router.push("/practice");
+    else if (tab === "flash") router.push("/flashcard-feed-demo");   // ⭐ NEW ROUTE
     else router.push(`/${tab}`);
   }
   setMoreVisible(false);
 };
+
 
 
 
