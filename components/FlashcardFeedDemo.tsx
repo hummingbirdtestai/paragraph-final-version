@@ -332,7 +332,13 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
                     style={styles.textBorder}
                   >
                     <View style={styles.textContent}>
-                      <Markdown style={{ body: styles.questionText }}>
+                      <Markdown
+                        style={{
+                          text: styles.questionText,
+                          strong: styles.questionText,
+                          em: styles.questionText,
+                        }}
+                      >
                         {item.Question}
                       </Markdown>
                     </View>
