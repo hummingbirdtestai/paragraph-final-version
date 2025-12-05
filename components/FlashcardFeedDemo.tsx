@@ -549,7 +549,7 @@ const FlashcardFeed: React.FC = () => {
       p_flashcard_id: flashcardId,
     });
     
-    console.log("Bookmark v1 result:", data, error);
+    console.log("Bookmark v3 result:", data, error);
     
     if (error) {
       console.error("BOOKMARK RPC ERROR:", error);
