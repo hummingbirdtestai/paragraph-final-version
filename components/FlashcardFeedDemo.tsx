@@ -47,9 +47,13 @@ interface MarkupTextRendererProps {
 }
 
 const MarkupTextRenderer: React.FC<MarkupTextRendererProps> = ({ text, style }) => {
-  const parseMarkup = (input: string) => {
+    const parseMarkup = (input: string) => {
     const parts: Array<{ text: string; bold?: boolean; italic?: boolean }> = [];
-    const regex = /\*\*\*(.*?)\*\*\*|\*\*(.*?)\*\*|\*(.*?)\*/g;
+
+    // Supports *, **, ***, _, __, ___
+    const regex =
+      /\*\*\*(.*?)\*\*\*|\*\*(.*?)\*\*|\*(.*?)\*|___(.*?)___|__(.*?)__|_(.*?)_/g;
+
     let lastIndex = 0;
     let match;
 
@@ -59,11 +63,17 @@ const MarkupTextRenderer: React.FC<MarkupTextRendererProps> = ({ text, style }) 
       }
 
       if (match[1]) {
-        parts.push({ text: match[1], bold: true, italic: true });
+        parts.push({ text: match[1], bold: true, italic: true }); // ***text***
       } else if (match[2]) {
-        parts.push({ text: match[2], bold: true });
+        parts.push({ text: match[2], bold: true }); // **text**
       } else if (match[3]) {
-        parts.push({ text: match[3], italic: true });
+        parts.push({ text: match[3], italic: true }); // *text*
+      } else if (match[4]) {
+        parts.push({ text: match[4], bold: true, italic: true }); // ___text___
+      } else if (match[5]) {
+        parts.push({ text: match[5], bold: true }); // __text__
+      } else if (match[6]) {
+        parts.push({ text: match[6], italic: true }); // _text_
       }
 
       lastIndex = regex.lastIndex;
@@ -75,7 +85,7 @@ const MarkupTextRenderer: React.FC<MarkupTextRendererProps> = ({ text, style }) 
 
     return parts;
   };
-
+  
   const parts = parseMarkup(text);
 
   return (
