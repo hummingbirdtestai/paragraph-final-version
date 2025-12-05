@@ -542,41 +542,42 @@ const FlashcardFeed: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Flashcard Feed</Text>
-        <Text style={styles.headerSubtitle}>
-          {hasFlashcards ? `${filteredFlashcards.length} cards` : 'Select a subject'}
-        </Text>
-      </View>
+      <View>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Flashcard Feed</Text>
+          <Text style={styles.headerSubtitle}>
+            {hasFlashcards ? `${filteredFlashcards.length} cards` : 'Select a subject'}
+          </Text>
+        </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.subjectScrollContent}
-        style={styles.subjectScrollContainer}
-      >
-        {SUBJECTS.map((item) => (
-          <TouchableOpacity
-            key={item.subject}
-            style={[
-              styles.subjectBubble,
-              selectedSubject === item.subject && styles.subjectBubbleSelected,
-            ]}
-            onPress={() => setSelectedSubject(item.subject)}
-          >
-            <Text
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.subjectScrollContent}
+          style={styles.subjectScrollContainer}
+        >
+          {SUBJECTS.map((item) => (
+            <TouchableOpacity
+              key={item.subject}
               style={[
-                styles.subjectBubbleText,
-                selectedSubject === item.subject && styles.subjectBubbleTextSelected,
+                styles.subjectBubble,
+                selectedSubject === item.subject && styles.subjectBubbleSelected,
               ]}
+              onPress={() => setSelectedSubject(item.subject)}
             >
-              {item.subject}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text
+                style={[
+                  styles.subjectBubbleText,
+                  selectedSubject === item.subject && styles.subjectBubbleTextSelected,
+                ]}
+              >
+                {item.subject}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-      <View style={styles.categoryContainer}>
+        <View style={styles.categoryContainer}>
         <TouchableOpacity
           style={[
             styles.categoryIcon,
@@ -619,6 +620,7 @@ const FlashcardFeed: React.FC = () => {
             fill={selectedCategory === 'bookmarked' ? '#ffffff' : 'transparent'}
           />
         </TouchableOpacity>
+      </View>
       </View>
 
       {hasFlashcards ? (
