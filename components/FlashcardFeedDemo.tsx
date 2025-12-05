@@ -12,7 +12,8 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bookmark } from 'lucide-react-native';
+import { Bookmark, Eye, EyeOff } from 'lucide-react-native';
+import { supabase } from '../lib/supabaseClient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -120,9 +121,20 @@ interface FlashcardCardProps {
     Answer: string;
   };
   index: number;
+  subject: string;
+  isBookmarked: boolean;
+  onView: (flashcardId: string, subject: string) => void;
+  onBookmark: (flashcardId: string, subject: string) => void;
 }
 
-const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
+const FlashcardCard: React.FC<FlashcardCardProps> = ({
+  item,
+  index,
+  subject,
+  isBookmarked,
+  onView,
+  onBookmark
+}) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [cardHeight, setCardHeight] = useState(200);
   const flipAnim = useRef(new Animated.Value(0)).current;
@@ -177,6 +189,9 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
       tension: 50,
       friction: 8,
     }).start();
+    if (!isFlipped) {
+      onView(item.id, subject);
+    }
     setIsFlipped(!isFlipped);
   };
 
@@ -298,7 +313,14 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
                     </LinearGradient>
                     <Text style={styles.badgeLabel}>QUESTION</Text>
                   </View>
-                  <Bookmark size={20} color="#3b82f6" strokeWidth={2} />
+                  <TouchableOpacity onPress={() => onBookmark(item.id, subject)}>
+                    <Bookmark
+                      size={20}
+                      color="#3b82f6"
+                      strokeWidth={2}
+                      fill={isBookmarked ? '#3b82f6' : 'transparent'}
+                    />
+                  </TouchableOpacity>
                 </View>
 
                 <View style={styles.textBorderContainer}>
@@ -349,7 +371,14 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
                     </LinearGradient>
                     <Text style={styles.badgeLabel}>ANSWER</Text>
                   </View>
-                  <Bookmark size={20} color="#10b981" strokeWidth={2} fill="#10b981" />
+                  <TouchableOpacity onPress={() => onBookmark(item.id, subject)}>
+                    <Bookmark
+                      size={20}
+                      color="#10b981"
+                      strokeWidth={2}
+                      fill={isBookmarked ? '#10b981' : 'transparent'}
+                    />
+                  </TouchableOpacity>
                 </View>
 
                 <View style={[styles.textBorderContainer, styles.answerContainer]}>
@@ -375,8 +404,108 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
   );
 };
 
+type CategoryType = 'unviewed' | 'viewed' | 'bookmarked';
+
 const FlashcardFeed: React.FC = () => {
   const [selectedSubject, setSelectedSubject] = useState('Psychiatry');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
+  const [userId, setUserId] = useState<string | null>(null);
+  const [flashcardStates, setFlashcardStates] = useState<Map<string, {
+    isViewed: boolean;
+    isBookmarked: boolean;
+  }>>(new Map());
+
+  useEffect(() => {
+    initializeAuth();
+  }, []);
+
+  useEffect(() => {
+    if (userId && selectedSubject) {
+      loadFlashcardStates();
+    }
+  }, [userId, selectedSubject]);
+
+  const initializeAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session?.user) {
+      setUserId(session.user.id);
+    } else {
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (data?.user) {
+        setUserId(data.user.id);
+      }
+    }
+  };
+
+  const loadFlashcardStates = async () => {
+    if (!userId) return;
+
+    const { data, error } = await supabase
+      .from('flashcard_states')
+      .select('flashcard_id, is_viewed, is_bookmarked')
+      .eq('user_id', userId)
+      .eq('subject', selectedSubject);
+
+    if (data) {
+      const statesMap = new Map();
+      data.forEach((state) => {
+        statesMap.set(state.flashcard_id, {
+          isViewed: state.is_viewed,
+          isBookmarked: state.is_bookmarked,
+        });
+      });
+      setFlashcardStates(statesMap);
+    }
+  };
+
+  const handleView = async (flashcardId: string, subject: string) => {
+    if (!userId) return;
+
+    await supabase
+      .from('flashcard_states')
+      .upsert({
+        user_id: userId,
+        flashcard_id: flashcardId,
+        subject: subject,
+        is_viewed: true,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'user_id,flashcard_id,subject'
+      });
+
+    setFlashcardStates((prev) => {
+      const newMap = new Map(prev);
+      const current = newMap.get(flashcardId) || { isViewed: false, isBookmarked: false };
+      newMap.set(flashcardId, { ...current, isViewed: true });
+      return newMap;
+    });
+  };
+
+  const handleBookmark = async (flashcardId: string, subject: string) => {
+    if (!userId) return;
+
+    const current = flashcardStates.get(flashcardId) || { isViewed: false, isBookmarked: false };
+    const newBookmarkState = !current.isBookmarked;
+
+    await supabase
+      .from('flashcard_states')
+      .upsert({
+        user_id: userId,
+        flashcard_id: flashcardId,
+        subject: subject,
+        is_bookmarked: newBookmarkState,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'user_id,flashcard_id,subject'
+      });
+
+    setFlashcardStates((prev) => {
+      const newMap = new Map(prev);
+      newMap.set(flashcardId, { ...current, isBookmarked: newBookmarkState });
+      return newMap;
+    });
+  };
 
   const getFlashcardsForSubject = (subject: string) => {
     if (subject === 'Psychiatry') {
@@ -385,7 +514,26 @@ const FlashcardFeed: React.FC = () => {
     return [];
   };
 
-  const flashcards = getFlashcardsForSubject(selectedSubject);
+  const getFilteredFlashcards = () => {
+    const allFlashcards = getFlashcardsForSubject(selectedSubject);
+
+    return allFlashcards.filter((card) => {
+      const state = flashcardStates.get(card.id) || { isViewed: false, isBookmarked: false };
+
+      switch (selectedCategory) {
+        case 'viewed':
+          return state.isViewed;
+        case 'unviewed':
+          return !state.isViewed;
+        case 'bookmarked':
+          return state.isBookmarked;
+        default:
+          return true;
+      }
+    });
+  };
+
+  const flashcards = getFilteredFlashcards();
   const hasFlashcards = flashcards.length > 0;
 
   return (
@@ -424,11 +572,65 @@ const FlashcardFeed: React.FC = () => {
         ))}
       </ScrollView>
 
+      <View style={styles.categoryContainer}>
+        <TouchableOpacity
+          style={[
+            styles.categoryIcon,
+            selectedCategory === 'unviewed' && styles.categoryIconSelected,
+          ]}
+          onPress={() => setSelectedCategory('unviewed')}
+        >
+          <EyeOff
+            size={20}
+            color={selectedCategory === 'unviewed' ? '#ffffff' : '#10b981'}
+            strokeWidth={2}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.categoryIcon,
+            selectedCategory === 'viewed' && styles.categoryIconSelected,
+          ]}
+          onPress={() => setSelectedCategory('viewed')}
+        >
+          <Eye
+            size={20}
+            color={selectedCategory === 'viewed' ? '#ffffff' : '#10b981'}
+            strokeWidth={2}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.categoryIcon,
+            selectedCategory === 'bookmarked' && styles.categoryIconSelected,
+          ]}
+          onPress={() => setSelectedCategory('bookmarked')}
+        >
+          <Bookmark
+            size={20}
+            color={selectedCategory === 'bookmarked' ? '#ffffff' : '#10b981'}
+            strokeWidth={2}
+            fill={selectedCategory === 'bookmarked' ? '#ffffff' : 'transparent'}
+          />
+        </TouchableOpacity>
+      </View>
+
       {hasFlashcards ? (
         <FlatList
           data={flashcards}
           keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => <FlashcardCard item={item} index={index} />}
+          renderItem={({ item, index }) => (
+            <FlashcardCard
+              item={item}
+              index={index}
+              subject={selectedSubject}
+              isBookmarked={flashcardStates.get(item.id)?.isBookmarked || false}
+              onView={handleView}
+              onBookmark={handleBookmark}
+            />
+          )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           removeClippedSubviews={Platform.OS === 'android'}
@@ -679,6 +881,28 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     fontStyle: 'italic',
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    gap: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#222',
+  },
+  categoryIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  categoryIconSelected: {
+    backgroundColor: '#10b981',
+    borderColor: '#10b981',
   },
 });
 
