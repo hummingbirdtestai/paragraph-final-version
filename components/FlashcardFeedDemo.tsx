@@ -433,6 +433,7 @@ const FlashcardFeed: React.FC = () => {
     isViewed: boolean;
     isBookmarked: boolean;
   }>>(new Map());
+  const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     initializeAuth();
@@ -449,6 +450,11 @@ const FlashcardFeed: React.FC = () => {
 
   useEffect(() => {
     setInitialStates(new Map(flashcardStates));
+    setTimeout(() => {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+      }
+    }, 100);
   }, [selectedCategory]);
 
   const initializeAuth = async () => {
@@ -625,7 +631,12 @@ const FlashcardFeed: React.FC = () => {
                 styles.subjectBubble,
                 selectedSubject === item.subject && styles.subjectBubbleSelected,
               ]}
-              onPress={() => setSelectedSubject(item.subject)}
+              onPress={() => {
+                if (selectedSubject !== item.subject) {
+                  setSelectedCategory('unviewed');
+                }
+                setSelectedSubject(item.subject);
+              }}
             >
               <Text
                 style={[
@@ -687,6 +698,7 @@ const FlashcardFeed: React.FC = () => {
 
       {hasFlashcards ? (
         <FlatList
+          ref={flatListRef}
           data={filteredFlashcards}
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
