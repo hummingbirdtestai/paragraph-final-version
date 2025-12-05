@@ -840,15 +840,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   subjectScrollContainer: {
-    height: 80,
     borderBottomWidth: 1,
     borderBottomColor: '#222',
     backgroundColor: '#0d0d0d',
+    paddingTop: 12,
+    paddingBottom: 12,
   },
   subjectScrollContent: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
+    paddingHorizontal: 16,
+    gap: 8,
     alignItems: 'center',
   },
   subjectBubble: {
@@ -891,10 +891,12 @@ const styles = StyleSheet.create({
   categoryContainer: {
     flexDirection: 'row',
     gap: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#222',
+    backgroundColor: '#0d0d0d',
   },
   categoryIcon: {
     width: 48,
