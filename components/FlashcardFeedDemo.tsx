@@ -399,7 +399,9 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
                     style={styles.textBorder}
                   >
                     <View style={[styles.textContent, styles.answerBackground]}>
-                      <Markdown style={styles.answerText}>{item.Answer}</Markdown>
+                      <Markdown style={{ body: styles.answerText }}>
+                        {item.Answer}
+                      </Markdown>
                     </View>
                   </LinearGradient>
                 </View>
