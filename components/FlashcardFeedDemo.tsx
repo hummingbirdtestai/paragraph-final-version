@@ -840,16 +840,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   subjectScrollContainer: {
-    height: 72,
     backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
+    paddingVertical: 16,
   },
   subjectScrollContent: {
     paddingHorizontal: 16,
     gap: 8,
     alignItems: 'center',
-    justifyContent: 'center',   // ✅ ADD HERE
   },
   subjectBubble: {
     paddingHorizontal: 20,
@@ -889,11 +888,11 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   categoryContainer: {
-    height: 64,                       // 🔥 FIXED HEIGHT → matching all states
     flexDirection: 'row',
-    alignItems: 'center',             // vertical alignment
+    alignItems: 'center',
     gap: 16,
     paddingHorizontal: 16,
+    paddingVertical: 12,
     backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
