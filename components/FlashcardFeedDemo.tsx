@@ -3,6 +3,8 @@ import {
   View,
   Text,
   FlatList,
+  ScrollView,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   Animated,
   StyleSheet,
@@ -14,36 +16,46 @@ import { Bookmark } from 'lucide-react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const FLASHCARD_DATA = [
+const SUBJECTS = [
+  { subject: 'Anatomy' },
+  { subject: 'Anesthesia' },
+  { subject: 'Biochemistry' },
+  { subject: 'Community Medicine' },
+  { subject: 'Dermatology' },
+  { subject: 'ENT' },
+  { subject: 'Forensic Medicine' },
+  { subject: 'General Medicine' },
+  { subject: 'General Surgery' },
+  { subject: 'Microbiology' },
+  { subject: 'Obstetrics and Gynaecology' },
+  { subject: 'Ophthalmology' },
+  { subject: 'Orthopedics' },
+  { subject: 'Pathology' },
+  { subject: 'Pediatrics' },
+  { subject: 'Pharmacology' },
+  { subject: 'Physiology' },
+  { subject: 'Psychiatry' },
+  { subject: 'Radiology' },
+];
+
+const PSYCHIATRY_FLASHCARDS = [
   {
     id: 'b8c3a6c2-1c4e-4e4e-8e3a-2208e6f3a111',
     Question:
-      'Elderly woman (68 y) with advanced metastatic disease, progressive breathlessness, and poor functional status. She is alert but anxious. Aggressive therapy offers no benefit; family demands maximal care.\nWhat is the ethical next step?',
+      'Elderly woman (68 y) with advanced metastatic disease, progressive breathlessness, and poor functional status.\nWhat is the ethical next step?',
     Answer: 'Family meeting → goals-of-care',
   },
   {
     id: '0e7dd1e1-5f42-4a99-92e2-02ab5fa54212',
     Question:
-      'Middle-aged man (55 y) with end-stage COPD, repeated ICU admissions, now arrives with severe dyspnea, cachexia, CO₂ narcosis, and poor prognosis.\nWhat should the clinician prioritize?',
+      'Middle-aged man (55 y) with end-stage COPD, repeated ICU admissions, cachexia, CO₂ narcosis, and poor prognosis.\nWhat should the clinician prioritize?',
     Answer: 'Honor prior wishes',
   },
   {
     id: '6b9d13f4-d2e7-4da8-9edb-923f248aef13',
     Question:
-      'Elderly patient (72 y) with advanced dementia, recurrent aspiration pneumonia, and bedbound status becomes febrile and hypoxic.\nWhat is the best ethical approach?',
+      'Elderly patient (72 y) with advanced dementia, recurrent aspiration pneumonia, and bedbound status.\nWhat is the best ethical approach?',
     Answer: 'Discuss prognosis & limits',
-  },
-  {
-    id: 'db3cf98a-93f4-4dfd-9f6f-0f0c1fcd5e14',
-    Question:
-      'Cancer patient (65 y) with widespread metastases arrives with intractable pain and poor performance status.\nWhat should the physician focus on?',
-    Answer: 'Palliative symptom control',
-  },
-  {
-    id: 'c2b8fb2d-3f77-4be7-a8b3-ddf3167d9f15',
-    Question:
-      'Young woman (32 y) with end-stage heart failure awaiting transplant deteriorates rapidly. She previously signed DNR.\nWhich directive takes priority?',
-    Answer: "Patient's DNR autonomy",
   },
 ];
 
@@ -364,23 +376,72 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
 };
 
 const FlashcardFeed: React.FC = () => {
+  const [selectedSubject, setSelectedSubject] = useState('Psychiatry');
+
+  const getFlashcardsForSubject = (subject: string) => {
+    if (subject === 'Psychiatry') {
+      return PSYCHIATRY_FLASHCARDS;
+    }
+    return [];
+  };
+
+  const flashcards = getFlashcardsForSubject(selectedSubject);
+  const hasFlashcards = flashcards.length > 0;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Flashcard Feed</Text>
-        <Text style={styles.headerSubtitle}>{FLASHCARD_DATA.length} cards</Text>
+        <Text style={styles.headerSubtitle}>
+          {hasFlashcards ? `${flashcards.length} cards` : 'Select a subject'}
+        </Text>
       </View>
 
-      <FlatList
-        data={FLASHCARD_DATA}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => <FlashcardCard item={item} index={index} />}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        removeClippedSubviews={Platform.OS === 'android'}
-        maxToRenderPerBatch={5}
-        windowSize={5}
-      />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.subjectScrollContent}
+        style={styles.subjectScrollContainer}
+      >
+        {SUBJECTS.map((item) => (
+          <TouchableOpacity
+            key={item.subject}
+            style={[
+              styles.subjectBubble,
+              selectedSubject === item.subject && styles.subjectBubbleSelected,
+            ]}
+            onPress={() => setSelectedSubject(item.subject)}
+          >
+            <Text
+              style={[
+                styles.subjectBubbleText,
+                selectedSubject === item.subject && styles.subjectBubbleTextSelected,
+              ]}
+            >
+              {item.subject}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {hasFlashcards ? (
+        <FlatList
+          data={flashcards}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => <FlashcardCard item={item} index={index} />}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          removeClippedSubviews={Platform.OS === 'android'}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+        />
+      ) : (
+        <View style={styles.placeholderContainer}>
+          <Text style={styles.placeholderText}>
+            No flashcards available for this subject.
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -571,6 +632,49 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 8,
+  },
+  subjectScrollContainer: {
+    maxHeight: 60,
+    borderBottomWidth: 1,
+    borderBottomColor: '#222',
+  },
+  subjectScrollContent: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  subjectBubble: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    backgroundColor: 'transparent',
+    marginRight: 12,
+  },
+  subjectBubbleSelected: {
+    backgroundColor: '#10b981',
+    borderColor: '#10b981',
+  },
+  subjectBubbleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#10b981',
+  },
+  subjectBubbleTextSelected: {
+    color: '#ffffff',
+  },
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 });
 
