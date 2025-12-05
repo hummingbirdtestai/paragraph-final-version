@@ -528,15 +528,10 @@ const FlashcardFeed: React.FC = () => {
   const handleView = async (flashcardId: string, subject: string) => {
     if (!userId) return;
 
-    await supabase
-      .from('student_flashcard_views')
-      .upsert({
-        student_id: userId,
-        flashcard_id: flashcardId,
-        viewed_at: new Date().toISOString()
-      }, {
-        onConflict: 'student_id,flashcard_id'
-      });
+    await supabase.rpc('mark_flashcard_viewed', {
+      p_student_id: userId,
+      p_flashcard_id: flashcardId
+    });
 
     setFlashcardStates((prev) => {
       const map = new Map(prev);
