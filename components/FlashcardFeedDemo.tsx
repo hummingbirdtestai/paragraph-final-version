@@ -544,18 +544,20 @@ const FlashcardFeed: React.FC = () => {
   const handleBookmark = async (flashcardId: string, subject: string) => {
     if (!userId) return;
 
-    const { data, error } = await supabase.rpc('toggle_flashcard_bookmark_v1', {
+    const { data, error } = await supabase.rpc("toggle_flashcard_bookmark_v1", {
       p_student_id: userId,
-      p_flashcard_id: flashcardId
+      p_flashcard_id: flashcardId,
     });
-
+    
+    console.log("Bookmark v1 result:", data, error);
+    
     if (error) {
       console.error("BOOKMARK RPC ERROR:", error);
       return;
     }
-
-    const newState = data?.[0]?.is_bookmark ?? false;
-
+    
+    const newState = data?.[0]?.out_is_bookmark ?? false;
+    
     setFlashcardStates((prev) => {
       const map = new Map(prev);
       const current = map.get(flashcardId) || { isViewed: false, isBookmarked: false };
