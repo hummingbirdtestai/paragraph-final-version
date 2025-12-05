@@ -418,7 +418,7 @@ const MemoizedFlashcardCard = React.memo(FlashcardCard);
 type CategoryType = 'unviewed' | 'viewed' | 'bookmarked';
 
 const FlashcardFeed: React.FC = () => {
-  const [selectedSubject, setSelectedSubject] = useState('Psychiatry');
+  const [selectedSubject, setSelectedSubject] = useState('Anatomy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
   const [userId, setUserId] = useState<string | null>(null);
   const [flashcards, setFlashcards] = useState<any[]>([]);
