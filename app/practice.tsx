@@ -7,7 +7,9 @@ import {
   RefreshControl,
   StyleSheet,
   Platform,
+  TouchableOpacity,
 } from "react-native";
+import { Eye, EyeOff, Bookmark } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { usePracticeData } from "@/hooks/usePracticeData";
@@ -38,9 +40,28 @@ const subjects = [
 
 export default function PracticeScreen() {
   const [selectedSubject, setSelectedSubject] = useState<string>("General Medicine");
+  const [selectedCategory, setSelectedCategory] = useState<'unviewed' | 'viewed' | 'bookmarked'>('unviewed');
 
   const { phases, loading, refreshing, refresh } =
     usePracticeData(selectedSubject);
+
+  // Filter phases based on selected category
+  const getFilteredPhases = () => {
+    return phases.filter((phase) => {
+      switch (selectedCategory) {
+        case 'viewed':
+          return phase.is_viewed;
+        case 'unviewed':
+          return !phase.is_viewed;
+        case 'bookmarked':
+          return phase.is_bookmarked;
+        default:
+          return true;
+      }
+    });
+  };
+
+  const filteredPhases = getFilteredPhases();
 
   return (
     <View style={styles.container}>
@@ -61,6 +82,52 @@ export default function PracticeScreen() {
             />
           ))}
         </ScrollView>
+
+        {/* CATEGORY FILTER BAR */}
+        <View style={styles.categoryContainer}>
+          <TouchableOpacity
+            style={[
+              styles.categoryIcon,
+              selectedCategory === 'unviewed' && styles.categoryIconSelected,
+            ]}
+            onPress={() => setSelectedCategory('unviewed')}
+          >
+            <EyeOff
+              size={20}
+              color={selectedCategory === 'unviewed' ? '#ffffff' : '#10b981'}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.categoryIcon,
+              selectedCategory === 'viewed' && styles.categoryIconSelected,
+            ]}
+            onPress={() => setSelectedCategory('viewed')}
+          >
+            <Eye
+              size={20}
+              color={selectedCategory === 'viewed' ? '#ffffff' : '#10b981'}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.categoryIcon,
+              selectedCategory === 'bookmarked' && styles.categoryIconSelected,
+            ]}
+            onPress={() => setSelectedCategory('bookmarked')}
+          >
+            <Bookmark
+              size={20}
+              color={selectedCategory === 'bookmarked' ? '#ffffff' : '#10b981'}
+              strokeWidth={2}
+              fill={selectedCategory === 'bookmarked' ? '#ffffff' : 'transparent'}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* CONTENT */}
@@ -76,7 +143,7 @@ export default function PracticeScreen() {
           />
         }
       >
-        {phases.map((phase) => (
+        {filteredPhases.map((phase) => (
           <PracticeCard key={phase.id} phase={phase} />
         ))}
       </ScrollView>
@@ -126,5 +193,30 @@ const styles = StyleSheet.create({
       marginRight: "auto",
       width: "100%",
     }),
+  },
+
+  categoryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#0d0d0d',
+  },
+
+  categoryIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+
+  categoryIconSelected: {
+    backgroundColor: '#10b981',
+    borderColor: '#10b981',
   },
 });
