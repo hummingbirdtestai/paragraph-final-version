@@ -112,10 +112,13 @@ interface FlashcardCardProps {
 
 const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [cardHeight, setCardHeight] = useState(200);
   const flipAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const shimmerAnim = useRef(new Animated.Value(0)).current;
+  const frontHeightRef = useRef(200);
+  const backHeightRef = useRef(200);
 
   const isOddCard = index % 2 === 0;
   const borderColors = isOddCard
@@ -208,6 +211,24 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
     outputRange: [0.3, 0.8],
   });
 
+  const handleFrontLayout = (event: any) => {
+    const { height } = event.nativeEvent.layout;
+    frontHeightRef.current = height;
+    const maxHeight = Math.max(frontHeightRef.current, backHeightRef.current);
+    if (maxHeight > cardHeight) {
+      setCardHeight(maxHeight);
+    }
+  };
+
+  const handleBackLayout = (event: any) => {
+    const { height } = event.nativeEvent.layout;
+    backHeightRef.current = height;
+    const maxHeight = Math.max(frontHeightRef.current, backHeightRef.current);
+    if (maxHeight > cardHeight) {
+      setCardHeight(maxHeight);
+    }
+  };
+
   return (
     <Animated.View
       style={[
@@ -233,8 +254,9 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
-          <View style={styles.cardTouchable}>
+          <View style={[styles.cardTouchable, { height: cardHeight }]}>
             <Animated.View
+              onLayout={handleFrontLayout}
               style={[
                 styles.cardFace,
                 styles.cardFront,
@@ -285,6 +307,7 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({ item, index }) => {
             </Animated.View>
 
             <Animated.View
+              onLayout={handleBackLayout}
               style={[
                 styles.cardFace,
                 styles.cardBack,
@@ -426,8 +449,13 @@ const styles = StyleSheet.create({
   cardTouchable: {
     flex: 1,
     marginLeft: 16,
+    position: 'relative',
   },
   cardFace: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     width: '100%',
     borderRadius: 16,
     borderWidth: 1,
@@ -449,8 +477,12 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  cardFront: {},
-  cardBack: {},
+  cardFront: {
+    zIndex: 2,
+  },
+  cardBack: {
+    zIndex: 1,
+  },
   cardGradient: {
     padding: 24,
     paddingTop: 20,
