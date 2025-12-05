@@ -423,6 +423,10 @@ const FlashcardFeed: React.FC = () => {
     isViewed: boolean;
     isBookmarked: boolean;
   }>>(new Map());
+  const [initialStates, setInitialStates] = useState<Map<string, {
+    isViewed: boolean;
+    isBookmarked: boolean;
+  }>>(new Map());
 
   useEffect(() => {
     initializeAuth();
@@ -433,6 +437,10 @@ const FlashcardFeed: React.FC = () => {
       fetchFlashcards();
     }
   }, [userId, selectedSubject]);
+
+  useEffect(() => {
+    setInitialStates(new Map(flashcardStates));
+  }, [selectedCategory]);
 
   const initializeAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -487,6 +495,7 @@ const FlashcardFeed: React.FC = () => {
     });
 
     setFlashcardStates(map);
+    setInitialStates(new Map(map));
   };
 
   const handleView = async (flashcardId: string, subject: string) => {
@@ -532,7 +541,7 @@ const FlashcardFeed: React.FC = () => {
     const allFlashcards = getFlashcardsForSubject();
 
     return allFlashcards.filter((card) => {
-      const state = flashcardStates.get(card.id) || { isViewed: false, isBookmarked: false };
+      const state = initialStates.get(card.id) || { isViewed: false, isBookmarked: false };
 
       switch (selectedCategory) {
         case 'viewed':
