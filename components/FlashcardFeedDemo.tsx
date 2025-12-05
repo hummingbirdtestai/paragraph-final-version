@@ -840,15 +840,16 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   subjectScrollContainer: {
-    height: 60,
+    height: 80,
     borderBottomWidth: 1,
     borderBottomColor: '#222',
     backgroundColor: '#0d0d0d',
   },
   subjectScrollContent: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 16,
     gap: 12,
+    alignItems: 'center',
   },
   subjectBubble: {
     paddingHorizontal: 20,
