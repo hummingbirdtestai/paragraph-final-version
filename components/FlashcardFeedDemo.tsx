@@ -840,11 +840,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   subjectScrollContainer: {
-    height: 72,                       // 🔥 FIXED HEIGHT → constant spacing
+    height: 72,
     backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
-    justifyContent: 'center',         // centers bubbles vertically
   },
   subjectScrollContent: {
     paddingHorizontal: 16,
