@@ -890,14 +890,14 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   categoryContainer: {
+    height: 64,                       // 🔥 FIXED HEIGHT → matching all states
     flexDirection: 'row',
+    alignItems: 'center',             // vertical alignment
     gap: 16,
     paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
+    backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
-    backgroundColor: '#0d0d0d',
   },
   categoryIcon: {
     width: 48,
