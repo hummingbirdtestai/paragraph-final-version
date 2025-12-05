@@ -423,6 +423,8 @@ const FlashcardFeed: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [flashcards, setFlashcards] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [flashcardStates, setFlashcardStates] = useState<Map<string, {
     isViewed: boolean;
     isBookmarked: boolean;
@@ -438,7 +440,10 @@ const FlashcardFeed: React.FC = () => {
 
   useEffect(() => {
     if (userId && selectedSubject) {
-      fetchFlashcards();
+      setFlashcards([]);
+      setOffset(0);
+      setHasMore(true);
+      fetchFlashcards(0);
     }
   }, [userId, selectedSubject]);
 
@@ -459,22 +464,28 @@ const FlashcardFeed: React.FC = () => {
     }
   };
 
-  const fetchFlashcards = async () => {
+  const fetchFlashcards = async (newOffset = 0) => {
     if (!userId || !selectedSubject) return;
+    if (newOffset > 0 && !hasMore) return;
 
     setLoading(true);
 
     const { data, error } = await supabase.rpc('get_flashcards_v2', {
       p_subject: selectedSubject,
       p_student_id: userId,
-      p_limit: 100,
-      p_offset: 0
+      p_limit: 50,
+      p_offset: newOffset
     });
 
     setLoading(false);
 
     if (error) {
       console.error('RPC ERROR:', error);
+      return;
+    }
+
+    if (data.length === 0) {
+      setHasMore(false);
       return;
     }
 
@@ -488,18 +499,30 @@ const FlashcardFeed: React.FC = () => {
       isViewed: row.is_viewed
     }));
 
-    setFlashcards(formatted);
-
-    const map = new Map();
-    data.forEach((row: any) => {
-      map.set(row.flashcard_id, {
-        isViewed: row.is_viewed,
-        isBookmarked: row.is_bookmarked
+    if (newOffset === 0) {
+      setFlashcards(formatted);
+      const map = new Map();
+      data.forEach((row: any) => {
+        map.set(row.flashcard_id, {
+          isViewed: row.is_viewed,
+          isBookmarked: row.is_bookmarked
+        });
       });
-    });
-
-    setFlashcardStates(map);
-    setInitialStates(new Map(map));
+      setFlashcardStates(map);
+      setInitialStates(new Map(map));
+    } else {
+      setFlashcards(prev => [...prev, ...formatted]);
+      setFlashcardStates(prev => {
+        const map = new Map(prev);
+        data.forEach((row: any) => {
+          map.set(row.flashcard_id, {
+            isViewed: row.is_viewed,
+            isBookmarked: row.is_bookmarked
+          });
+        });
+        return map;
+      });
+    }
   };
 
   const handleView = async (flashcardId: string, subject: string) => {
@@ -562,6 +585,14 @@ const FlashcardFeed: React.FC = () => {
 
   const filteredFlashcards = getFilteredFlashcards();
   const hasFlashcards = filteredFlashcards.length > 0;
+
+  const loadMore = useCallback(() => {
+    if (hasMore && !loading) {
+      const newOffset = offset + 50;
+      setOffset(newOffset);
+      fetchFlashcards(newOffset);
+    }
+  }, [hasMore, loading, offset]);
 
   const renderCard = useCallback(({ item, index }: { item: any; index: number }) => (
     <MemoizedFlashcardCard
@@ -669,6 +700,8 @@ const FlashcardFeed: React.FC = () => {
           windowSize={7}
           updateCellsBatchingPeriod={60}
           removeClippedSubviews={true}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
         />
       ) : (
         <View style={styles.placeholderContainer}>
