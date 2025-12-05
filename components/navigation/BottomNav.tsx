@@ -39,21 +39,16 @@ export function BottomNav({ activeTab, onTabPress }: BottomNavProps) {
 
 const currentTab =
   activeTab ||
-  (pathname.includes("/feed")
-    ? "feed"
-    : pathname.includes("/flashcards")
-    ? "flashcards"
-    : pathname.includes("/mocktests")
-    ? "mocktests"
-    : pathname.includes("/battle")
-    ? "battle"
-    : pathname.includes("/analytics")
-    ? "analytics"
-    : pathname.includes("/settings")
-    ? "settings"
-    : pathname.includes("/concept")   // ✅ NEW
-    ? "concept"
+  (pathname.includes("/feed") ? "feed"
+    : pathname.includes("/flashcards") ? "flashcards"
+    : pathname.includes("/flashcard-feed-demo") ? "flash"      // ⭐ NEW
+    : pathname.includes("/mocktests") ? "mocktests"
+    : pathname.includes("/battle") ? "battle"
+    : pathname.includes("/analytics") ? "analytics"
+    : pathname.includes("/settings") ? "settings"
+    : pathname.includes("/concept") ? "concept"
     : "practice");
+
 
 
 
