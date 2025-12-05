@@ -4,13 +4,10 @@ import FlashcardFeed from '@/components/FlashcardFeedDemo';
 import { BottomNav } from '@/components/navigation/BottomNav';
 
 export default function FlashcardFeedDemoScreen() {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
-
   return (
     <View style={styles.container}>
       <FlashcardFeed />
-      {isMobile && <BottomNav />}
+      <BottomNav />
     </View>
   );
 }
