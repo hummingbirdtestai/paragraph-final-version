@@ -130,7 +130,8 @@ try {
   console.log("🔥 [MCQScreen] EXCEPTION during my_answers submit:", exception);
 }
 
-
+// ✅ CLOSE the handleOptionSelect function
+};
   const isCorrect = selectedOption === item.correct_answer;
 
   return (
