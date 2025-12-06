@@ -117,7 +117,6 @@ const ORCHESTRATOR_URL =
           correctAnswer={phase.phase_json?.correct_answer} // ⭐ correct answer from DB
 
           studentId={user?.id}
-          isBookmarked={phase.is_bookmarked}   // 🔥 from DB
           reviewMode={false}
           hideInternalNext={true}
           phaseUniqueId={phase.id}
@@ -230,6 +229,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 12,
   },
+bookmarkRow: {
+  position: "absolute",
+  top: 12,
+  right: 16,
+  zIndex: 999,
+},
 
   progressRow: {
     marginBottom: 12,
