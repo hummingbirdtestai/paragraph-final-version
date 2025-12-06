@@ -158,8 +158,6 @@ function MessageBubble({
     console.error("❌ Bookmark toggle ERROR:", err);
   }
 }}
-
-
             />
           </View>
         </View>
