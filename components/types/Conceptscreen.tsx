@@ -136,9 +136,11 @@ function MessageBubble({
       <View style={{ flex: 1 }}>
         {renderMarkupText(message.title, styles.conceptTitle)}
       </View>
+      {/* Bookmark removed */}
     </View>
   </View>
 )}
+
 
       {renderMarkupText(
         message.content,
