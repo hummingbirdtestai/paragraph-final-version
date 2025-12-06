@@ -9,7 +9,6 @@ import {
   Animated,
 } from "react-native";
 import { supabase } from "@/lib/supabaseClient";
-import BookmarkButton from "@/components/common/BookmarkButton";
 
 interface MCQData {
   id: string;
