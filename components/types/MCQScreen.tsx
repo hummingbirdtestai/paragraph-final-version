@@ -224,32 +224,13 @@ function MCQQuestion({
           {renderMarkupText(mcq.stem, styles.mcqStem)}
         </View>
 
-        <BookmarkButton
-          initialState={isBookmarked}
-          onToggle={async () => {
-            try {
-              console.log("🔖 Toggling practice bookmark", {
-                studentId,
-                practicecardId,
-                subject,
-              });
+       {studentId !== "practice-view" && (
+  <BookmarkButton
+    initialState={isBookmarked}
+    onToggle={toggleBookmarkInLearningMode}
+  />
+)}
 
-              const { data, error } = await supabase.rpc("toggle_practice_bookmark_v1", {
-                p_student_id: studentId,
-                p_practicecard_id: practicecardId,
-                p_subject: subject,
-              });
-
-              if (error) {
-                console.error("❌ toggle_practice_bookmark_v1 ERROR:", error);
-              } else {
-                console.log("🟢 Bookmark toggled:", data);
-              }
-            } catch (err) {
-              console.error("🔥 Bookmark RPC exception:", err);
-            }
-          }}
-        />
       </View>
     </Animated.View>
   );
