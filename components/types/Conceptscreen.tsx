@@ -112,56 +112,45 @@ function MessageBubble({
       ]}
     >
       {isConcept && message.title && (
-        <View style={styles.conceptHeader}>
-          <View style={styles.conceptHeaderRow}>
-            <View style={{ flex: 1 }}>
-              {renderMarkupText(message.title, styles.conceptTitle)}
-            </View>
-            {/* ✅ Bookmark Button added */}
-            <BookmarkButton
-              initialState={isBookmarked}
-              onToggle={async () => {
-  console.log("🔍 [BOOKMARK CLICKED - CONCEPT]");
-  console.log("reviewMode =", reviewMode);
-  console.log("studentId =", studentId);
-  console.log("phaseUniqueId =", phaseUniqueId);
+  <View style={styles.conceptHeader}>
+    <View style={styles.conceptHeaderRow}>
+      <View style={{ flex: 1 }}>
+        {renderMarkupText(message.title, styles.conceptTitle)}
+      </View>
 
-  // ⛔ FIX: NEVER CALL RPC IN PRACTICE-VIEW
-  if (studentId === "practice-view") {
-    console.log("⛔ Skipping RPC — practice-view cannot write to DB");
-    return;
-  }
+      {/* 🔒 Hide bookmark button in practice mode */}
+      {studentId !== "practice-view" && (
+        <BookmarkButton
+          initialState={isBookmarked}
+          onToggle={async () => {
+            console.log("🔍 [BOOKMARK CLICKED - CONCEPT]");
 
-  try {
-    if (reviewMode) {
-      console.log("📡 Calling toggle_bookmark_for_review_mode...");
-      const { data, error } = await supabase.rpc(
-        "toggle_bookmark_for_review_mode",
-        {
-          p_student_id: studentId,
-          p_phase_unique_id: phaseUniqueId,
-        }
-      );
+            if (reviewMode) {
+              const { data, error } = await supabase.rpc(
+                "toggle_bookmark_for_review_mode",
+                {
+                  p_student_id: studentId,
+                  p_phase_unique_id: phaseUniqueId,
+                }
+              );
+              console.log("📥 RPC RESPONSE:", { data, error });
+              return;
+            }
 
-      console.log("📥 RPC RESPONSE:", { data, error });
-      return;
-    }
-
-    // NORMAL MODE (actual student)
-    console.log("📡 Calling toggle_latest_bookmark...");
-    const { data, error } = await supabase.rpc("toggle_latest_bookmark", {
-      p_student_id: studentId,
-    });
-
-    console.log("📥 RPC RESPONSE:", { data, error });
-  } catch (err) {
-    console.error("❌ Bookmark toggle ERROR:", err);
-  }
-}}
-            />
-          </View>
-        </View>
+            const { data, error } = await supabase.rpc(
+              "toggle_latest_bookmark",
+              {
+                p_student_id: studentId,
+              }
+            );
+            console.log("📥 RPC RESPONSE:", { data, error });
+          }}
+        />
       )}
+    </View>
+  </View>
+)}
+
       {renderMarkupText(
         message.content,
         isStudent ? styles.studentText : styles.mentorText
