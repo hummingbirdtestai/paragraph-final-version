@@ -18,6 +18,9 @@ export function PracticeCard({ phase }) {
 const [isSending, setIsSending] = React.useState(false);
 const [isTyping, setIsTyping] = React.useState(false);
   const { user } = useAuth();
+  // Local bookmark state (like FlashcardCard)
+const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
+
 
   // 🔵 DEBUG: Log concept/mcq IDs when card loads
   React.useEffect(() => {
