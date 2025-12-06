@@ -265,7 +265,6 @@ const styles = StyleSheet.create({
   },
   conceptHeaderRow: {
     flexDirection: 'row',
-    alignItems: 'center',
   },
   conceptTitle: {
     fontSize: 17,
