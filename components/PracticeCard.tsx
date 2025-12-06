@@ -49,6 +49,44 @@ const ORCHESTRATOR_URL =
     <View style={styles.card}>
       {/* SUBJECT NAME */}
       <Text style={styles.subject}>{phase.subject}</Text>
+      {/* 🔖 Inline bookmark icon (same as flashcards) */}
+<View style={styles.bookmarkRow}>
+  <TouchableOpacity
+    onPress={async () => {
+      if (!user?.id) return;
+
+      console.log("🔖 Toggle practice bookmark", {
+        practicecard_id: phase.id,
+        subject: phase.subject,
+      });
+
+      const { data, error } = await supabase.rpc(
+        "toggle_practice_bookmark_v1",
+        {
+          p_student_id: user.id,
+          p_practicecard_id: phase.id,
+          p_subject: phase.subject,
+        }
+      );
+
+      if (error) {
+        console.log("❌ Bookmark toggle error:", error);
+        return;
+      }
+
+      const newState = data?.is_bookmark ?? !isBookmarked;
+      setIsBookmarked(newState);
+    }}
+  >
+    <Bookmark
+      size={22}
+      color="#10b981"
+      strokeWidth={2}
+      fill={isBookmarked ? "#10b981" : "transparent"}
+    />
+  </TouchableOpacity>
+</View>
+
 
       {/* 🔥 NEW — Progress Counter */}
       <View style={styles.progressRow}>
