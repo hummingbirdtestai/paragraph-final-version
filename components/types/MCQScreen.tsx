@@ -102,45 +102,6 @@ const handleOptionSelect = async (option: string) => {
     return;
   }
 
-  // ⭐ NORMAL MODE — Call mark_mcq_submission_v6 RPC
-  console.log("📤 [MCQScreen] Submitting MCQ RPC → mark_mcq_submission_v6", {
-    p_student_id: studentId,
-    p_concept_id: conceptId,
-    p_mcq_id: mcqId,
-    p_student_answer: option,
-    p_correct_answer: correct_answer,
-  });
-
-  try {
-    const { data, error } = await supabase.rpc("mark_mcq_submission_v6", {
-      p_student_id: studentId,
-      p_concept_id: conceptId,
-      p_mcq_id: mcqId,
-      p_student_answer: option,
-      p_correct_answer: correct_answer,
-    });
-
-    if (error) {
-      console.log("❌ [MCQScreen] RPC ERROR mark_mcq_submission_v6:", error);
-      return;
-    }
-
-    console.log("🟢 [MCQScreen] RPC SUCCESS", {
-      data,
-      out_is_correct: data?.[0]?.out_is_correct,
-      out_concept_id: data?.[0]?.out_concept_id,
-      out_mcq_id: data?.[0]?.out_mcq_id,
-    });
-
-    console.log("🎯 [MCQScreen] UI Updated After RPC", {
-      chosen_answer: option,
-      is_correct: data?.[0]?.out_is_correct,
-    });
-
-  } catch (exception) {
-    console.log("🔥 [MCQScreen] EXCEPTION during MCQ submit:", exception);
-  }
-};
 
 
   const isCorrect = selectedOption === item.correct_answer;
