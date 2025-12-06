@@ -217,6 +217,26 @@ function MCQQuestion({
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 100, useNativeDriver: true }).start();
   }, []);
 
+  async function toggleBookmarkInLearningMode() {
+  try {
+    console.log("📌 Learning Mode MCQ Bookmark Toggle");
+
+    const { data, error } = await supabase.rpc("toggle_latest_bookmark", {
+      p_student_id: studentId,
+      p_phase_unique_id: phaseUniqueId
+    });
+
+    if (error) {
+      console.error("❌ Learning bookmark RPC error:", error);
+    } else {
+      console.log("🟢 Bookmark toggled:", data);
+    }
+  } catch (err) {
+    console.error("🔥 toggleBookmarkInLearningMode failed:", err);
+  }
+}
+
+
   return (
     <Animated.View style={[styles.mcqCard, { opacity: fadeAnim }]}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
