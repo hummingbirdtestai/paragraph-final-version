@@ -112,22 +112,23 @@ function MessageBubble({
       ]}
     >
       {isConcept && message.title && (
-        <View style={styles.conceptHeader}>
-          <View style={styles.conceptHeaderRow}>
-            <View style={{ flex: 1 }}>
-              {renderMarkupText(message.title, styles.conceptTitle)}
-            </View>
-            {/* ✅ Bookmark Button added */}
-            {studentId !== "practice-view" && (
-  <BookmarkButton
-    initialState={isBookmarked}
-    onToggle={toggleBookmarkInLearningMode}
-  />
+  <View style={styles.conceptHeader}>
+    <View style={styles.conceptHeaderRow}>
+      <View style={{ flex: 1 }}>
+        {renderMarkupText(message.title, styles.conceptTitle)}
+      </View>
+
+      {/* 🚫 REMOVE BOOKMARK BUTTON FOR PRACTICE */}
+      {studentId !== "practice-view" && (
+        <BookmarkButton
+          initialState={isBookmarked}
+          onToggle={toggleBookmarkInLearningMode}
+        />
+      )}
+    </View>
+  </View>
 )}
 
-          </View>
-        </View>
-      )}
       {renderMarkupText(
         message.content,
         isStudent ? styles.studentText : styles.mentorText
