@@ -126,12 +126,6 @@ function MessageBubble({
   console.log("studentId =", studentId);
   console.log("phaseUniqueId =", phaseUniqueId);
 
-  // ⛔ FIX: NEVER CALL RPC IN PRACTICE-VIEW
-  if (studentId === "practice-view") {
-    console.log("⛔ Skipping RPC — practice-view cannot write to DB");
-    return;
-  }
-
   try {
     if (reviewMode) {
       console.log("📡 Calling toggle_bookmark_for_review_mode...");
