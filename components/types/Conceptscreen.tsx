@@ -126,9 +126,13 @@ function MessageBubble({
   console.log("studentId =", studentId);
   console.log("phaseUniqueId =", phaseUniqueId);
 
-  try {
-    let result;
+  // ⛔ FIX: NEVER CALL RPC IN PRACTICE-VIEW
+  if (studentId === "practice-view") {
+    console.log("⛔ Skipping RPC — practice-view cannot write to DB");
+    return;
+  }
 
+  try {
     if (reviewMode) {
       console.log("📡 Calling toggle_bookmark_for_review_mode...");
       const { data, error } = await supabase.rpc(
@@ -140,22 +144,21 @@ function MessageBubble({
       );
 
       console.log("📥 RPC RESPONSE:", { data, error });
-
-      result = { data, error };
-    } else {
-      console.log("📡 Calling toggle_latest_bookmark...");
-      const { data, error } = await supabase.rpc("toggle_latest_bookmark", {
-        p_student_id: studentId,
-      });
-
-      console.log("📥 RPC RESPONSE:", { data, error });
-
-      result = { data, error };
+      return;
     }
+
+    // NORMAL MODE (actual student)
+    console.log("📡 Calling toggle_latest_bookmark...");
+    const { data, error } = await supabase.rpc("toggle_latest_bookmark", {
+      p_student_id: studentId,
+    });
+
+    console.log("📥 RPC RESPONSE:", { data, error });
   } catch (err) {
     console.error("❌ Bookmark toggle ERROR:", err);
   }
 }}
+
 
             />
           </View>
