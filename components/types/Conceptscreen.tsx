@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { Send } from 'lucide-react-native';
 import { supabase } from '@/lib/supabaseClient';
-import BookmarkButton from '@/components/common/BookmarkButton';
 
 interface Message {
   id: string;
