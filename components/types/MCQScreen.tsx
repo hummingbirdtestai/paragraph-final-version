@@ -38,6 +38,8 @@ export default function MCQChatScreen({
   isBookmarked = false,
   studentSelected = null,
   phaseUniqueId,
+  practicecardId,
+  subject,
 }: {
   item: MCQData;
   onNext?: () => void;
@@ -53,6 +55,8 @@ export default function MCQChatScreen({
   isBookmarked: boolean;
   studentSelected?: string | null;
   phaseUniqueId: string;
+  practicecardId?: string;
+  subject?: string;
 }) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -145,6 +149,8 @@ try {
           isBookmarked={isBookmarked}
           reviewMode={reviewMode}
           phaseUniqueId={phaseUniqueId}
+          practicecardId={practicecardId}
+          subject={subject}
         />
 
         <OptionsGrid
@@ -194,12 +200,16 @@ function MCQQuestion({
   isBookmarked,
   reviewMode,
   phaseUniqueId,
+  practicecardId,
+  subject,
 }: {
   mcq: MCQData;
   studentId: string;
   isBookmarked: boolean;
   reviewMode: boolean;
   phaseUniqueId: string;
+  practicecardId?: string;
+  subject?: string;
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -218,18 +228,25 @@ function MCQQuestion({
           initialState={isBookmarked}
           onToggle={async () => {
             try {
-              if (reviewMode) {
-                await supabase.rpc("toggle_bookmark_for_review_mode", {
-                  p_student_id: studentId,
-                  p_phase_unique_id: phaseUniqueId,
-                });
+              console.log("🔖 Toggling practice bookmark", {
+                studentId,
+                practicecardId,
+                subject,
+              });
+
+              const { data, error } = await supabase.rpc("toggle_practice_bookmark_v1", {
+                p_student_id: studentId,
+                p_practicecard_id: practicecardId,
+                p_subject: subject,
+              });
+
+              if (error) {
+                console.error("❌ toggle_practice_bookmark_v1 ERROR:", error);
               } else {
-                await supabase.rpc("toggle_latest_bookmark", {
-                  p_student_id: studentId,
-                });
+                console.log("🟢 Bookmark toggled:", data);
               }
             } catch (err) {
-              console.error("❌ Bookmark toggle ERROR:", err);
+              console.error("🔥 Bookmark RPC exception:", err);
             }
           }}
         />

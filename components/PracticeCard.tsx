@@ -76,10 +76,14 @@ const ORCHESTRATOR_URL =
           correctAnswer={phase.phase_json?.correct_answer} // ⭐ correct answer from DB
 
           studentId={user?.id}
-          isBookmarked={false}
+          isBookmarked={phase.is_bookmarked}   // 🔥 from DB
           reviewMode={false}
           hideInternalNext={true}
           phaseUniqueId={phase.id}
+
+          // 🔥 REQUIRED FOR BOOKMARK RPC
+          practicecardId={phase.phase_json?.uuid || phase.phase_json?.id}
+          subject={phase.subject}
 
           onAnswered={(selected) => {
             console.log("🧠 [PracticeCard] MCQ answered", {
