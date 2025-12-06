@@ -243,14 +243,6 @@ function MCQQuestion({
         <View style={{ flex: 1, paddingRight: 8 }}>
           {renderMarkupText(mcq.stem, styles.mcqStem)}
         </View>
-
-       {studentId !== "practice-view" && (
-  <BookmarkButton
-    initialState={isBookmarked}
-    onToggle={toggleBookmarkInLearningMode}
-  />
-)}
-
       </View>
     </Animated.View>
   );
