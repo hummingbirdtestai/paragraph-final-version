@@ -102,6 +102,33 @@ const handleOptionSelect = async (option: string) => {
     return;
   }
 
+// ⭐ NORMAL MODE — Call new RPC: my_answers
+console.log("📤 [MCQScreen] Submitting MCQ RPC → my_answers", {
+  p_student_id: studentId,
+  p_mcq_id: mcqId,
+  p_student_answer: option,
+  p_is_correct: is_correct,
+  p_correct_answer: correct_answer,
+});
+
+try {
+  const { data, error } = await supabase.rpc("my_answers", {
+    p_student_id: studentId,
+    p_mcq_id: mcqId,
+    p_student_answer: option,
+    p_is_correct: is_correct,
+    p_correct_answer: correct_answer,
+  });
+
+  if (error) {
+    console.log("❌ [MCQScreen] RPC ERROR my_answers:", error);
+    return;
+  }
+
+  console.log("🟢 [MCQScreen] RPC SUCCESS → my_answers submitted");
+} catch (exception) {
+  console.log("🔥 [MCQScreen] EXCEPTION during my_answers submit:", exception);
+}
 
 
   const isCorrect = selectedOption === item.correct_answer;
