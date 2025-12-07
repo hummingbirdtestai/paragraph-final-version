@@ -25,7 +25,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: Home },
-  { label: 'Concepts', href: '/concepts', icon: BookOpen },
+  { label: 'Concepts', href: '/practice', icon: BookOpen },
   { label: 'Flash Cards', href: '/flashcards', icon: CreditCard },
   { label: 'NEET-PG Full-Scale Mock Tests', href: '/mock-tests', icon: FileText },
   { label: 'Battles', href: '/battles', icon: Swords },
