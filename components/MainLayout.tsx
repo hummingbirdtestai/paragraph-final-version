@@ -12,6 +12,9 @@ const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
 export default function MainLayout({ children }: MainLayoutProps) {
+  const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
+const [authVisible, setAuthVisible] = useState(false);
+
   const [drawerVisible, setDrawerVisible] = useState(false);
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
@@ -30,7 +33,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
       ) : (
         <View style={styles.desktopLayout}>
           <View style={styles.sidebarContainer}>
-            <Sidebar />
+            <Sidebar
+  onOpenAuth={(mode) => {
+    setAuthMode(mode);
+    setAuthVisible(true);
+  }}
+/>
+
           </View>
           <View style={styles.desktopContent}>
             {children}
