@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import FlashcardFeed from '@/components/FlashcardFeedDemo';
-import { BottomNav } from '@/components/navigation/BottomNav';
+import MainLayout from "@/components/MainLayout";
+
 
 export default function FlashcardFeedDemoScreen() {
   return (
+    <MainLayout>
     <View style={styles.container}>
       <FlashcardFeed />
     </View>
+    </MainLayout>
   );
 }
 
