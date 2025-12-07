@@ -95,7 +95,11 @@ export default function MainLayout({ children }) {
     <View style={styles.container}>
       {isMobile ? (
         <>
-          <AppHeader onMenuPress={openDrawer} showMenu />
+          <AppHeader
+  onMenuPress={openDrawer}
+  onOpenAuth={() => setShowLoginModal(true)}
+/>
+
 
           <View style={styles.mobileContent}>{injectedChild}</View>
 
