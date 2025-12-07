@@ -29,7 +29,6 @@ import Markdown from "react-native-markdown-display";
 import { supabase } from "@/lib/supabaseClient";
 
 import { MocktestDashboard } from "@/components/types/MocktestSubjectSelection";
-import { BottomNav } from "@/components/navigation/BottomNav";
 import PageHeader from "@/components/common/PageHeader";
 import QuestionNavigationScreen from "@/components/types/QuestionNavigationScreen";
 
