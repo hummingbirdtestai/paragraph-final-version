@@ -3,6 +3,7 @@ import { View, StyleSheet, useWindowDimensions, Platform } from 'react-native';
 import Sidebar from './Sidebar';
 import MobileDrawer from './MobileDrawer';
 import AppHeader from './AppHeader';
+import AuthModal from "@/components/auth/AuthModal";
 
 interface MainLayoutProps {
   children: React.ReactNode;
