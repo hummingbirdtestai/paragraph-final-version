@@ -7,9 +7,18 @@ export function usePracticeData(subject: string | null = null) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const LIMIT = 20;
+
+  useEffect(() => {
+    if (!subject) {
+      setPhases([]);
+      setLoading(false);
+      return;
+    }
+
+    fetchPhases(0);
+  }, [subject]);
 
   console.log("🔵 usePracticeData() — subject =", subject);
 
