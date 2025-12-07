@@ -22,6 +22,11 @@ interface NavItem {
   href: string;
   icon: any;
 }
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  onOpenAuth?: (mode: "login" | "signup") => void;
+}
 
 const navItems: NavItem[] = [
   { id: "home", label: "Home", href: "/", icon: Home },
@@ -133,17 +138,21 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         </Link>
 
         <View style={styles.authButtons}>
-          <Link href="/login" asChild>
-            <Pressable style={styles.loginButton}>
-              <Text style={styles.loginText}>Login</Text>
-            </Pressable>
-          </Link>
-          <Link href="/signup" asChild>
-            <Pressable style={styles.signupButton}>
-              <Text style={styles.signupText}>Sign Up</Text>
-            </Pressable>
-          </Link>
-        </View>
+  <Pressable
+    style={styles.loginButton}
+    onPress={() => onOpenAuth?.("login")}
+  >
+    <Text style={styles.loginText}>Login</Text>
+  </Pressable>
+
+  <Pressable
+    style={styles.signupButton}
+    onPress={() => onOpenAuth?.("signup")}
+  >
+    <Text style={styles.signupText}>Sign Up</Text>
+  </Pressable>
+</View>
+
       </View>
     </View>
   );
