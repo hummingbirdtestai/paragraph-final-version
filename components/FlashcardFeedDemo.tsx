@@ -16,7 +16,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Bookmark, Eye, EyeOff } from 'lucide-react-native';
 import { supabase } from '../lib/supabaseClient';
 import Markdown from "react-native-markdown-display";
-const [userId, setUserId] = useState<string | null>(null);
 
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -425,6 +424,7 @@ const FlashcardFeed: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [flashcards, setFlashcards] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const isLoggedOut = userId === null;
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [flashcardStates, setFlashcardStates] = useState<Map<string, {
@@ -441,14 +441,15 @@ const FlashcardFeed: React.FC = () => {
     initializeAuth();
   }, []);
 
-  useEffect(() => {
-    if (userId && selectedSubject) {
-      setFlashcards([]);
-      setOffset(0);
-      setHasMore(true);
-      fetchFlashcards(0);
-    }
-  }, [userId, selectedSubject]);
+useEffect(() => {
+  if (!userId) return; // ⭐ do nothing when logged out
+
+  setFlashcards([]);
+  setOffset(0);
+  setHasMore(true);
+  fetchFlashcards(0);
+}, [userId, selectedSubject]);
+
 
   useEffect(() => {
     setInitialStates(new Map(flashcardStates));
