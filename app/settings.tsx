@@ -11,7 +11,6 @@ import { LoginModal } from '@/components/auth/LoginModal';
 import { OTPModal } from '@/components/auth/OTPModal';
 import { RegistrationModal } from '@/components/auth/RegistrationModal';
 import { Toast } from '@/components/common/Toast';
-import { BottomNav } from '@/components/navigation/BottomNav';
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/common/PageHeader";
@@ -341,8 +340,6 @@ const confirmLogout = async () => {
           <Text style={styles.footerText}>© 2025 Paragraph Mentor</Text>
         </View>
       </ScrollView>
-
-      <BottomNav activeTab="settings" />
 
       <LoginModal
         visible={showLoginModal}
