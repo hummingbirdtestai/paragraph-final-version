@@ -152,6 +152,26 @@ export default function MockTestsScreen() {
 
   const autoStartDone = useRef(false);
 
+  const [userId, setUserId] = useState<string | null>(null);
+
+useEffect(() => {
+  initializeUser();
+}, []);
+
+const initializeUser = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session?.user) {
+    setUserId(session.user.id);
+  } else {
+    const { data } = await supabase.auth.signInAnonymously();
+    if (data?.user) {
+      setUserId(data.user.id);
+    }
+  }
+};
+
+
   console.log("🟡 PARAMS RECEIVED:", params);
   console.log("🟡 TestStarted:", testStarted);
 
