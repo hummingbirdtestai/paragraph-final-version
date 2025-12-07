@@ -15,10 +15,9 @@ export default function Index() {
 
   return (
     <MainLayout>
-      <View style={styles.container}>
-        <HomeScreen images={images} />
-      </View>
-    </MainLayout>
+  <HomeScreen images={images} />
+</MainLayout>
+
   );
 }
 
