@@ -26,21 +26,37 @@ export default function HomeScreen(
   { images, onOpenAuth }: HomeScreenProps & { onOpenAuth?: (mode: "login" | "signup") => void }
 ) {
   const { width } = useWindowDimensions();
-  const isWeb = Platform.OS === 'web';
+  const isWeb = Platform.OS === "web";
   const isMobile = !isWeb || width < 768;
-const { user } = useAuth();
-const isLoggedIn = !!user;
 
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
 
   if (isMobile) {
-    return <MobileLayout images={images} onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />;
+    return (
+      <MobileLayout
+        images={images}
+        onOpenAuth={onOpenAuth}
+        isLoggedIn={isLoggedIn}
+      />
+    );
   }
 
-  return <WebLayout images={images} onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />;
-
+  return (
+    <WebLayout
+      images={images}
+      onOpenAuth={onOpenAuth}
+      isLoggedIn={isLoggedIn}
+    />
+  );
 }
 
-function MobileLayout({ images }: HomeScreenProps) {
+
+function MobileLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
+  onOpenAuth?: (mode: "login" | "signup") => void;
+  isLoggedIn: boolean;
+}) {
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.mobileContent}>
       <Section1Mobile image={images.img1} />
@@ -57,7 +73,11 @@ function MobileLayout({ images }: HomeScreenProps) {
   );
 }
 
-function WebLayout({ images }: HomeScreenProps) {
+function WebLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
+  onOpenAuth?: (mode: "login" | "signup") => void;
+  isLoggedIn: boolean;
+}) {
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.webContent}>
       <Section1Web image={images.img1} />
@@ -545,23 +565,27 @@ const Section8Web = memo(() => {
   );
 });
 
-const Section9Mobile = memo(() => {
-  console.log('Section9Mobile mounted');
+const Section9Mobile = memo(({ onOpenAuth, isLoggedIn }) => {
+  if (isLoggedIn) return null;
+
   return (
     <View style={styles.mobileCTASection}>
       <Text style={styles.mobileCTAHeading}>Start Your Journey</Text>
       <Text style={styles.mobileCTAText}>
-        This is the NEETPG preparation model built for 2026 —{'\n'}
+        This is the NEETPG preparation model built for 2026 —
         efficient, adaptive, personalised, unstoppable.
       </Text>
-      <Text style={styles.mobileCTAText}>
-        If you're willing to invest your 1,150 hours wisely,{'\n'}
-        we'll take you to a Top 1000 rank.
-      </Text>
-      <Pressable style={styles.mobileCTAButton} onPress={() => onOpenAuth?.("signup")}>
+
+      <Pressable
+        style={styles.mobileCTAButton}
+        onPress={() => onOpenAuth?.("signup")}
+      >
+        <Text style={styles.mobileCTAButtonText}>Sign Up Now</Text>
+      </Pressable>
     </View>
   );
 });
+
 
 const Section9Web = memo(() => {
   console.log('Section9Web mounted');
