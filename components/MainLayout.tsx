@@ -20,7 +20,6 @@ export default function MainLayout({ children }) {
 
   const [drawerVisible, setDrawerVisible] = useState(false);
 
-  // Auth modal state
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
@@ -33,14 +32,10 @@ export default function MainLayout({ children }) {
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
 
-  // Inject auth trigger into all children
   const injectedChild = React.cloneElement(children, {
-    onOpenAuth: () => {
-      setShowLoginModal(true);
-    },
+    onOpenAuth: () => setShowLoginModal(true),
   });
 
-  // OTP FLOW
   const handleSendOTP = async (phone: string) => {
     try {
       const formatted = phone.startsWith("+91") ? phone : `+91${phone}`;
@@ -123,12 +118,9 @@ export default function MainLayout({ children }) {
           )}
 
           <View style={styles.desktopLayoutContent}>
-            {/* ⭐ S U R G I C A L   F I X — sidebar only when logged in */}
             {isLoggedIn && (
               <View style={styles.sidebarContainer}>
-                <Sidebar
-                  onOpenAuth={() => setShowLoginModal(true)}
-                />
+                <Sidebar onOpenAuth={() => setShowLoginModal(true)} />
               </View>
             )}
 
