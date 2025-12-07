@@ -11,6 +11,8 @@ import BattleSubjectSelection from "@/components/battle/BattleSubjectSelection";
 import BattleListScreen from "@/components/battle/BattleListScreen";
 import BattleWaitingRoom from "@/app/BattleWaitingRoom";
 import WarRoom from "@/app/WarRoom";
+import MainLayout from "@/components/MainLayout";
+
 
 export default function BattleScreen() {
   const { user, loginWithOTP, verifyOTP } = useAuth();
@@ -174,6 +176,7 @@ const handleRegister = async (name: string) => {
   // 🔹 MAIN RENDER FLOW
   // ───────────────────────────────────────────────
   return (
+    <MainLayout>
     <SafeAreaView style={styles.container}>
       {!isLoggedIn ? (
         <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -227,6 +230,7 @@ const handleRegister = async (name: string) => {
 />
 
     </SafeAreaView>
+      </MainLayout>
   );
 }
 
