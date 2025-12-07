@@ -23,13 +23,21 @@ interface NavItem {
   icon: any;
 }
 
-const navItems: NavItem[] = [
+/* const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: Home },
   { label: 'Concepts', href: '/practice', icon: BookOpen },
   { label: 'Flash Cards', href: '/flashcard-feed-demo', icon: CreditCard },
   { label: 'NEET-PG Full-Scale Mock Tests', href: '/mocktests', icon: FileText },
   { label: 'Battles', href: '/battles', icon: Swords },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+]; */
+const navItems: NavItem[] = [
+  { id: "home", label: "Home", href: "/", icon: Home },
+  { id: "practice", label: "Concepts", href: "/practice", icon: BookOpen },
+  { id: "flash", label: "Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
+  { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
+  { id: "battle", label: "Battles", href: "/battles", icon: Swords },
+  { id: "analytics", label: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
 export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
