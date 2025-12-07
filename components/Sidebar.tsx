@@ -51,6 +51,10 @@ const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState("");
   const { user, logout } = useAuth();
 const isLoggedIn = !!user;
+// ⭐ BLOCK SIDEBAR BEFORE LOGIN/SIGNUP
+if (!isLoggedIn) {
+  return null;
+}
 
 
   const isMobile = !!onClose;
