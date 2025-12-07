@@ -12,6 +12,8 @@ import {
   Settings,
   X,
 } from 'lucide-react-native';
+import { useAuth } from "@/contexts/AuthContext";
+
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -51,6 +53,9 @@ const [showOTPModal, setShowOTPModal] = useState(false);
 const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
 const [phoneNumber, setPhoneNumber] = useState("");
+  const { user, logout } = useAuth();
+const isLoggedIn = !!user;
+
 
   const isMobile = !!onClose;
 
@@ -151,20 +156,34 @@ const [phoneNumber, setPhoneNumber] = useState("");
         </Link>
 
         <View style={styles.authButtons}>
-  <Pressable
-    style={styles.loginButton}
-    onPress={() => onOpenAuth?.("login")}
-  >
-    <Text style={styles.loginText}>Login</Text>
-  </Pressable>
+  {isLoggedIn ? (
+    // ⭐ SHOW LOGOUT
+    <Pressable
+      style={[styles.loginButton, { backgroundColor: "#ef4444", borderColor: "#ef4444" }]}
+      onPress={logout}
+    >
+      <Text style={[styles.loginText, { color: "#fff" }]}>Logout</Text>
+    </Pressable>
+  ) : (
+    // ⭐ SHOW LOGIN + SIGN UP
+    <>
+      <Pressable
+        style={styles.loginButton}
+        onPress={() => onOpenAuth?.("login")}
+      >
+        <Text style={styles.loginText}>Login</Text>
+      </Pressable>
 
-  <Pressable
-    style={styles.signupButton}
-    onPress={() => onOpenAuth?.("signup")}
-  >
-    <Text style={styles.signupText}>Sign Up</Text>
-  </Pressable>
+      <Pressable
+        style={styles.signupButton}
+        onPress={() => onOpenAuth?.("signup")}
+      >
+        <Text style={styles.signupText}>Sign Up</Text>
+      </Pressable>
+    </>
+  )}
 </View>
+
 
       </View>
     </View>
