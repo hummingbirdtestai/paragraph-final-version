@@ -16,6 +16,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Bookmark, Eye, EyeOff } from 'lucide-react-native';
 import { supabase } from '../lib/supabaseClient';
 import Markdown from "react-native-markdown-display";
+const [userId, setUserId] = useState<string | null>(null);
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
