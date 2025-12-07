@@ -36,7 +36,7 @@ const navItems: NavItem[] = [
   { id: "practice", label: "Concepts", href: "/practice", icon: BookOpen },
   { id: "flash", label: "Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
   { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
-  { id: "battle", label: "Battles", href: "/battles", icon: Swords },
+  { id: "battle", label: "Battles", href: "/battle", icon: Swords },
   { id: "analytics", label: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
