@@ -14,6 +14,8 @@ import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { usePracticeData } from "@/hooks/usePracticeData";
 import MainLayout from "@/components/MainLayout";
+import { supabase } from "@/lib/supabaseClient";
+import { useEffect } from "react";
 
 
 const subjects = [
@@ -42,7 +44,22 @@ const subjects = [
 export default function PracticeScreen() {
   const [selectedSubject, setSelectedSubject] = useState<string>("General Medicine");
   const [selectedCategory, setSelectedCategory] = useState<'unviewed' | 'viewed' | 'bookmarked'>('unviewed');
+const [userId, setUserId] = useState<string | null>(null);
 
+useEffect(() => {
+  const loadUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      setUserId(session.user.id);
+    } else {
+      setUserId(null);
+    }
+  };
+
+  loadUser();
+}, []);
+
+  
   const { phases, loading, refreshing, refresh } =
     usePracticeData(selectedSubject);
 
