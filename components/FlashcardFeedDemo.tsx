@@ -699,29 +699,36 @@ useEffect(() => {
       </View>
       </View>
 
-      {hasFlashcards ? (
-        <FlatList
-          ref={flatListRef}
-          data={filteredFlashcards}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCard}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          initialNumToRender={6}
-          maxToRenderPerBatch={4}
-          windowSize={7}
-          updateCellsBatchingPeriod={60}
-          removeClippedSubviews={true}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-        />
-      ) : (
-        <View style={styles.placeholderContainer}>
-          <Text style={styles.placeholderText}>
-            {loading ? 'Loading flashcards...' : 'No flashcards available for this subject.'}
-          </Text>
-        </View>
-      )}
+     {isLoggedOut ? (
+  <View style={styles.placeholderContainer}>
+    <Text style={styles.placeholderText}>
+      Please sign in to view flashcards.
+    </Text>
+  </View>
+) : hasFlashcards ? (
+  <FlatList
+    ref={flatListRef}
+    data={filteredFlashcards}
+    keyExtractor={(item) => item.id}
+    renderItem={renderCard}
+    contentContainerStyle={styles.listContent}
+    showsVerticalScrollIndicator={false}
+    initialNumToRender={6}
+    maxToRenderPerBatch={4}
+    windowSize={7}
+    updateCellsBatchingPeriod={60}
+    removeClippedSubviews={true}
+    onEndReached={loadMore}
+    onEndReachedThreshold={0.5}
+  />
+) : (
+  <View style={styles.placeholderContainer}>
+    <Text style={styles.placeholderText}>
+      {loading ? 'Loading flashcards...' : 'No flashcards available for this subject.'}
+    </Text>
+  </View>
+)}
+
     </View>
   );
 };
