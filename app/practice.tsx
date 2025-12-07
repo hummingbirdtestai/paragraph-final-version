@@ -60,8 +60,13 @@ useEffect(() => {
 }, []);
 
   
-  const { phases, loading, refreshing, refresh } =
-    usePracticeData(selectedSubject);
+const practiceData = userId ? usePracticeData(selectedSubject) : null;
+
+const phases = practiceData?.phases ?? [];
+const loading = practiceData?.loading ?? false;
+const refreshing = practiceData?.refreshing ?? false;
+const refresh = practiceData?.refresh ?? (() => {});
+
 
   // Filter phases based on selected category
   const getFilteredPhases = () => {
@@ -150,22 +155,38 @@ useEffect(() => {
       </View>
 
       {/* CONTENT */}
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.cardsWrapper}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={refresh}
-            tintColor="#25D366"
-            colors={["#25D366"]}
-          />
-        }
-      >
-        {filteredPhases.map((phase) => (
-          <PracticeCard key={phase.id} phase={phase} />
-        ))}
-      </ScrollView>
+      {/* CONTENT */}
+{!userId ? (
+  <View style={{ padding: 40 }}>
+    <Text style={{ color: "#bbb", fontSize: 16, textAlign: "center" }}>
+      Please sign in to view concepts.
+    </Text>
+  </View>
+) : (
+  <ScrollView
+    style={{ flex: 1 }}
+    contentContainerStyle={styles.cardsWrapper}
+    refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={refresh}
+        tintColor="#25D366"
+        colors={["#25D366"]}
+      />
+    }
+  >
+    {filteredPhases.length === 0 ? (
+      <Text style={{ textAlign: "center", color: "#666", marginTop: 40 }}>
+        No concepts available.
+      </Text>
+    ) : (
+      filteredPhases.map((phase) => (
+        <PracticeCard key={phase.id} phase={phase} />
+      ))
+    )}
+  </ScrollView>
+)}
+
     </View>
       </MainLayout>
   );
