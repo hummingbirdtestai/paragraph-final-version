@@ -38,7 +38,12 @@ const navItems: NavItem[] = [
   { id: "analytics", label: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
-export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+export default function Sidebar({
+  isOpen = true,
+  onClose,
+  onOpenAuth,   // ⭐ ADD THIS
+}: SidebarProps) {
+
   const pathname = usePathname();
   // AUTH MODAL STATES
 const [showLoginModal, setShowLoginModal] = useState(false);
