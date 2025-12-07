@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     maxWidth: 1400,
-    marginHorizontal: 'auto',
+    alignSelf: 'center',
     width: '100%',
   },
   contentDesktop: {
