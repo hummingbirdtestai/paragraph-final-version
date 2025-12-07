@@ -14,6 +14,7 @@ import { Toast } from '@/components/common/Toast';
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import PageHeader from "@/components/common/PageHeader";
+import MainLayout from "@/components/MainLayout";
 
 
 export default function SettingsScreen() {
@@ -282,6 +283,7 @@ const confirmLogout = async () => {
   };
 
   return (
+    <MainLayout>
     <SafeAreaView style={styles.container}>
       <PageHeader title="settings" />
 
@@ -374,6 +376,7 @@ const confirmLogout = async () => {
         onHide={() => setToast({ ...toast, visible: false })}
       />
     </SafeAreaView>
+      </MainLayout>
   );
 }
 
