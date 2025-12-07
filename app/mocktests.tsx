@@ -34,6 +34,8 @@ import QuestionNavigationScreen from "@/components/types/QuestionNavigationScree
 import type { MockTest, UserMockTest } from "@/types/mock-test";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
+import MainLayout from "@/components/MainLayout";
+
 
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -959,6 +961,7 @@ const getSectionQNumber = (react_order: number) => {
   // 🎨 MAIN RENDER BODY
   // ───────────────────────────────────────────────
   return (
+    <MainLayout>
     <SafeAreaView style={styles.container} edges={["top"]}>
       <PageHeader 
   title={testTitle || "Mock Test"} 
@@ -1323,6 +1326,7 @@ const getSectionQNumber = (react_order: number) => {
 )}
 
     </SafeAreaView>
+      </MainLayout>
   );
 }
 
