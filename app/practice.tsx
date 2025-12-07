@@ -60,12 +60,13 @@ useEffect(() => {
 }, []);
 
   
-const practiceData = userId ? usePracticeData(selectedSubject) : null;
+const practiceData = usePracticeData(userId ? selectedSubject : null);
 
-const phases = practiceData?.phases ?? [];
-const loading = practiceData?.loading ?? false;
-const refreshing = practiceData?.refreshing ?? false;
-const refresh = practiceData?.refresh ?? (() => {});
+const phases = practiceData.phases;
+const loading = practiceData.loading;
+const refreshing = practiceData.refreshing;
+const refresh = practiceData.refresh;
+
 
 
   // Filter phases based on selected category
