@@ -19,6 +19,20 @@ import { useEffect } from "react";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 
+export default function PracticeScreen() {
+const { width } = useWindowDimensions();
+const isMobile = width < 768;
+
+const headerOffset = useSharedValue(0);
+const { direction, onScroll } = useScrollDirection();
+
+useEffect(() => {
+  if (!isMobile) return;
+
+  headerOffset.value = withTiming(direction === "down" ? -140 : 0, { duration: 220 });
+}, [direction]);
+
+
 const subjects = [
   "Anatomy",
   "Anesthesia",
