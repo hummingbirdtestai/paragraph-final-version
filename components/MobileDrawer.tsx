@@ -5,18 +5,13 @@ import Sidebar from './Sidebar';
 interface MobileDrawerProps {
   visible: boolean;
   onClose: () => void;
-}
-
-interface MobileDrawerProps {
-  visible: boolean;
-  onClose: () => void;
-  onOpenAuth: (mode: "login" | "signup") => void;
+  onOpenAuth: (mode: "login" | "signup") => void;   // ⭐ added
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DRAWER_WIDTH = SCREEN_WIDTH * 0.7;
 
-export default function MobileDrawer({ visible, onClose }: MobileDrawerProps) {
+export default function MobileDrawer({ visible, onClose, onOpenAuth }: MobileDrawerProps) {
   const slideAnim = React.useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
@@ -48,7 +43,7 @@ export default function MobileDrawer({ visible, onClose }: MobileDrawerProps) {
         }),
       ]).start();
     }
-  }, [visible, slideAnim, fadeAnim]);
+  }, [visible]);
 
   return (
     <Modal
@@ -79,8 +74,12 @@ export default function MobileDrawer({ visible, onClose }: MobileDrawerProps) {
             },
           ]}
         >
-          <Sidebar isOpen={visible} onClose={onClose} onOpenAuth={onOpenAuth} />
-
+          {/* ⭐ Pass onOpenAuth to Sidebar */}
+          <Sidebar 
+            isOpen={visible} 
+            onClose={onClose} 
+            onOpenAuth={onOpenAuth} 
+          />
         </Animated.View>
       </View>
     </Modal>
@@ -88,16 +87,12 @@ export default function MobileDrawer({ visible, onClose }: MobileDrawerProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
-  overlayPressable: {
-    flex: 1,
-  },
+  overlayPressable: { flex: 1 },
   drawer: {
     position: 'absolute',
     left: 0,
