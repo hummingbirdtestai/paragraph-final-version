@@ -7,9 +7,10 @@ import AppHeader from "./AppHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 
-import LoginModal from "@/components/auth/LoginModal";
-import OTPModal from "@/components/auth/OTPModal";
-import RegistrationModal from "@/components/auth/RegistrationModal";
+import { LoginModal } from "@/components/auth/LoginModal";
+import { OTPModal } from "@/components/auth/OTPModal";
+import { RegistrationModal } from "@/components/auth/RegistrationModal";
+
 
 const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
