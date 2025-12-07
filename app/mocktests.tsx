@@ -121,9 +121,6 @@ export default function MockTestsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  // 💡 User NOT required → We use a placeholder ID for mocktests
-  const userId = "practice-user"; // always available
-
   const testTitle = params.title ? decodeURIComponent(params.title as string) : null;
   const testDate = params.date ? decodeURIComponent(params.date as string) : null;
 
@@ -170,6 +167,10 @@ const initializeUser = async () => {
     }
   }
 };
+
+  if (!userId) {
+  return <Text style={{ color: "white" }}>Loading...</Text>;
+}
 
 
   console.log("🟡 PARAMS RECEIVED:", params);
