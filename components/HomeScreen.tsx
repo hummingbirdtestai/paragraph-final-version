@@ -10,6 +10,7 @@ import {
   Pressable,
 } from 'react-native';
 import Footer from './Footer';
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HomeScreenProps {
   images: {
@@ -21,20 +22,22 @@ interface HomeScreenProps {
     img6: string;
   };
 }
-
-export default function HomeScreen({ images, onOpenAuth }: HomeScreenProps & {
-  onOpenAuth?: (mode: "login" | "signup") => void;
-})
-
+export default function HomeScreen(
+  { images, onOpenAuth }: HomeScreenProps & { onOpenAuth?: (mode: "login" | "signup") => void }
+) {
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
   const isMobile = !isWeb || width < 768;
+const { user } = useAuth();
+const isLoggedIn = !!user;
+
 
   if (isMobile) {
-    return <MobileLayout images={images} />;
+    return <MobileLayout images={images} onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />;
   }
 
-  return <WebLayout images={images} />;
+  return <WebLayout images={images} onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />;
+
 }
 
 function MobileLayout({ images }: HomeScreenProps) {
