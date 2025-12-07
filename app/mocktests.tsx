@@ -865,8 +865,6 @@ return (
       )}
     </ScrollView>
 
-    <BottomNav />
-
     {/* CONFIRM FINISH MODAL */}
     {showConfirmFinish && (
       <View style={styles.modalOverlay}>
