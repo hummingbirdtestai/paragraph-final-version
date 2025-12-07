@@ -67,7 +67,7 @@ function MobileLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Section4Mobile image={images.img4} />
       <Section3Mobile image={images.img3} />
       <Section6Mobile image={images.img6} />
-      <Section9Mobile />
+      <Section9Mobile onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
       <Footer />
     </ScrollView>
   );
@@ -88,7 +88,7 @@ function WebLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Section4Web image={images.img4} />
       <Section3Web image={images.img3} />
       <Section6Web image={images.img6} />
-      <Section9Web />
+      <Section9Web onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
       <Footer />
     </ScrollView>
   );
