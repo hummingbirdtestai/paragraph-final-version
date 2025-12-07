@@ -16,6 +16,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
   const [authVisible, setAuthVisible] = useState(false);
+  // AUTH MODAL STATES
+const [showLoginModal, setShowLoginModal] = useState(false);
+const [showOTPModal, setShowOTPModal] = useState(false);
+const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+
+const [phoneNumber, setPhoneNumber] = useState("");
+
 
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
@@ -55,13 +62,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <View style={styles.desktopContent}>{children}</View>
         </View>
       )}
-
-      {/* Global Login + OTP + Register Modal */}
-      <AuthModal
-        visible={authVisible}
-        mode={authMode}
-        onClose={() => setAuthVisible(false)}
-      />
     </View>
   );
 }
