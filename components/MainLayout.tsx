@@ -12,10 +12,10 @@ const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
-const [authVisible, setAuthVisible] = useState(false);
-
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
+  const [authVisible, setAuthVisible] = useState(false);
+
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
 
@@ -27,28 +27,44 @@ const [authVisible, setAuthVisible] = useState(false);
       {isMobile ? (
         <>
           <AppHeader onMenuPress={openDrawer} showMenu />
+
           <View style={styles.mobileContent}>{children}</View>
-          <MobileDrawer visible={drawerVisible} onClose={closeDrawer} />
+
+          <MobileDrawer
+            visible={drawerVisible}
+            onClose={closeDrawer}
+            onOpenAuth={(mode) => {
+              closeDrawer();
+              setAuthMode(mode);
+              setAuthVisible(true);
+            }}
+          />
         </>
       ) : (
         <View style={styles.desktopLayout}>
           <View style={styles.sidebarContainer}>
             <Sidebar
-  onOpenAuth={(mode) => {
-    setAuthMode(mode);
-    setAuthVisible(true);
-  }}
-/>
+              onOpenAuth={(mode) => {
+                setAuthMode(mode);
+                setAuthVisible(true);
+              }}
+            />
+          </View>
 
-          </View>
-          <View style={styles.desktopContent}>
-            {children}
-          </View>
+          <View style={styles.desktopContent}>{children}</View>
         </View>
       )}
+
+      {/* Global Login + OTP + Register Modal */}
+      <AuthModal
+        visible={authVisible}
+        mode={authMode}
+        onClose={() => setAuthVisible(false)}
+      />
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
