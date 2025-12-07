@@ -33,7 +33,7 @@ export default function MainLayout({ children }) {
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
 
-  // Inject auth trigger into all children (important!)
+  // Inject auth trigger into all children
   const injectedChild = React.cloneElement(children, {
     onOpenAuth: () => {
       setShowLoginModal(true);
@@ -66,7 +66,6 @@ export default function MainLayout({ children }) {
 
         setShowOTPModal(false);
 
-        // Check if profile exists
         const { data: existing } = await supabase
           .from("users")
           .select("*")
@@ -124,18 +123,20 @@ export default function MainLayout({ children }) {
           )}
 
           <View style={styles.desktopLayoutContent}>
-            <View style={styles.sidebarContainer}>
-              <Sidebar
-                onOpenAuth={() => setShowLoginModal(true)}
-              />
-            </View>
+            {/* ⭐ S U R G I C A L   F I X — sidebar only when logged in */}
+            {isLoggedIn && (
+              <View style={styles.sidebarContainer}>
+                <Sidebar
+                  onOpenAuth={() => setShowLoginModal(true)}
+                />
+              </View>
+            )}
 
             <View style={styles.desktopContent}>{injectedChild}</View>
           </View>
         </View>
       )}
 
-      {/* AUTH MODALS */}
       <LoginModal
         visible={showLoginModal}
         onClose={() => setShowLoginModal(false)}
