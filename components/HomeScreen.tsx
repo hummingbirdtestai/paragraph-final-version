@@ -22,7 +22,10 @@ interface HomeScreenProps {
   };
 }
 
-export default function HomeScreen({ images }: HomeScreenProps) {
+export default function HomeScreen({ images, onOpenAuth }: HomeScreenProps & {
+  onOpenAuth?: (mode: "login" | "signup") => void;
+})
+
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
   const isMobile = !isWeb || width < 768;
