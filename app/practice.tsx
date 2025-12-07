@@ -147,8 +147,6 @@ export default function PracticeScreen() {
           <PracticeCard key={phase.id} phase={phase} />
         ))}
       </ScrollView>
-
-      <BottomNav />
     </View>
   );
 }
