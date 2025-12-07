@@ -7,7 +7,6 @@ export default function FlashcardFeedDemoScreen() {
   return (
     <View style={styles.container}>
       <FlashcardFeed />
-      <BottomNav />
     </View>
   );
 }
