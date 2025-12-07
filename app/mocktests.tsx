@@ -168,11 +168,6 @@ const initializeUser = async () => {
   }
 };
 
-  if (!userId) {
-  return <Text style={{ color: "white" }}>Loading...</Text>;
-}
-
-
   console.log("🟡 PARAMS RECEIVED:", params);
   console.log("🟡 TestStarted:", testStarted);
 
@@ -203,6 +198,9 @@ useEffect(() => {
   }
 }, [params]);
 
+    if (!userId) {
+  return <Text style={{ color: "white" }}>Loading...</Text>;
+}
 /* 
 ===========================================================
    🟦 NORMALIZE MCQ DATA
