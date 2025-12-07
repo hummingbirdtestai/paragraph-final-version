@@ -7,6 +7,12 @@ interface MobileDrawerProps {
   onClose: () => void;
 }
 
+interface MobileDrawerProps {
+  visible: boolean;
+  onClose: () => void;
+  onOpenAuth: (mode: "login" | "signup") => void;
+}
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DRAWER_WIDTH = SCREEN_WIDTH * 0.7;
 
@@ -73,7 +79,8 @@ export default function MobileDrawer({ visible, onClose }: MobileDrawerProps) {
             },
           ]}
         >
-          <Sidebar isOpen={visible} onClose={onClose} />
+          <Sidebar isOpen={visible} onClose={onClose} onOpenAuth={onOpenAuth} />
+
         </Animated.View>
       </View>
     </Modal>
