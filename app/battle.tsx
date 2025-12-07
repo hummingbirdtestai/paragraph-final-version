@@ -209,8 +209,6 @@ const handleRegister = async (name: string) => {
         </>
       )}
 
-      <BottomNav />
-
       {/* 🔐 AUTH MODALS */}
       <LoginModal
         visible={showLoginModal}
