@@ -17,14 +17,19 @@ export default function AppHeader({ onMenuPress, showMenu = false }: AppHeaderPr
             <Pressable onPress={onMenuPress} style={styles.menuButton}>
               <Menu size={24} color="#E5E5E5" strokeWidth={2} />
             </Pressable>
-            <View style={styles.logoSection}>
-              <Image
-                source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text style={styles.tagline} numberOfLines={1}>100% AI-Driven NEETPG Self Prep Platform</Text>
-            </View>
+            <Link href="/" asChild>
+  <Pressable style={styles.logoSection}>
+    <Image
+      source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
+      style={styles.logo}
+      resizeMode="contain"
+    />
+    <Text style={styles.tagline} numberOfLines={1}>
+      100% AI-Driven NEETPG Self Prep Platform
+    </Text>
+  </Pressable>
+</Link>
+
           </>
         ) : (
           <>
