@@ -2,22 +2,28 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Link } from 'expo-router';
 import { Menu } from 'lucide-react-native';
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AppHeaderProps {
   onMenuPress?: () => void;
-  showMenu?: boolean;
   onOpenAuth?: (mode: 'login' | 'signup') => void;
 }
 
-export default function AppHeader({ onMenuPress, showMenu = false, onOpenAuth }: AppHeaderProps) {
+export default function AppHeader({ onMenuPress, onOpenAuth }: AppHeaderProps) {
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        {showMenu ? (
+
+        {isLoggedIn ? (
+          // ⭐ AFTER LOGIN — SHOW MENU + LOGO
           <>
             <Pressable onPress={onMenuPress} style={styles.menuButton}>
               <Menu size={24} color="#E5E5E5" strokeWidth={2} />
             </Pressable>
+
             <Link href="/" asChild>
               <Pressable style={styles.logoSection}>
                 <Image
@@ -25,13 +31,12 @@ export default function AppHeader({ onMenuPress, showMenu = false, onOpenAuth }:
                   style={styles.logo}
                   resizeMode="contain"
                 />
-                <Text style={styles.tagline} numberOfLines={1}>
-                  100% AI-Driven NEETPG Self Prep Platform
-                </Text>
+                <Text style={styles.tagline}>100% AI-Driven NEETPG Self Prep Platform</Text>
               </Pressable>
             </Link>
           </>
         ) : (
+          // ⭐ BEFORE LOGIN — SHOW LOGO + AUTH BUTTONS
           <>
             <Link href="/" asChild>
               <Pressable style={styles.logoSection}>
@@ -40,11 +45,10 @@ export default function AppHeader({ onMenuPress, showMenu = false, onOpenAuth }:
                   style={styles.logo}
                   resizeMode="contain"
                 />
-                <Text style={styles.tagline} numberOfLines={1}>
-                  100% AI-Driven NEETPG Self Prep Platform
-                </Text>
+                <Text style={styles.tagline}>100% AI-Driven NEETPG Self Prep Platform</Text>
               </Pressable>
             </Link>
+
             <View style={styles.authButtons}>
               <Pressable
                 style={styles.loginButton}
@@ -52,6 +56,7 @@ export default function AppHeader({ onMenuPress, showMenu = false, onOpenAuth }:
               >
                 <Text style={styles.loginText}>Login</Text>
               </Pressable>
+
               <Pressable
                 style={styles.signupButton}
                 onPress={() => onOpenAuth?.('signup')}
@@ -61,6 +66,7 @@ export default function AppHeader({ onMenuPress, showMenu = false, onOpenAuth }:
             </View>
           </>
         )}
+
       </View>
     </View>
   );
@@ -114,7 +120,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#E5E5E5',
     fontWeight: '500',
-    lineHeight: 20,
   },
   signupButton: {
     paddingHorizontal: 16,
@@ -126,6 +131,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#0D0D0D',
     fontWeight: '600',
-    lineHeight: 20,
   },
 });
