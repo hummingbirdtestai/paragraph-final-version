@@ -6,9 +6,10 @@ import { Menu } from 'lucide-react-native';
 interface AppHeaderProps {
   onMenuPress?: () => void;
   showMenu?: boolean;
+  onOpenAuth?: (mode: 'login' | 'signup') => void;
 }
 
-export default function AppHeader({ onMenuPress, showMenu = false }: AppHeaderProps) {
+export default function AppHeader({ onMenuPress, showMenu = false, onOpenAuth }: AppHeaderProps) {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -18,33 +19,45 @@ export default function AppHeader({ onMenuPress, showMenu = false }: AppHeaderPr
               <Menu size={24} color="#E5E5E5" strokeWidth={2} />
             </Pressable>
             <Link href="/" asChild>
-  <Pressable style={styles.logoSection}>
-    <Image
-      source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
-      style={styles.logo}
-      resizeMode="contain"
-    />
-    <Text style={styles.tagline} numberOfLines={1}>
-      100% AI-Driven NEETPG Self Prep Platform
-    </Text>
-  </Pressable>
-</Link>
-
+              <Pressable style={styles.logoSection}>
+                <Image
+                  source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.tagline} numberOfLines={1}>
+                  100% AI-Driven NEETPG Self Prep Platform
+                </Text>
+              </Pressable>
+            </Link>
           </>
         ) : (
           <>
-            <View style={styles.spacer} />
+            <Link href="/" asChild>
+              <Pressable style={styles.logoSection}>
+                <Image
+                  source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.tagline} numberOfLines={1}>
+                  100% AI-Driven NEETPG Self Prep Platform
+                </Text>
+              </Pressable>
+            </Link>
             <View style={styles.authButtons}>
-              <Link href="/login" asChild>
-                <Pressable style={styles.loginButton}>
-                  <Text style={styles.loginText}>Login</Text>
-                </Pressable>
-              </Link>
-              <Link href="/signup" asChild>
-                <Pressable style={styles.signupButton}>
-                  <Text style={styles.signupText}>Sign Up</Text>
-                </Pressable>
-              </Link>
+              <Pressable
+                style={styles.loginButton}
+                onPress={() => onOpenAuth?.('login')}
+              >
+                <Text style={styles.loginText}>Login</Text>
+              </Pressable>
+              <Pressable
+                style={styles.signupButton}
+                onPress={() => onOpenAuth?.('signup')}
+              >
+                <Text style={styles.signupText}>Sign Up</Text>
+              </Pressable>
             </View>
           </>
         )}
@@ -87,9 +100,6 @@ const styles = StyleSheet.create({
     color: '#FFFBED',
     letterSpacing: 0.3,
     marginTop: 2,
-  },
-  spacer: {
-    flex: 1,
   },
   authButtons: {
     flexDirection: 'row',
