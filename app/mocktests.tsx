@@ -25,7 +25,6 @@ import Markdown from "react-native-markdown-display";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { MocktestDashboard } from "@/components/types/MocktestSubjectSelection";
-import { BottomNav } from "@/components/navigation/BottomNav";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
@@ -1228,8 +1227,6 @@ const getSectionQNumber = (react_order: number) => {
           </Text>
         )}
       </ScrollView>
-
-      <BottomNav />
             {/* 🔐 AUTH MODALS */}
       <LoginModal
         visible={showLoginModal}
