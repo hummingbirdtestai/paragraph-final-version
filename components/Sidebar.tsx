@@ -33,7 +33,7 @@ const navItems: NavItem[] = [
   { id: "flash", label: "Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
   { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
   { id: "battle", label: "Battles", href: "/battle", icon: Swords },
-  { id: "analytics", label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { id: "analytics", label: "Analytics", href: "/analyticspage", icon: BarChart3 },
 ];
 
 export default function Sidebar({
