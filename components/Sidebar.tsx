@@ -39,6 +39,13 @@ const navItems: NavItem[] = [
 
 export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const pathname = usePathname();
+  // AUTH MODAL STATES
+const [showLoginModal, setShowLoginModal] = useState(false);
+const [showOTPModal, setShowOTPModal] = useState(false);
+const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+
+const [phoneNumber, setPhoneNumber] = useState("");
+
   const isMobile = !!onClose;
 
   const isActive = (href: string) => {
