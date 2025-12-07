@@ -106,7 +106,7 @@ const refresh = practiceData.refresh;
     <MainLayout>
     <View style={styles.container}>
       {/* SUBJECT FILTER — Same as Feed */}
-      <View style={styles.subjectsWrapper}>
+      <Animated.View style={[styles.subjectsWrapper, { transform: [{ translateY: headerOffset }] }]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
