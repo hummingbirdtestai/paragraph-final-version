@@ -1,5 +1,4 @@
-// app/practice.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,208 +7,192 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 import { Eye, EyeOff, Bookmark } from "lucide-react-native";
+import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { usePracticeData } from "@/hooks/usePracticeData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
-import { useEffect } from "react";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 export default function PracticeScreen() {
-const { width } = useWindowDimensions();
-const isMobile = width < 768;
+  // ------------------------------
+  // DEVICE WIDTH / HEADER ANIMATION
+  // ------------------------------
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
 
-const headerOffset = useSharedValue(0);
-const { direction, onScroll } = useScrollDirection();
+  const headerOffset = useSharedValue(0);
+  const { direction, onScroll } = useScrollDirection();
 
-useEffect(() => {
-  if (!isMobile) return;
+  useEffect(() => {
+    if (!isMobile) return;
+    headerOffset.value = withTiming(direction === "down" ? -140 : 0, { duration: 220 });
+  }, [direction]);
 
-  headerOffset.value = withTiming(direction === "down" ? -140 : 0, { duration: 220 });
-}, [direction]);
+  // ------------------------------
+  // SUBJECTS
+  // ------------------------------
+  const subjects = [
+    "Anatomy",
+    "Anesthesia",
+    "Biochemistry",
+    "Community Medicine",
+    "Dermatology",
+    "ENT",
+    "Forensic Medicine",
+    "General Medicine",
+    "General Surgery",
+    "Microbiology",
+    "Obstetrics and Gynaecology",
+    "Ophthalmology",
+    "Orthopedics",
+    "Pathology",
+    "Pediatrics",
+    "Pharmacology",
+    "Physiology",
+    "Psychiatry",
+    "Radiology",
+  ];
 
+  const [selectedSubject, setSelectedSubject] = useState("General Medicine");
+  const [selectedCategory, setSelectedCategory] =
+    useState<"unviewed" | "viewed" | "bookmarked">("unviewed");
+  const [userId, setUserId] = useState<string | null>(null);
 
-const subjects = [
-  "Anatomy",
-  "Anesthesia",
-  "Biochemistry",
-  "Community Medicine",
-  "Dermatology",
-  "ENT",
-  "Forensic Medicine",
-  "General Medicine",
-  "General Surgery",
-  "Microbiology",
-  "Obstetrics and Gynaecology",
-  "Ophthalmology",
-  "Orthopedics",
-  "Pathology",
-  "Pediatrics",
-  "Pharmacology",
-  "Physiology",
-  "Psychiatry",
-  "Radiology"
-];
+  // ------------------------------
+  // LOAD USER (LOGIN REQUIRED)
+  // ------------------------------
+  useEffect(() => {
+    const loadUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id ?? null);
+    };
+    loadUser();
+  }, []);
 
+  // ------------------------------
+  // FETCH PHASES
+  // ------------------------------
+  const practiceData = usePracticeData(userId ? selectedSubject : null);
+  const { phases, loading, refreshing, refresh } = practiceData;
 
-export default function PracticeScreen() {
-  const [selectedSubject, setSelectedSubject] = useState<string>("General Medicine");
-  const [selectedCategory, setSelectedCategory] = useState<'unviewed' | 'viewed' | 'bookmarked'>('unviewed');
-const [userId, setUserId] = useState<string | null>(null);
-
-useEffect(() => {
-  const loadUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      setUserId(session.user.id);
-    } else {
-      setUserId(null);
+  // ------------------------------
+  // CATEGORY FILTERING
+  // ------------------------------
+  const filteredPhases = phases.filter((phase) => {
+    switch (selectedCategory) {
+      case "viewed":
+        return phase.is_viewed;
+      case "unviewed":
+        return !phase.is_viewed;
+      case "bookmarked":
+        return phase.is_bookmarked;
+      default:
+        return true;
     }
-  };
+  });
 
-  loadUser();
-}, []);
-
-  
-const practiceData = usePracticeData(userId ? selectedSubject : null);
-
-const phases = practiceData.phases;
-const loading = practiceData.loading;
-const refreshing = practiceData.refreshing;
-const refresh = practiceData.refresh;
-
-
-
-  // Filter phases based on selected category
-  const getFilteredPhases = () => {
-    return phases.filter((phase) => {
-      switch (selectedCategory) {
-        case 'viewed':
-          return phase.is_viewed;
-        case 'unviewed':
-          return !phase.is_viewed;
-        case 'bookmarked':
-          return phase.is_bookmarked;
-        default:
-          return true;
-      }
-    });
-  };
-
-  const filteredPhases = getFilteredPhases();
-
+  // ------------------------------
+  // UI RENDER
+  // ------------------------------
   return (
     <MainLayout>
-    <View style={styles.container}>
-      {/* SUBJECT FILTER — Same as Feed */}
-      <Animated.View style={[styles.subjectsWrapper, { transform: [{ translateY: headerOffset }] }]}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.subjectsContainer}
-          style={styles.subjectsScroll}
-        >
-          {subjects.map((subj) => (
-            <SubjectFilterBubble
-              key={subj}
-              subject={subj}
-              selected={selectedSubject === subj}
-              onPress={() => setSelectedSubject(subj)}
-            />
-          ))}
-        </ScrollView>
-
-        {/* CATEGORY FILTER BAR */}
-        <View style={styles.categoryContainer}>
-          <TouchableOpacity
-            style={[
-              styles.categoryIcon,
-              selectedCategory === 'unviewed' && styles.categoryIconSelected,
-            ]}
-            onPress={() => setSelectedCategory('unviewed')}
+      <View style={styles.container}>
+        {/* SUBJECT + CATEGORY FILTER */}
+        <Animated.View style={[styles.subjectsWrapper, { transform: [{ translateY: headerOffset }] }]}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.subjectsContainer}
+            style={styles.subjectsScroll}
           >
-            <EyeOff
-              size={20}
-              color={selectedCategory === 'unviewed' ? '#ffffff' : '#10b981'}
-              strokeWidth={2}
-            />
-          </TouchableOpacity>
+            {subjects.map((subj) => (
+              <SubjectFilterBubble
+                key={subj}
+                subject={subj}
+                selected={selectedSubject === subj}
+                onPress={() => setSelectedSubject(subj)}
+              />
+            ))}
+          </ScrollView>
 
-          <TouchableOpacity
-            style={[
-              styles.categoryIcon,
-              selectedCategory === 'viewed' && styles.categoryIconSelected,
-            ]}
-            onPress={() => setSelectedCategory('viewed')}
-          >
-            <Eye
-              size={20}
-              color={selectedCategory === 'viewed' ? '#ffffff' : '#10b981'}
-              strokeWidth={2}
-            />
-          </TouchableOpacity>
+          <View style={styles.categoryContainer}>
+            <TouchableOpacity
+              style={[styles.categoryIcon, selectedCategory === "unviewed" && styles.categoryIconSelected]}
+              onPress={() => setSelectedCategory("unviewed")}
+            >
+              <EyeOff
+                size={20}
+                color={selectedCategory === "unviewed" ? "#fff" : "#10b981"}
+                strokeWidth={2}
+              />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.categoryIcon,
-              selectedCategory === 'bookmarked' && styles.categoryIconSelected,
-            ]}
-            onPress={() => setSelectedCategory('bookmarked')}
+            <TouchableOpacity
+              style={[styles.categoryIcon, selectedCategory === "viewed" && styles.categoryIconSelected]}
+              onPress={() => setSelectedCategory("viewed")}
+            >
+              <Eye
+                size={20}
+                color={selectedCategory === "viewed" ? "#fff" : "#10b981"}
+                strokeWidth={2}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.categoryIcon, selectedCategory === "bookmarked" && styles.categoryIconSelected]}
+              onPress={() => setSelectedCategory("bookmarked")}
+            >
+              <Bookmark
+                size={20}
+                color={selectedCategory === "bookmarked" ? "#fff" : "#10b981"}
+                fill={selectedCategory === "bookmarked" ? "#fff" : "transparent"}
+              />
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+
+        {/* CONTENT */}
+        {!userId ? (
+          <View style={{ padding: 40 }}>
+            <Text style={{ color: "#bbb", fontSize: 16, textAlign: "center" }}>
+              Please sign in to view concepts.
+            </Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={styles.cardsWrapper}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={refresh}
+                tintColor="#10b981"
+              />
+            }
+            onScroll={isMobile ? onScroll : undefined}
+            scrollEventThrottle={16}
           >
-            <Bookmark
-              size={20}
-              color={selectedCategory === 'bookmarked' ? '#ffffff' : '#10b981'}
-              strokeWidth={2}
-              fill={selectedCategory === 'bookmarked' ? '#ffffff' : 'transparent'}
-            />
-          </TouchableOpacity>
-        </View>
+            {filteredPhases.length === 0 ? (
+              <Text style={{ textAlign: "center", color: "#666", marginTop: 40 }}>
+                No concepts available.
+              </Text>
+            ) : (
+              filteredPhases.map((phase) => <PracticeCard key={phase.id} phase={phase} />)
+            )}
+          </ScrollView>
+        )}
       </View>
-
-      {/* CONTENT */}
-      {/* CONTENT */}
-{!userId ? (
-  <View style={{ padding: 40 }}>
-    <Text style={{ color: "#bbb", fontSize: 16, textAlign: "center" }}>
-      Please sign in to view concepts.
-    </Text>
-  </View>
-) : (
-  <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.cardsWrapper}
-      refreshControl={...}
-      onScroll={isMobile ? onScroll : undefined}
-      scrollEventThrottle={16}
-    >
-    }
-  >
-    {filteredPhases.length === 0 ? (
-      <Text style={{ textAlign: "center", color: "#666", marginTop: 40 }}>
-        No concepts available.
-      </Text>
-    ) : (
-      filteredPhases.map((phase) => (
-        <PracticeCard key={phase.id} phase={phase} />
-      ))
-    )}
-  </ScrollView>
-)}
-
-    </View>
-      </MainLayout>
+    </MainLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0b141a",
-  },
+  container: { flex: 1, backgroundColor: "#0b141a" },
 
   subjectsWrapper: {
     paddingTop: 60,
@@ -221,19 +204,12 @@ const styles = StyleSheet.create({
     }),
   },
 
-  subjectsScroll: {
-    marginBottom: 16,
-    ...(Platform.OS === "web" && {
-      flexWrap: "wrap",
-    }),
-  },
+  subjectsScroll: { marginBottom: 16 },
 
   subjectsContainer: {
     paddingHorizontal: 16,
     gap: 8,
-    ...(Platform.OS === "web" && {
-      flexWrap: "wrap",
-    }),
+    flexWrap: "wrap",
   },
 
   cardsWrapper: {
@@ -248,12 +224,12 @@ const styles = StyleSheet.create({
   },
 
   categoryContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#0d0d0d',
+    backgroundColor: "#0d0d0d",
   },
 
   categoryIcon: {
@@ -261,14 +237,14 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#10b981',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
+    borderColor: "#10b981",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
   },
 
   categoryIconSelected: {
-    backgroundColor: '#10b981',
-    borderColor: '#10b981',
+    backgroundColor: "#10b981",
+    borderColor: "#10b981",
   },
 });
