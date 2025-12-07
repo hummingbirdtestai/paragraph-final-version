@@ -1,3 +1,4 @@
+// MainLayout.tsx
 import React, { useState } from "react";
 import { View, StyleSheet, useWindowDimensions } from "react-native";
 import Sidebar from "./Sidebar";
@@ -11,7 +12,6 @@ import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 
-
 const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
@@ -20,7 +20,7 @@ export default function MainLayout({ children }) {
 
   const [drawerVisible, setDrawerVisible] = useState(false);
 
-  // Combined Auth Flow State
+  // Auth modal state
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
@@ -33,9 +33,14 @@ export default function MainLayout({ children }) {
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
 
-  // ───────────────────────────────────────────────
+  // Inject auth trigger into all children (important!)
+  const injectedChild = React.cloneElement(children, {
+    onOpenAuth: () => {
+      setShowLoginModal(true);
+    },
+  });
+
   // OTP FLOW
-  // ───────────────────────────────────────────────
   const handleSendOTP = async (phone: string) => {
     try {
       const formatted = phone.startsWith("+91") ? phone : `+91${phone}`;
@@ -61,6 +66,7 @@ export default function MainLayout({ children }) {
 
         setShowOTPModal(false);
 
+        // Check if profile exists
         const { data: existing } = await supabase
           .from("users")
           .select("*")
@@ -91,7 +97,7 @@ export default function MainLayout({ children }) {
         <>
           <AppHeader onMenuPress={openDrawer} showMenu />
 
-          <View style={styles.mobileContent}>{children}</View>
+          <View style={styles.mobileContent}>{injectedChild}</View>
 
           <MobileDrawer
             visible={drawerVisible}
@@ -106,13 +112,11 @@ export default function MainLayout({ children }) {
         <View style={styles.desktopLayout}>
           <View style={styles.sidebarContainer}>
             <Sidebar
-              onOpenAuth={() => {
-                setShowLoginModal(true);
-              }}
+              onOpenAuth={() => setShowLoginModal(true)}
             />
           </View>
 
-          <View style={styles.desktopContent}>{children}</View>
+          <View style={styles.desktopContent}>{injectedChild}</View>
         </View>
       )}
 
@@ -141,22 +145,9 @@ export default function MainLayout({ children }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0D0D0D",
-  },
-  desktopLayout: {
-    flex: 1,
-    flexDirection: "row",
-  },
-  sidebarContainer: {
-    width: SIDEBAR_WIDTH,
-    height: "100%",
-  },
-  desktopContent: {
-    flex: 1,
-  },
-  mobileContent: {
-    flex: 1,
-  },
+  container: { flex: 1, backgroundColor: "#0D0D0D" },
+  desktopLayout: { flex: 1, flexDirection: "row" },
+  sidebarContainer: { width: SIDEBAR_WIDTH, height: "100%" },
+  desktopContent: { flex: 1 },
+  mobileContent: { flex: 1 },
 });
