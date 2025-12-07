@@ -182,9 +182,10 @@ const initializeUser = async () => {
   ===========================================================
   */
 
-  useEffect(() => {
-    loadData();
-  }, []);
+useEffect(() => {
+  if (userId) loadData();
+}, [userId]);
+
 /* 
 ===========================================================
    🔥 AUTO-START LOGIC (optional exam_serial=start)
