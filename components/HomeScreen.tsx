@@ -587,27 +587,25 @@ const Section9Mobile = memo(({ onOpenAuth, isLoggedIn }) => {
 });
 
 
-const Section9Web = memo(() => {
-  console.log('Section9Web mounted');
+const Section9Web = memo(({ onOpenAuth, isLoggedIn }) => {
+  if (isLoggedIn) return null;
+
   return (
     <View style={styles.webCTASection}>
       <View style={styles.webCTAContent}>
         <Text style={styles.webCTAHeading}>Start Your Journey</Text>
-        <Text style={styles.webCTAText}>
-          This is the NEETPG preparation model built for 2026 —
-          efficient, adaptive, personalised, unstoppable.
-        </Text>
-        <Text style={styles.webCTAText}>
-          If you're willing to invest your 1,150 hours wisely,
-          we'll take you to a Top 1000 rank.
-        </Text>
-        <Pressable style={styles.webCTAButton}>
+
+        <Pressable
+          style={styles.webCTAButton}
+          onPress={() => onOpenAuth?.("signup")}
+        >
           <Text style={styles.webCTAButtonText}>Sign Up Now</Text>
         </Pressable>
       </View>
     </View>
   );
 });
+
 
 const styles = StyleSheet.create({
   container: {
