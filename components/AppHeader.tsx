@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions } from 'react-native';
 import { Link } from 'expo-router';
 import { Menu } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,15 +7,24 @@ import { useAuth } from "@/contexts/AuthContext";
 interface AppHeaderProps {
   onMenuPress?: () => void;
   onOpenAuth?: (mode: 'login' | 'signup') => void;
+  isDesktop?: boolean;
 }
 
-export default function AppHeader({ onMenuPress, onOpenAuth }: AppHeaderProps) {
+const SIDEBAR_WIDTH = 340;
+const MOBILE_BREAKPOINT = 768;
+
+export default function AppHeader({ onMenuPress, onOpenAuth, isDesktop }: AppHeaderProps) {
   const { user } = useAuth();
   const isLoggedIn = !!user;
+  const { width } = useWindowDimensions();
+  const isMobile = width < MOBILE_BREAKPOINT;
 
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
+      <View style={[
+        styles.content,
+        isDesktop && !isLoggedIn && styles.contentDesktop
+      ]}>
 
         {isLoggedIn ? (
           // ⭐ AFTER LOGIN — SHOW MENU + LOGO
@@ -39,7 +48,10 @@ export default function AppHeader({ onMenuPress, onOpenAuth }: AppHeaderProps) {
           // ⭐ BEFORE LOGIN — SHOW LOGO + AUTH BUTTONS
           <>
             <Link href="/" asChild>
-              <Pressable style={styles.logoSection}>
+              <Pressable style={[
+                styles.logoSection,
+                isDesktop && styles.logoSectionDesktop
+              ]}>
                 <Image
                   source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
                   style={styles.logo}
@@ -88,6 +100,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '100%',
   },
+  contentDesktop: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    maxWidth: '100%',
+  },
   menuButton: {
     padding: 4,
     marginRight: 12,
@@ -95,6 +112,10 @@ const styles = StyleSheet.create({
   logoSection: {
     flex: 1,
     flexDirection: 'column',
+  },
+  logoSectionDesktop: {
+    flex: 0,
+    width: SIDEBAR_WIDTH - 40,
   },
   logo: {
     width: 150,

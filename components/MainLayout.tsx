@@ -120,17 +120,23 @@ export default function MainLayout({ children }) {
             <AppHeader
               onMenuPress={() => {}}
               onOpenAuth={() => setShowLoginModal(true)}
+              isDesktop={true}
             />
           )}
 
           <View style={styles.desktopLayoutContent}>
-            <View style={styles.sidebarContainer}>
-              <Sidebar
-                onOpenAuth={() => setShowLoginModal(true)}
-              />
-            </View>
+            {isLoggedIn && (
+              <View style={styles.sidebarContainer}>
+                <Sidebar
+                  onOpenAuth={() => setShowLoginModal(true)}
+                />
+              </View>
+            )}
 
-            <View style={styles.desktopContent}>{injectedChild}</View>
+            <View style={[
+              styles.desktopContent,
+              !isLoggedIn && styles.desktopContentFullWidth
+            ]}>{injectedChild}</View>
           </View>
         </View>
       )}
@@ -165,5 +171,10 @@ const styles = StyleSheet.create({
   desktopLayoutContent: { flex: 1, flexDirection: "row" },
   sidebarContainer: { width: SIDEBAR_WIDTH, height: "100%" },
   desktopContent: { flex: 1 },
+  desktopContentFullWidth: {
+    maxWidth: 1200,
+    marginHorizontal: 'auto',
+    width: '100%',
+  },
   mobileContent: { flex: 1 },
 });
