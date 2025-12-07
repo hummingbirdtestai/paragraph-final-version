@@ -559,7 +559,6 @@ const Section9Mobile = memo(() => {
         we'll take you to a Top 1000 rank.
       </Text>
       <Pressable style={styles.mobileCTAButton} onPress={() => onOpenAuth?.("signup")}>
-
     </View>
   );
 });
