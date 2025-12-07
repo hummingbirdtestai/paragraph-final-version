@@ -558,9 +558,8 @@ const Section9Mobile = memo(() => {
         If you're willing to invest your 1,150 hours wisely,{'\n'}
         we'll take you to a Top 1000 rank.
       </Text>
-      <Pressable style={styles.mobileCTAButton}>
-        <Text style={styles.mobileCTAButtonText}>Sign Up Now</Text>
-      </Pressable>
+      <Pressable style={styles.mobileCTAButton} onPress={() => onOpenAuth?.("signup")}>
+
     </View>
   );
 });
