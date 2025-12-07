@@ -51,8 +51,8 @@ const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState("");
   const { user, logout } = useAuth();
 const isLoggedIn = !!user;
-// ⭐ BLOCK SIDEBAR BEFORE LOGIN/SIGNUP
-if (!isLoggedIn) {
+// Only block sidebar on DESKTOP when not logged in
+if (!onClose && !isLoggedIn) {
   return null;
 }
 
