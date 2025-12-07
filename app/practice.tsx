@@ -180,15 +180,12 @@ const refresh = practiceData.refresh;
   </View>
 ) : (
   <ScrollView
-    style={{ flex: 1 }}
-    contentContainerStyle={styles.cardsWrapper}
-    refreshControl={
-      <RefreshControl
-        refreshing={refreshing}
-        onRefresh={refresh}
-        tintColor="#25D366"
-        colors={["#25D366"]}
-      />
+      style={{ flex: 1 }}
+      contentContainerStyle={styles.cardsWrapper}
+      refreshControl={...}
+      onScroll={isMobile ? onScroll : undefined}
+      scrollEventThrottle={16}
+    >
     }
   >
     {filteredPhases.length === 0 ? (
