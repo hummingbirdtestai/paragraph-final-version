@@ -12,6 +12,54 @@ interface MainLayoutProps {
 const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
+const handleSendOTP = async (phone: string) => {
+  try {
+    const formatted = phone.startsWith("+91") ? phone : `+91${phone}`;
+    await loginWithOTP(formatted);
+
+    setPhoneNumber(phone);
+    setShowLoginModal(false);
+    setShowOTPModal(true);
+  } catch (err) {
+    console.error("OTP Send Error", err);
+  }
+};
+
+const handleVerifyOTP = async (otp: string) => {
+  try {
+    await verifyOTP(phoneNumber, otp);
+
+    setTimeout(async () => {
+      const { data } = await supabase.auth.getUser();
+      const authUser = data?.user;
+      if (!authUser) return;
+
+      setShowOTPModal(false);
+
+      const { data: existing } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authUser.id)
+        .maybeSingle();
+
+      if (!existing) {
+        setShowRegistrationModal(true);
+      }
+    }, 300);
+  } catch (err) {
+    console.error("OTP verify error", err);
+  }
+};
+
+const handleRegister = async (name: string) => {
+  try {
+    await registerUser(name, phoneNumber);
+    setShowRegistrationModal(false);
+  } catch (err) {
+    console.error("Registration error", err);
+  }
+};
+
 export default function MainLayout({ children }: MainLayoutProps) {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup" | null>(null);
@@ -52,16 +100,37 @@ const [phoneNumber, setPhoneNumber] = useState("");
         <View style={styles.desktopLayout}>
           <View style={styles.sidebarContainer}>
             <Sidebar
-              onOpenAuth={(mode) => {
-                setAuthMode(mode);
-                setAuthVisible(true);
-              }}
-            />
+  onOpenAuth={() => {
+    setShowLoginModal(true);
+  }}
+/>
+
           </View>
 
           <View style={styles.desktopContent}>{children}</View>
         </View>
       )}
+
+      <LoginModal
+  visible={showLoginModal}
+  onClose={() => setShowLoginModal(false)}
+  onSendOTP={handleSendOTP}
+/>
+
+<OTPModal
+  visible={showOTPModal}
+  phoneNumber={phoneNumber}
+  onClose={() => setShowOTPModal(false)}
+  onVerify={handleVerifyOTP}
+  onResend={() => handleSendOTP(phoneNumber)}
+/>
+
+<RegistrationModal
+  visible={showRegistrationModal}
+  onClose={() => {}}
+  onRegister={handleRegister}
+/>
+
     </View>
   );
 }
