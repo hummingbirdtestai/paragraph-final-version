@@ -16,7 +16,8 @@ import { usePracticeData } from "@/hooks/usePracticeData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect } from "react";
-
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 const subjects = [
   "Anatomy",
