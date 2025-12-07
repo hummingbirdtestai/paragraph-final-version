@@ -13,7 +13,6 @@ import { Eye, EyeOff, Bookmark } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { usePracticeData } from "@/hooks/usePracticeData";
-import { BottomNav } from "@/components/navigation/BottomNav";
 
 const subjects = [
   "Anatomy",
