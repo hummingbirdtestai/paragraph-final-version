@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { BottomNav } from "@/components/navigation/BottomNav";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
