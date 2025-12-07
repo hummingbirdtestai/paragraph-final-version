@@ -1,4 +1,4 @@
-//practice.tsx
+// practice.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -11,7 +11,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { Eye, EyeOff, Bookmark } from "lucide-react-native";
-import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { usePracticeData } from "@/hooks/usePracticeData";
@@ -20,23 +19,13 @@ import { supabase } from "@/lib/supabaseClient";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 export default function PracticeScreen() {
-  // ------------------------------
-  // DEVICE WIDTH / HEADER ANIMATION
-  // ------------------------------
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
-  const headerOffset = useSharedValue(0);
+  // Scroll detection
   const { direction, onScroll } = useScrollDirection();
+  const isHidden = isMobile && direction === "down";
 
-  useEffect(() => {
-    if (!isMobile) return;
-    headerOffset.value = withTiming(direction === "down" ? -140 : 0, { duration: 220 });
-  }, [direction]);
-
-  // ------------------------------
-  // SUBJECTS
-  // ------------------------------
   const subjects = [
     "Anatomy",
     "Anesthesia",
@@ -64,9 +53,6 @@ export default function PracticeScreen() {
     useState<"unviewed" | "viewed" | "bookmarked">("unviewed");
   const [userId, setUserId] = useState<string | null>(null);
 
-  // ------------------------------
-  // LOAD USER (LOGIN REQUIRED)
-  // ------------------------------
   useEffect(() => {
     const loadUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -75,15 +61,9 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-  // ------------------------------
-  // FETCH PHASES
-  // ------------------------------
   const practiceData = usePracticeData(userId ? selectedSubject : null);
   const { phases, loading, refreshing, refresh } = practiceData;
 
-  // ------------------------------
-  // CATEGORY FILTERING
-  // ------------------------------
   const filteredPhases = phases.filter((phase) => {
     switch (selectedCategory) {
       case "viewed":
@@ -97,65 +77,63 @@ export default function PracticeScreen() {
     }
   });
 
-  // ------------------------------
-  // UI RENDER
-  // ------------------------------
   return (
     <MainLayout>
       <View style={styles.container}>
-        {/* SUBJECT + CATEGORY FILTER */}
-        <Animated.View style={[styles.subjectsWrapper, { transform: [{ translateY: headerOffset }] }]}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.subjectsContainer}
-            style={styles.subjectsScroll}
-          >
-            {subjects.map((subj) => (
-              <SubjectFilterBubble
-                key={subj}
-                subject={subj}
-                selected={selectedSubject === subj}
-                onPress={() => setSelectedSubject(subj)}
-              />
-            ))}
-          </ScrollView>
 
-          <View style={styles.categoryContainer}>
-            <TouchableOpacity
-              style={[styles.categoryIcon, selectedCategory === "unviewed" && styles.categoryIconSelected]}
-              onPress={() => setSelectedCategory("unviewed")}
+        {/* ⭐ SUBJECT + CATEGORY HIDE ON SCROLL (mobile only) */}
+        {!isHidden && (
+          <View style={styles.headerBlock}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.subjectsContainer}
+              style={styles.subjectsScroll}
             >
-              <EyeOff
-                size={20}
-                color={selectedCategory === "unviewed" ? "#fff" : "#10b981"}
-                strokeWidth={2}
-              />
-            </TouchableOpacity>
+              {subjects.map((subj) => (
+                <SubjectFilterBubble
+                  key={subj}
+                  subject={subj}
+                  selected={selectedSubject === subj}
+                  onPress={() => setSelectedSubject(subj)}
+                />
+              ))}
+            </ScrollView>
 
-            <TouchableOpacity
-              style={[styles.categoryIcon, selectedCategory === "viewed" && styles.categoryIconSelected]}
-              onPress={() => setSelectedCategory("viewed")}
-            >
-              <Eye
-                size={20}
-                color={selectedCategory === "viewed" ? "#fff" : "#10b981"}
-                strokeWidth={2}
-              />
-            </TouchableOpacity>
+            <View style={styles.categoryContainer}>
+              <TouchableOpacity
+                style={[styles.categoryIcon, selectedCategory === "unviewed" && styles.categoryIconSelected]}
+                onPress={() => setSelectedCategory("unviewed")}
+              >
+                <EyeOff
+                  size={20}
+                  color={selectedCategory === "unviewed" ? "#fff" : "#10b981"}
+                />
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.categoryIcon, selectedCategory === "bookmarked" && styles.categoryIconSelected]}
-              onPress={() => setSelectedCategory("bookmarked")}
-            >
-              <Bookmark
-                size={20}
-                color={selectedCategory === "bookmarked" ? "#fff" : "#10b981"}
-                fill={selectedCategory === "bookmarked" ? "#fff" : "transparent"}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.categoryIcon, selectedCategory === "viewed" && styles.categoryIconSelected]}
+                onPress={() => setSelectedCategory("viewed")}
+              >
+                <Eye
+                  size={20}
+                  color={selectedCategory === "viewed" ? "#fff" : "#10b981"}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.categoryIcon, selectedCategory === "bookmarked" && styles.categoryIconSelected]}
+                onPress={() => setSelectedCategory("bookmarked")}
+              >
+                <Bookmark
+                  size={20}
+                  color={selectedCategory === "bookmarked" ? "#fff" : "#10b981"}
+                  fill={selectedCategory === "bookmarked" ? "#fff" : "transparent"}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </Animated.View>
+        )}
 
         {/* CONTENT */}
         {!userId ? (
@@ -169,11 +147,7 @@ export default function PracticeScreen() {
             style={{ flex: 1 }}
             contentContainerStyle={styles.cardsWrapper}
             refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={refresh}
-                tintColor="#10b981"
-              />
+              <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
             }
             onScroll={isMobile ? onScroll : undefined}
             scrollEventThrottle={16}
@@ -183,7 +157,9 @@ export default function PracticeScreen() {
                 No concepts available.
               </Text>
             ) : (
-              filteredPhases.map((phase) => <PracticeCard key={phase.id} phase={phase} />)
+              filteredPhases.map((phase) => (
+                <PracticeCard key={phase.id} phase={phase} />
+              ))
             )}
           </ScrollView>
         )}
@@ -195,14 +171,10 @@ export default function PracticeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0b141a" },
 
-  subjectsWrapper: {
+  headerBlock: {
     paddingTop: 60,
-    ...(Platform.OS === "web" && {
-      maxWidth: 760,
-      marginLeft: "auto",
-      marginRight: "auto",
-      width: "100%",
-    }),
+    backgroundColor: "#0b141a",
+    zIndex: 10,
   },
 
   subjectsScroll: { marginBottom: 16 },
@@ -216,17 +188,10 @@ const styles = StyleSheet.create({
   cardsWrapper: {
     paddingHorizontal: 16,
     paddingBottom: 100,
-    ...(Platform.OS === "web" && {
-      maxWidth: 760,
-      marginLeft: "auto",
-      marginRight: "auto",
-      width: "100%",
-    }),
   },
 
   categoryContainer: {
     flexDirection: "row",
-    alignItems: "center",
     gap: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -241,7 +206,6 @@ const styles = StyleSheet.create({
     borderColor: "#10b981",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent",
   },
 
   categoryIconSelected: {
