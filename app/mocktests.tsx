@@ -36,6 +36,8 @@ import type { MockTest, UserMockTest } from "@/types/mock-test";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { v4 as uuidv4 } from "uuid";
 
 /* 
 ===========================================================
