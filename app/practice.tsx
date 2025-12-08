@@ -159,21 +159,23 @@ export default function PracticeScreen() {
           onScroll={isMobile ? onScroll : undefined}
           scrollEventThrottle={16}
         
-          // 🚀 Virtualization
           initialNumToRender={8}
           maxToRenderPerBatch={6}
           windowSize={10}
           removeClippedSubviews={true}
         
-          // 🔥 PAGINATION — ADD THESE THREE LINES
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
+          // ⭐ FIXED PAGINATION
+          onEndReached={() => {
+            if (hasMoreData && !isLoadingMore && !loading) {
+              loadMore();
+            }
+          }}
+          onEndReachedThreshold={hasMoreData ? 0.5 : 0.01}
+        
           ListFooterComponent={
             isLoadingMore ? (
               <View style={{ padding: 20 }}>
-                <Text style={{ textAlign: "center", color: "#999" }}>
-                  Loading more…
-                </Text>
+                <Text style={{ textAlign: "center", color: "#999" }}>Loading more…</Text>
               </View>
             ) : null
           }
