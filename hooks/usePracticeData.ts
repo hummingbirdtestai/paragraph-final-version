@@ -30,7 +30,7 @@ export function usePracticeData(
       {
         p_subject: subject,
         p_student_id: userId,
-        p_filter: "all",              // 🔁 MODIFIED — ensures UI filter works 
+        p_filter: category,              // 🔁 MODIFIED — ensures UI filter works 
         p_limit: LIMIT,               // 🔥 NEW — pagination added
         p_offset: currentOffset       // 🔥 NEW — dynamic offset
       }
