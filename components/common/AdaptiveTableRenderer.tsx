@@ -289,7 +289,17 @@ function renderLine(line: string, styles: any) {
 }
 
 // Mobile: Render table as vertically stacked fact cards
-function MobileTableRenderer({ tableData, styles }: { tableData: TableData; styles: any }) {
+function MobileTableRenderer({
+  tableData,
+  styles,
+  markdownStyles,
+  markdownRules,
+}: {
+  tableData: TableData;
+  styles: any;
+  markdownStyles: any;
+  markdownRules?: any;
+})
   const { headers, rows } = tableData;
 
   return (
@@ -337,7 +347,18 @@ function MobileTableRenderer({ tableData, styles }: { tableData: TableData; styl
 }
 
 // Web: Render table as standard multi-column table
-function WebTableRenderer({ tableData, styles }: { tableData: TableData; styles: any }) {
+function WebTableRenderer({
+  tableData,
+  styles,
+  markdownStyles,
+  markdownRules,
+}: {
+  tableData: TableData;
+  styles: any;
+  markdownStyles: any;
+  markdownRules?: any;
+})
+
   const { headers, rows } = tableData;
 
   return (
