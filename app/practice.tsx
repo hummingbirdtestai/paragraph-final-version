@@ -55,7 +55,8 @@ export default function PracticeScreen() {
   const [userId, setUserId] = useState<string | null>(null);
    // ✅ FIX 1 — declare ref BEFORE scroll effect
   const listRef = React.useRef<FlatList>(null);
-
+ 
+  
   useEffect(() => {
     const loadUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -64,16 +65,17 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
+  const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
+ const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
+  practiceData;     // 🔥 NEW — supports pagination
+  
  // ✅ FIX 2 — scroll to top when subject/category changes
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollToOffset({ offset: 0, animated: true });
     }
   }, [selectedCategory, selectedSubject, phases.length]);
-  
- const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
- const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
-  practiceData;     // 🔥 NEW — supports pagination
+
 
   return (
     <MainLayout>
