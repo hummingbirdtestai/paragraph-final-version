@@ -56,10 +56,11 @@ export function usePracticeData(
   // SUBJECT CHANGE / USER CHANGE — reset offset
   // ------------------------------------------------------
   useEffect(() => {
+    setPhases([]);
     setOffset(0);                       // 🔥 NEW — reset for new subject/user
     setLoading(true);
     fetchPhases(0);                     // 🔁 MODIFIED — force first page
-  }, [subject, userId, category]);
+  }, [subject, category, userId]);
 
   // ------------------------------------------------------
   // PULL-TO-REFRESH — also resets pagination
