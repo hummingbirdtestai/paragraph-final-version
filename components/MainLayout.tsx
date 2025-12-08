@@ -15,7 +15,7 @@ import { RegistrationModal } from "@/components/auth/RegistrationModal";
 const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
-export default function MainLayout({ children }) {
+export default function MainLayout({ children, headerHidden = false }) {
   const { loginWithOTP, verifyOTP, registerUser } = useAuth();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -92,10 +92,13 @@ export default function MainLayout({ children }) {
     <View style={styles.container}>
       {isMobile ? (
         <>
-          <AppHeader
-            onMenuPress={openDrawer}
-            onOpenAuth={() => setShowLoginModal(true)}
-          />
+          {/* ⭐ HIDE HEADER ON SCROLL ⭐ */}
+          {!headerHidden && (
+            <AppHeader
+              onMenuPress={openDrawer}
+              onOpenAuth={() => setShowLoginModal(true)}
+            />
+          )}
 
           <View style={styles.mobileContent}>{injectedChild}</View>
 
@@ -110,7 +113,8 @@ export default function MainLayout({ children }) {
         </>
       ) : (
         <View style={styles.desktopLayout}>
-          {!isLoggedIn && (
+          {/* Desktop: show header only when NOT logged in */}
+          {!isLoggedIn && !headerHidden && (
             <AppHeader
               onMenuPress={() => {}}
               onOpenAuth={() => setShowLoginModal(true)}
