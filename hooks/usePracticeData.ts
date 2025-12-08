@@ -2,23 +2,23 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export function usePracticeData(
-  subject: string | null = null,
-  userId: string | null = null,
-  category: "unviewed" | "viewed" | "bookmarked" | "all" = "unviewed"
+  subject = null,
+  userId = null,
+  category = "unviewed"
 ) {
   const [phases, setPhases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [offset, setOffset] = useState(0);          // 🔥 NEW — required for pagination
-  const [isLoadingMore, setIsLoadingMore] = useState(false); // 🔥 NEW — prevents spam load
+  const [offset, setOffset] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
+  // ⭐ NEW — STOP LOAD MORE WHEN DATA FINISHES
+  const [hasMoreData, setHasMoreData] = useState(true);
 
-  const LIMIT = 20;                                 // 🔁 MODIFIED — earlier hook had no pagination limit
+  const LIMIT = 20;
 
-  // ------------------------------------------------------
-  // FETCH FUNCTION — ⭐ MAJOR CHANGES
-  // ------------------------------------------------------
-  const fetchPhases = async (currentOffset = 0) => { // 🔁 MODIFIED — now accepts offset
+  const fetchPhases = async (currentOffset = 0) => {
     if (!subject || !userId) {
       setPhases([]);
       setLoading(false);
@@ -30,58 +30,59 @@ export function usePracticeData(
       {
         p_subject: subject,
         p_student_id: userId,
-        p_filter: category,              // 🔁 MODIFIED — ensures UI filter works 
-        p_limit: LIMIT,               // 🔥 NEW — pagination added
-        p_offset: currentOffset       // 🔥 NEW — dynamic offset
+        p_filter: category,
+        p_limit: LIMIT,
+        p_offset: currentOffset
       }
     );
 
-    // -------------------------------------------
-    // Append OR Replace logic — 🔥 NEW
-    // -------------------------------------------
-    if (!error) {
-      if (currentOffset === 0) {       // first load OR refresh
-        setPhases(data || []);         // 🔁 MODIFIED — replaces fully
-      } else {
-        setPhases((prev) => [...prev, ...(data || [])]);  // 🔥 NEW — append for loadMore()
-      }
+    if (error) {
+      console.log("RPC Error", error);
+      return;
     }
 
+    // ⭐ If NO new records → no more pagination
+    if (!data || data.length === 0) {
+      setHasMoreData(false);
+      setIsLoadingMore(false);
+      return;
+    }
+
+    if (currentOffset === 0) {
+      setPhases(data);
+    } else {
+      setPhases((prev) => [...prev, ...data]);
+    }
+
+    setIsLoadingMore(false);
     setLoading(false);
     setRefreshing(false);
-    setIsLoadingMore(false);
   };
 
-  // ------------------------------------------------------
-  // SUBJECT CHANGE / USER CHANGE — reset offset
-  // ------------------------------------------------------
   useEffect(() => {
-    setPhases([]);
-    setOffset(0);                       // 🔥 NEW — reset for new subject/user
+    setOffset(0);
+    setHasMoreData(true);   // ⭐ RESET WHEN SUBJECT/CATEGORY CHANGE
     setLoading(true);
-    fetchPhases(0);                     // 🔁 MODIFIED — force first page
-  }, [subject, category, userId]);
+    fetchPhases(0);
+  }, [subject, userId, category]);
 
-  // ------------------------------------------------------
-  // PULL-TO-REFRESH — also resets pagination
-  // ------------------------------------------------------
   const refresh = async () => {
     setRefreshing(true);
-    await fetchPhases(0);               // 🔁 MODIFIED — resets offset
+    setOffset(0);
+    setHasMoreData(true);  
+    await fetchPhases(0);
   };
 
-  // ------------------------------------------------------
-  // LOAD MORE — ⭐ NEW IMPORTANT PART
-  // ------------------------------------------------------
   const loadMore = async () => {
-    if (isLoadingMore || loading) return;   // 🔥 NEW — prevents double calls
+    if (!hasMoreData) return;         // ⭐ STOP LOADING
+    if (isLoadingMore || loading) return;
 
     setIsLoadingMore(true);
 
-    const newOffset = offset + LIMIT;       // 🔥 NEW — calculate next page
+    const newOffset = offset + LIMIT;
     setOffset(newOffset);
 
-    await fetchPhases(newOffset);           // 🔥 NEW — fetch appended results
+    await fetchPhases(newOffset);
   };
 
   return {
@@ -89,7 +90,8 @@ export function usePracticeData(
     loading,
     refreshing,
     refresh,
-    loadMore,                                // 🔥 NEW — must be used in FlatList
-    isLoadingMore,                           // 🔥 NEW
+    loadMore,
+    isLoadingMore,
+    hasMoreData,       // Optional, if UI needs to show “No more items”
   };
 }
