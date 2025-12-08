@@ -66,8 +66,15 @@ export default function PracticeScreen() {
   }, []);
 
   const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
- const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
-  practiceData;     // 🔥 NEW — supports pagination
+ const {
+  phases,
+  loading,
+  refreshing,
+  refresh,
+  loadMore,
+  isLoadingMore,
+  hasMoreData
+} = practiceData;
   
  // ✅ FIX 2 — scroll to top when subject/category changes
   useEffect(() => {
