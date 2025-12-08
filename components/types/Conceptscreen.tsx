@@ -260,6 +260,8 @@ const markdownStylesMobile = StyleSheet.create({
     color: '#e1e1e1',
     fontSize: 15,
     lineHeight: 24,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   heading1: {
     display: 'none',
@@ -285,14 +287,20 @@ const markdownStylesMobile = StyleSheet.create({
     fontSize: 15,
     lineHeight: 24,
     color: '#e1e1e1',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   strong: {
     fontWeight: '700',
     color: '#ffffff',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   em: {
     fontStyle: 'italic',
     color: '#d1d1d1',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   bullet_list: {
     marginTop: 8,
@@ -397,6 +405,10 @@ const markdownStylesMobile = StyleSheet.create({
     height: 1,
     marginVertical: 18,
   },
+  text: {
+    flexShrink: 1,
+    flexWrap: 'wrap',
+  },
 });
 
 const markdownStylesWeb = StyleSheet.create({
@@ -404,6 +416,8 @@ const markdownStylesWeb = StyleSheet.create({
     color: '#e1e1e1',
     fontSize: 16,
     lineHeight: 26,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   heading1: {
     display: 'none',
@@ -429,14 +443,20 @@ const markdownStylesWeb = StyleSheet.create({
     fontSize: 16,
     lineHeight: 26,
     color: '#e1e1e1',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   strong: {
     fontWeight: '700',
     color: '#ffffff',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   em: {
     fontStyle: 'italic',
     color: '#d1d1d1',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   bullet_list: {
     marginTop: 12,
@@ -540,6 +560,10 @@ const markdownStylesWeb = StyleSheet.create({
     backgroundColor: '#333',
     height: 1,
     marginVertical: 24,
+  },
+  text: {
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
 });
 

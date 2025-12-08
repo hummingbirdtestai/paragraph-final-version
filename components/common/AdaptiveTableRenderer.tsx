@@ -312,12 +312,11 @@ function MobileTableRenderer({
           <View key={`row-${rowIndex}`} style={styles.factCard}>
             {/* First cell as header/title */}
             <View style={styles.factCardHeader}>
-              <Markdown
-  style={markdownStyles}
-  rules={markdownRules}
->
-  {row[0] || ''}
-</Markdown>
+              <View style={{ flex: 1, width: '100%' }}>
+                <Markdown style={markdownStyles} rules={markdownRules}>
+                  {row[0] || ''}
+                </Markdown>
+              </View>
             </View>
 
             {/* Subsequent cells as labeled sections */}
@@ -334,13 +333,12 @@ function MobileTableRenderer({
                 >
                   <Text style={styles.factCardLabel}>{label}</Text>
                   <View style={styles.factCardValue}>
-  <Markdown
-    style={markdownStyles}
-    rules={markdownRules}
-  >
-    {cell}
-  </Markdown>
-</View>
+                    <View style={{ flex: 1, width: '100%' }}>
+                      <Markdown style={markdownStyles} rules={markdownRules}>
+                        {cell}
+                      </Markdown>
+                    </View>
+                  </View>
                 </View>
               );
             })}
@@ -378,11 +376,11 @@ function WebTableRenderer({
               index === headers.length - 1 && styles.webTableLastCell,
             ]}
           >
-            <Text style={styles.webTableHeaderText}>
+            <View style={{ flex: 1, width: '100%' }}>
               <Markdown style={markdownStyles} rules={markdownRules}>
                 {header}
               </Markdown>
-            </Text>
+            </View>
           </View>
         ))}
       </View>
@@ -404,9 +402,11 @@ function WebTableRenderer({
                 cellIndex === row.length - 1 && styles.webTableLastCell,
               ]}
             >
-              <Markdown style={markdownStyles} rules={markdownRules}>
-                {cell}
-              </Markdown>
+              <View style={{ flex: 1, width: '100%' }}>
+                <Markdown style={markdownStyles} rules={markdownRules}>
+                  {cell}
+                </Markdown>
+              </View>
             </View>
           ))}
         </View>
@@ -613,11 +613,14 @@ const localStyles = StyleSheet.create({
   factCardValue: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    width: '100%',
   },
   cellText: {
     color: '#e1e1e1',
     fontSize: 15,
     lineHeight: 24,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   boldText: {
     fontWeight: '700',
