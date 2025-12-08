@@ -67,18 +67,6 @@ export default function PracticeScreen() {
   practiceData;     // 🔥 NEW — supports pagination
 
 
-  const filteredPhases = phases.filter((phase) => {
-    switch (selectedCategory) {
-      case "viewed":
-        return phase.is_viewed;
-      case "unviewed":
-        return !phase.is_viewed;
-      case "bookmarked":
-        return phase.is_bookmarked;
-      default:
-        return true;
-    }
-  });
 
   return (
     <MainLayout>
