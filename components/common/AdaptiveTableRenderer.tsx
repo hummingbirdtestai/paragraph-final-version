@@ -300,6 +300,7 @@ function MobileTableRenderer({
   markdownStyles: any;
   markdownRules?: any;
 })
+ {
   const { headers, rows } = tableData;
 
   return (
@@ -358,7 +359,7 @@ function WebTableRenderer({
   markdownStyles: any;
   markdownRules?: any;
 })
-
+ {
   const { headers, rows } = tableData;
 
   return (
@@ -460,12 +461,16 @@ function SectionRenderer({
                 key={`block-${blockIndex}`}
                 tableData={tableData}
                 styles={localStyles}
+                markdownStyles={markdownStyles}
+                markdownRules={markdownRules}
               />
             ) : (
               <WebTableRenderer
                 key={`block-${blockIndex}`}
                 tableData={tableData}
                 styles={localStyles}
+                markdownStyles={markdownStyles}
+                markdownRules={markdownRules}
               />
             );
           }
