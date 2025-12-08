@@ -17,41 +17,110 @@ function extractMarkdownFromConcept(conceptField: string): string {
 
   let cleaned = conceptField.trim();
 
-  // Remove leading fenced code blocks with various formats
-  // Handles: ```markdown, ```md, ```, with optional whitespace
-  cleaned = cleaned.replace(/^```\s*(markdown|md)?\s*\n?/i, '');
+  // AGGRESSIVE FENCE REMOVAL
+  // Method 1: Remove lines that are only backticks (with optional language identifier)
+  cleaned = cleaned.split('\n')
+    .filter(line => {
+      const trimmed = line.trim();
+      // Skip lines that are just backticks with optional language
+      return !(/^`{3,}\s*[a-zA-Z]*\s*$/.test(trimmed));
+    })
+    .join('\n');
 
-  // Remove trailing fenced code blocks
-  cleaned = cleaned.replace(/\n?\s*```\s*$/g, '');
+  // Method 2: Remove leading/trailing fence blocks
+  cleaned = cleaned.replace(/^`{3,}[a-zA-Z]*\s*\n/gm, '');
+  cleaned = cleaned.replace(/\n?`{3,}\s*$/gm, '');
 
-  // Handle cases where there might be multiple fence markers
-  // (in case content was double-wrapped)
-  cleaned = cleaned.replace(/^```\s*(markdown|md)?\s*\n?/i, '');
-  cleaned = cleaned.replace(/\n?\s*```\s*$/g, '');
+  // Method 3: Clean up any fence artifacts at start/end
+  while (cleaned.startsWith('```') || cleaned.startsWith('`')) {
+    if (cleaned.startsWith('```')) {
+      const firstNewline = cleaned.indexOf('\n');
+      if (firstNewline > 0) {
+        cleaned = cleaned.substring(firstNewline + 1);
+      } else {
+        cleaned = cleaned.substring(3);
+      }
+    } else {
+      cleaned = cleaned.substring(1);
+    }
+    cleaned = cleaned.trim();
+  }
+
+  while (cleaned.endsWith('```') || cleaned.endsWith('`')) {
+    if (cleaned.endsWith('```')) {
+      const lastNewline = cleaned.lastIndexOf('\n', cleaned.length - 4);
+      if (lastNewline > 0) {
+        cleaned = cleaned.substring(0, lastNewline);
+      } else {
+        cleaned = cleaned.substring(0, cleaned.length - 3);
+      }
+    } else {
+      cleaned = cleaned.substring(0, cleaned.length - 1);
+    }
+    cleaned = cleaned.trim();
+  }
 
   return cleaned.trim();
 }
 
 // Common emoji bullets used in medical content
-const EMOJI_BULLETS = ['🔷', '🔶', '🔹', '🔸', '✔️', '✅', '⭐', '💡', '🎯', '📌', '▪️', '▫️', '◾', '◽', '●', '○'];
+const EMOJI_BULLETS = [
+  '🔷', '🔶', '🔹', '🔸',  // Diamonds
+  '🔺', '🔻', '▪️', '▫️',  // Triangles and squares
+  '◾', '◽', '●', '○',      // Circles
+  '✔️', '✅', '❌', '✖️',  // Checkmarks
+  '⭐', '💡', '🎯', '📌',  // Other common bullets
+  '➡️', '→', '•', '◆', '◇', // Arrows and shapes
+];
 
 // Check if text starts with an emoji bullet
 function startsWithEmojiBullet(text: string): boolean {
   if (!text) return false;
   const trimmed = text.trim();
+
+  // Check for any emoji or special character at the start
+  // This catches emojis that might not be in our list
+  const emojiRegex = /^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{25A0}-\u{25FF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}]/u;
+
+  if (emojiRegex.test(trimmed)) {
+    return true;
+  }
+
+  // Also check our explicit list
   return EMOJI_BULLETS.some(emoji => trimmed.startsWith(emoji));
 }
 
-// Extract text content from React nodes
+// Extract text content from React nodes - improved version
 function getTextContent(children: any): string {
   if (!children) return '';
-  if (typeof children === 'string') return children;
+
+  if (typeof children === 'string') {
+    return children;
+  }
+
   if (Array.isArray(children)) {
-    return children.map(getTextContent).join('');
+    return children.map(child => getTextContent(child)).join('');
   }
-  if (children.props && children.props.children) {
-    return getTextContent(children.props.children);
+
+  if (React.isValidElement(children)) {
+    // Handle React elements
+    const element = children as React.ReactElement;
+    if (element.props && element.props.children) {
+      return getTextContent(element.props.children);
+    }
   }
+
+  if (typeof children === 'object' && children !== null) {
+    // Handle plain objects with children
+    if ('props' in children && children.props && children.props.children) {
+      return getTextContent(children.props.children);
+    }
+    // Handle objects with children property
+    if ('children' in children) {
+      return getTextContent(children.children);
+    }
+  }
+
   return '';
 }
 
@@ -59,7 +128,27 @@ function getTextContent(children: any): string {
 const customMarkdownRules = {
   // Custom bullet_list_item rendering
   bullet_list_item: (node: any, children: any, parent: any, styles: any) => {
-    const textContent = getTextContent(children);
+    // Try multiple methods to get the text content
+    let textContent = '';
+
+    // Method 1: Try node content directly
+    if (node && node.content) {
+      textContent = node.content;
+    }
+
+    // Method 2: Extract from children if no direct content
+    if (!textContent) {
+      textContent = getTextContent(children);
+    }
+
+    // Method 3: Check if first child is text with emoji
+    if (!textContent && Array.isArray(children) && children.length > 0) {
+      const firstChild = children[0];
+      if (firstChild && typeof firstChild === 'object' && firstChild.props) {
+        textContent = getTextContent(firstChild);
+      }
+    }
+
     const hasEmojiBullet = startsWithEmojiBullet(textContent);
 
     return (
@@ -76,7 +165,24 @@ const customMarkdownRules = {
 
   // Custom ordered_list_item rendering
   ordered_list_item: (node: any, children: any, parent: any, styles: any) => {
-    const textContent = getTextContent(children);
+    // Try multiple methods to get the text content
+    let textContent = '';
+
+    if (node && node.content) {
+      textContent = node.content;
+    }
+
+    if (!textContent) {
+      textContent = getTextContent(children);
+    }
+
+    if (!textContent && Array.isArray(children) && children.length > 0) {
+      const firstChild = children[0];
+      if (firstChild && typeof firstChild === 'object' && firstChild.props) {
+        textContent = getTextContent(firstChild);
+      }
+    }
+
     const hasEmojiBullet = startsWithEmojiBullet(textContent);
 
     return (

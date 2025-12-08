@@ -18,9 +18,28 @@ interface Section {
   blocks: ContentBlock[];
 }
 
+// Remove any remaining code fences from content
+function removeFences(text: string): string {
+  let cleaned = text.trim();
+
+  // Remove standalone backtick lines
+  cleaned = cleaned.split('\n')
+    .filter(line => {
+      const trimmedLine = line.trim();
+      // Filter out lines that are just backticks
+      return !(/^`{3,}[a-zA-Z]*\s*$/.test(trimmedLine));
+    })
+    .join('\n');
+
+  return cleaned;
+}
+
 // Parse markdown into sections based on headings
 function parseMarkdownIntoSections(markdown: string): Section[] {
-  const lines = markdown.split('\n');
+  // First pass: remove any remaining code fences
+  const cleanedMarkdown = removeFences(markdown);
+
+  const lines = cleanedMarkdown.split('\n');
   const sections: Section[] = [];
   let currentSection: Section = { blocks: [] };
   let currentContent: string[] = [];
