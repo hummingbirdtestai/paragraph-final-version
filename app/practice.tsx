@@ -69,7 +69,7 @@ export default function PracticeScreen() {
     if (listRef.current) {
       listRef.current.scrollToOffset({ offset: 0, animated: true });
     }
-  }, [selectedCategory, selectedSubject]);
+  }, [selectedCategory, selectedSubject, phases.length]);
   
  const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
  const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
