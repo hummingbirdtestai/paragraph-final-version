@@ -61,7 +61,7 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-  const practiceData = usePracticeData(userId ? selectedSubject : null);
+ const practiceData = usePracticeData(selectedSubject, userId);
   const { phases, loading, refreshing, refresh } = practiceData;
 
   const filteredPhases = phases.filter((phase) => {
