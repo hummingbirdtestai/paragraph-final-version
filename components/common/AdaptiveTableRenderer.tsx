@@ -353,7 +353,9 @@ function WebTableRenderer({ tableData, styles }: { tableData: TableData; styles:
             ]}
           >
             <Text style={styles.webTableHeaderText}>
-              {renderFormattedText(header, styles, false)}
+              <Markdown style={markdownStyles} rules={markdownRules}>
+                {header}
+              </Markdown>
             </Text>
           </View>
         ))}
