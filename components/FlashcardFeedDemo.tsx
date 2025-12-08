@@ -11,14 +11,11 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
-  useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bookmark, Eye, EyeOff } from 'lucide-react-native';
 import { supabase } from '../lib/supabaseClient';
 import Markdown from "react-native-markdown-display";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
-import MainLayout from "@/components/MainLayout";
 
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -422,12 +419,6 @@ const MemoizedFlashcardCard = React.memo(FlashcardCard);
 type CategoryType = 'unviewed' | 'viewed' | 'bookmarked';
 
 const FlashcardFeed: React.FC = () => {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
-
-  const { direction, onScroll } = useScrollDirection();
-  const isHidden = isMobile && direction === "down";
-
   const [selectedSubject, setSelectedSubject] = useState('Anatomy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
   const [userId, setUserId] = useState<string | null>(null);
@@ -628,10 +619,8 @@ useEffect(() => {
   ), [selectedSubject, flashcardStates, handleView, handleBookmark]);
 
   return (
-    <MainLayout headerHidden={isMobile ? isHidden : false}>
-      <View style={styles.container}>
-        {isMobile && (
-        <View>
+    <View style={styles.container}>
+      <View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -709,7 +698,6 @@ useEffect(() => {
         </TouchableOpacity>
       </View>
       </View>
-        )}
 
      {isLoggedOut ? (
   <View style={styles.placeholderContainer}>
@@ -732,8 +720,6 @@ useEffect(() => {
     removeClippedSubviews={true}
     onEndReached={loadMore}
     onEndReachedThreshold={0.5}
-    onScroll={isMobile ? onScroll : undefined}
-    scrollEventThrottle={16}
   />
 ) : (
   <View style={styles.placeholderContainer}>
@@ -743,8 +729,7 @@ useEffect(() => {
   </View>
 )}
 
-      </View>
-    </MainLayout>
+    </View>
   );
 };
 
@@ -921,6 +906,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
+    paddingTop: 60,
     paddingBottom: 16,
   },
   subjectScrollContent: {
