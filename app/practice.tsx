@@ -17,6 +17,7 @@ import { usePracticeData } from "@/hooks/usePracticeData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { FlatList } from "react-native";   // 🔥 REQUIRED FOR PAGINATION
 
 export default function PracticeScreen() {
   const { width } = useWindowDimensions();
