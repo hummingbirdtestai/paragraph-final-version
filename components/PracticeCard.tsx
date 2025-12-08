@@ -49,11 +49,11 @@ const ORCHESTRATOR_URL =
 
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, isConcept && styles.cardConcept]}>
       {/* SUBJECT NAME */}
-      <Text style={styles.subject}>{phase.subject}</Text>
+      <Text style={[styles.subject, isConcept && styles.subjectConcept]}>{phase.subject}</Text>
       {/* 🔖 Inline bookmark icon (same as flashcards) */}
-<View style={styles.bookmarkRow}>
+<View style={[styles.bookmarkRow, isConcept && styles.bookmarkRowConcept]}>
   <TouchableOpacity
     onPress={async () => {
       if (!user?.id) return;
@@ -92,7 +92,7 @@ const ORCHESTRATOR_URL =
 
 
       {/* 🔥 NEW — Progress Counter */}
-      <View style={styles.progressRow}>
+      <View style={[styles.progressRow, isConcept && styles.progressRowConcept]}>
         <Text style={styles.progressText}>
           {isMCQ ? "🧩 MCQ" : "🧠 Concept"} {phase.react_order_final} / {phase.total_count}
         </Text>
@@ -216,11 +216,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
   },
+  cardConcept: {
+    paddingHorizontal: 0,
+  },
   subject: {
     color: "#25D366",
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 12,
+  },
+  subjectConcept: {
+    paddingHorizontal: 16,
   },
   image: {
     width: "100%",
@@ -228,13 +234,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 12,
   },
-bookmarkRow: {
-  position: "absolute",
-  top: 12,
-  right: 16,
-  zIndex: 999,
-},
-
+  bookmarkRow: {
+    position: "absolute",
+    top: 12,
+    right: 16,
+    zIndex: 999,
+  },
+  bookmarkRowConcept: {
+    right: 16,
+  },
   progressRow: {
     marginBottom: 12,
     paddingVertical: 4,
@@ -243,9 +251,11 @@ bookmarkRow: {
     borderRadius: 12,
     alignSelf: "flex-start",
     borderWidth: 1,
-    borderColor: "#25D3665", // faint green
+    borderColor: "#25D3665",
   },
-
+  progressRowConcept: {
+    marginHorizontal: 16,
+  },
   progressText: {
     color: "#25D366",
     fontSize: 13,
