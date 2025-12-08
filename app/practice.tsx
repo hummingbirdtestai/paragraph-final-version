@@ -143,25 +143,23 @@ export default function PracticeScreen() {
             </Text>
           </View>
         ) : (
-          <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={styles.cardsWrapper}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
-            }
-            onScroll={isMobile ? onScroll : undefined}
-            scrollEventThrottle={16}
-          >
-            {filteredPhases.length === 0 ? (
-              <Text style={{ textAlign: "center", color: "#666", marginTop: 40 }}>
-                No concepts available.
-              </Text>
-            ) : (
-              filteredPhases.map((phase) => (
-                <PracticeCard key={phase.id} phase={phase} />
-              ))
-            )}
-          </ScrollView>
+     <FlatList
+          data={filteredPhases}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <PracticeCard phase={item} />}
+          contentContainerStyle={styles.cardsWrapper}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
+          }
+          onScroll={isMobile ? onScroll : undefined}
+          scrollEventThrottle={16}
+        
+          // 🚀 Virtualization
+          initialNumToRender={8}
+          maxToRenderPerBatch={6}
+          windowSize={10}
+          removeClippedSubviews={true}
+        />
         )}
       </View>
     </MainLayout>
