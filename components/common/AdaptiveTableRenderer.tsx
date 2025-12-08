@@ -458,11 +458,15 @@ function SectionRenderer({
               },
               strong: {
                 fontWeight: '700',
-                color: 'inherit',
+                color: section.headingLevel === 1 ? '#10b981' :
+                       section.headingLevel === 2 ? '#3b82f6' :
+                       section.headingLevel === 3 ? '#8b5cf6' : '#10b981',
               },
               em: {
                 fontStyle: 'italic',
-                color: 'inherit',
+                color: section.headingLevel === 1 ? '#10b981' :
+                       section.headingLevel === 2 ? '#3b82f6' :
+                       section.headingLevel === 3 ? '#8b5cf6' : '#10b981',
               },
             }}
             rules={markdownRules}
