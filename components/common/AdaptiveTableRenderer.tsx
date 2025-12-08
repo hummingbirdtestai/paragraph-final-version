@@ -378,7 +378,9 @@ function WebTableRenderer({ tableData, styles }: { tableData: TableData; styles:
                 cellIndex === row.length - 1 && styles.webTableLastCell,
               ]}
             >
-              {renderFormattedText(cell, styles, false)}
+              <Markdown style={markdownStyles} rules={markdownRules}>
+                {cell}
+              </Markdown>
             </View>
           ))}
         </View>
