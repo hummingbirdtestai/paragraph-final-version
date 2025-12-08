@@ -630,7 +630,7 @@ useEffect(() => {
   return (
     <MainLayout headerHidden={isMobile ? isHidden : false}>
       <View style={styles.container}>
-        {isMobile && !isHidden && (
+        {isMobile && (
         <View>
         <ScrollView
           horizontal
