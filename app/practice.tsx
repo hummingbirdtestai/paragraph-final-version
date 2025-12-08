@@ -146,13 +146,17 @@ export default function PracticeScreen() {
             </Text>
           </View>
         ) : (
-     <FlatList
+   <FlatList
           data={filteredPhases}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <PracticeCard phase={item} />}
           contentContainerStyle={styles.cardsWrapper}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={refresh}
+              tintColor="#10b981"
+            />
           }
           onScroll={isMobile ? onScroll : undefined}
           scrollEventThrottle={16}
@@ -162,7 +166,21 @@ export default function PracticeScreen() {
           maxToRenderPerBatch={6}
           windowSize={10}
           removeClippedSubviews={true}
+        
+          // 🔥 PAGINATION — ADD THESE THREE LINES
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={{ padding: 20 }}>
+                <Text style={{ textAlign: "center", color: "#999" }}>
+                  Loading more…
+                </Text>
+              </View>
+            ) : null
+          }
         />
+
         )}
       </View>
     </MainLayout>
