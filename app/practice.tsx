@@ -63,7 +63,9 @@ export default function PracticeScreen() {
   }, []);
 
  const practiceData = usePracticeData(selectedSubject, userId);
-  const { phases, loading, refreshing, refresh } = practiceData;
+ const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
+  practiceData;     // 🔥 NEW — supports pagination
+
 
   const filteredPhases = phases.filter((phase) => {
     switch (selectedCategory) {
