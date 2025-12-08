@@ -151,42 +151,42 @@ export default function PracticeScreen() {
           </View>
         ) : (
    <FlatList
-          ref={listRef}
-          data={phases}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <PracticeCard phase={item} />}
-          contentContainerStyle={styles.cardsWrapper}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={refresh}
-              tintColor="#10b981"
-            />
-          }
-          onScroll={isMobile ? onScroll : undefined}
-          scrollEventThrottle={16}
-        
-          initialNumToRender={8}
-          maxToRenderPerBatch={6}
-          windowSize={10}
-          removeClippedSubviews={true}
-        
-          // ⭐ FIXED PAGINATION
-          onEndReached={() => {
-            if (hasMoreData && !isLoadingMore && !loading) {
-              loadMore();
-            }
-          }}
-          onEndReachedThreshold={hasMoreData ? 0.5 : 0.01}
-        
-          ListFooterComponent={
-            isLoadingMore ? (
-              <View style={{ padding: 20 }}>
-                <Text style={{ textAlign: "center", color: "#999" }}>Loading more…</Text>
-              </View>
-            ) : null
-          }
-        />
+  ref={listRef}
+  data={phases}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => <PracticeCard phase={item} />}
+  contentContainerStyle={styles.cardsWrapper}
+  refreshControl={
+    <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
+  }
+  onScroll={isMobile ? onScroll : undefined}
+  scrollEventThrottle={16}
+
+  initialNumToRender={8}
+  maxToRenderPerBatch={6}
+  windowSize={10}
+  removeClippedSubviews={true}
+
+  onEndReached={() => {
+    if (
+      hasMoreData &&
+      !isLoadingMore &&
+      !loading &&
+      phases.length >= PAGE_LIMIT       // ⭐ REQUIRED FIX FOR WEB FLICKER
+    ) {
+      loadMore();
+    }
+  }}
+  onEndReachedThreshold={hasMoreData ? 0.5 : 0.01}
+
+  ListFooterComponent={
+    isLoadingMore ? (
+      <View style={{ padding: 20 }}>
+        <Text style={{ textAlign: "center", color: "#999" }}>Loading more…</Text>
+      </View>
+    ) : null
+  }
+/>
         )}
       </View>
     </MainLayout>
