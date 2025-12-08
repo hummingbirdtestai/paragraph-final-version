@@ -336,7 +336,30 @@ function MobileTableRenderer({
                     isLastSection && styles.factCardSectionLast,
                   ]}
                 >
-                  <Text style={styles.factCardLabel}>{label}</Text>
+                  <View style={{ width: '100%' }}>
+                    <Markdown
+                      style={{
+                        ...markdownStyles,
+                        body: styles.factCardLabel,
+                        paragraph: {
+                          ...styles.factCardLabel,
+                          margin: 0,
+                          padding: 0,
+                        },
+                        strong: {
+                          fontWeight: '700',
+                          color: '#3b82f6',
+                        },
+                        em: {
+                          fontStyle: 'italic',
+                          color: '#3b82f6',
+                        },
+                      }}
+                      rules={markdownRules}
+                    >
+                      {label}
+                    </Markdown>
+                  </View>
                   <View style={styles.factCardValue}>
                     <View style={{ flex: 1, width: '100%' }}>
                       <Markdown style={markdownStyles} rules={markdownRules}>
@@ -382,7 +405,26 @@ function WebTableRenderer({
             ]}
           >
             <View style={{ flex: 1, width: '100%' }}>
-              <Markdown style={markdownStyles} rules={markdownRules}>
+              <Markdown
+                style={{
+                  ...markdownStyles,
+                  body: styles.webTableHeaderText,
+                  paragraph: {
+                    ...styles.webTableHeaderText,
+                    margin: 0,
+                    padding: 0,
+                  },
+                  strong: {
+                    fontWeight: '700',
+                    color: '#10b981',
+                  },
+                  em: {
+                    fontStyle: 'italic',
+                    color: '#10b981',
+                  },
+                }}
+                rules={markdownRules}
+              >
                 {header}
               </Markdown>
             </View>
