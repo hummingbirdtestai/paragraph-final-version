@@ -312,11 +312,12 @@ function MobileTableRenderer({
           <View key={`row-${rowIndex}`} style={styles.factCard}>
             {/* First cell as header/title */}
             <View style={styles.factCardHeader}>
-              <Text style={styles.factCardTitle}>
-                <Markdown style={markdownStyles} rules={markdownRules}>
-                  {row[0] || ''}
-                </Markdown>
-              </Text>
+              <Markdown
+  style={markdownStyles}
+  rules={markdownRules}
+>
+  {row[0] || ''}
+</Markdown>
             </View>
 
             {/* Subsequent cells as labeled sections */}
@@ -333,10 +334,13 @@ function MobileTableRenderer({
                 >
                   <Text style={styles.factCardLabel}>{label}</Text>
                   <View style={styles.factCardValue}>
-                    <Markdown style={markdownStyles} rules={markdownRules}>
-                      {cell}
-                    </Markdown>
-                  </View>
+  <Markdown
+    style={markdownStyles}
+    rules={markdownRules}
+  >
+    {cell}
+  </Markdown>
+</View>
                 </View>
               );
             })}
