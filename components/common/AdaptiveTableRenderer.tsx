@@ -366,11 +366,13 @@ function WebTableRenderer({ tableData, styles }: { tableData: TableData; styles:
 function SectionRenderer({
   section,
   markdownStyles,
+  markdownRules,
   isMobile,
   sectionIndex,
 }: {
   section: Section;
   markdownStyles: any;
+  markdownRules?: any;
   isMobile: boolean;
   sectionIndex: number;
 }) {
@@ -398,7 +400,7 @@ function SectionRenderer({
           if (block.type === 'markdown') {
             return (
               <View key={`block-${blockIndex}`}>
-                <Markdown style={markdownStyles}>
+                <Markdown style={markdownStyles} rules={markdownRules}>
                   {block.content as string}
                 </Markdown>
               </View>
@@ -430,10 +432,12 @@ function SectionRenderer({
 export default function AdaptiveTableRenderer({
   markdown,
   markdownStyles,
+  markdownRules,
   isMobile,
 }: {
   markdown: string;
   markdownStyles: any;
+  markdownRules?: any;
   isMobile: boolean;
 }) {
   const sections = parseMarkdownIntoSections(markdown);
@@ -445,6 +449,7 @@ export default function AdaptiveTableRenderer({
           key={`section-${index}`}
           section={section}
           markdownStyles={markdownStyles}
+          markdownRules={markdownRules}
           isMobile={isMobile}
           sectionIndex={index}
         />

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import {
   View,
+  Text,
   ScrollView,
   StyleSheet,
   Animated,
@@ -16,18 +17,80 @@ function extractMarkdownFromConcept(conceptField: string): string {
 
   let cleaned = conceptField.trim();
 
-  if (cleaned.startsWith('```markdown\n')) {
-    cleaned = cleaned.replace(/^```markdown\n/, '');
-  } else if (cleaned.startsWith('```')) {
-    cleaned = cleaned.replace(/^```\n?/, '');
-  }
+  // Remove leading fenced code blocks with various formats
+  // Handles: ```markdown, ```md, ```, with optional whitespace
+  cleaned = cleaned.replace(/^```\s*(markdown|md)?\s*\n?/i, '');
 
-  if (cleaned.endsWith('```')) {
-    cleaned = cleaned.replace(/```$/, '');
-  }
+  // Remove trailing fenced code blocks
+  cleaned = cleaned.replace(/\n?\s*```\s*$/g, '');
+
+  // Handle cases where there might be multiple fence markers
+  // (in case content was double-wrapped)
+  cleaned = cleaned.replace(/^```\s*(markdown|md)?\s*\n?/i, '');
+  cleaned = cleaned.replace(/\n?\s*```\s*$/g, '');
 
   return cleaned.trim();
 }
+
+// Common emoji bullets used in medical content
+const EMOJI_BULLETS = ['🔷', '🔶', '🔹', '🔸', '✔️', '✅', '⭐', '💡', '🎯', '📌', '▪️', '▫️', '◾', '◽', '●', '○'];
+
+// Check if text starts with an emoji bullet
+function startsWithEmojiBullet(text: string): boolean {
+  if (!text) return false;
+  const trimmed = text.trim();
+  return EMOJI_BULLETS.some(emoji => trimmed.startsWith(emoji));
+}
+
+// Extract text content from React nodes
+function getTextContent(children: any): string {
+  if (!children) return '';
+  if (typeof children === 'string') return children;
+  if (Array.isArray(children)) {
+    return children.map(getTextContent).join('');
+  }
+  if (children.props && children.props.children) {
+    return getTextContent(children.props.children);
+  }
+  return '';
+}
+
+// Custom markdown rules to handle emoji bullets
+const customMarkdownRules = {
+  // Custom bullet_list_item rendering
+  bullet_list_item: (node: any, children: any, parent: any, styles: any) => {
+    const textContent = getTextContent(children);
+    const hasEmojiBullet = startsWithEmojiBullet(textContent);
+
+    return (
+      <View key={node.key} style={styles.list_item}>
+        {!hasEmojiBullet && (
+          <Text style={styles.bullet_list_icon}>•</Text>
+        )}
+        <View style={styles.list_item_content}>
+          {children}
+        </View>
+      </View>
+    );
+  },
+
+  // Custom ordered_list_item rendering
+  ordered_list_item: (node: any, children: any, parent: any, styles: any) => {
+    const textContent = getTextContent(children);
+    const hasEmojiBullet = startsWithEmojiBullet(textContent);
+
+    return (
+      <View key={node.key} style={styles.list_item}>
+        {!hasEmojiBullet && (
+          <Text style={styles.ordered_list_icon}>{node.index + 1}.</Text>
+        )}
+        <View style={styles.list_item_content}>
+          {children}
+        </View>
+      </View>
+    );
+  },
+};
 
 export default function ConceptChatScreen({
   item,
@@ -73,6 +136,7 @@ export default function ConceptChatScreen({
             <AdaptiveTableRenderer
               markdown={conceptContent}
               markdownStyles={isMobile ? markdownStylesMobile : markdownStylesWeb}
+              markdownRules={customMarkdownRules}
               isMobile={isMobile}
             />
           </View>
@@ -135,16 +199,23 @@ const markdownStylesMobile = StyleSheet.create({
   list_item: {
     marginBottom: 8,
     flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  list_item_content: {
+    flex: 1,
+    flexDirection: 'column',
   },
   bullet_list_icon: {
     color: '#10b981',
     fontSize: 16,
     marginRight: 8,
+    lineHeight: 24,
   },
   ordered_list_icon: {
     color: '#3b82f6',
     fontSize: 14,
     marginRight: 8,
+    lineHeight: 24,
   },
   table: {
     borderWidth: 1,
@@ -272,16 +343,23 @@ const markdownStylesWeb = StyleSheet.create({
   list_item: {
     marginBottom: 10,
     flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  list_item_content: {
+    flex: 1,
+    flexDirection: 'column',
   },
   bullet_list_icon: {
     color: '#10b981',
     fontSize: 18,
     marginRight: 10,
+    lineHeight: 26,
   },
   ordered_list_icon: {
     color: '#3b82f6',
     fontSize: 16,
     marginRight: 10,
+    lineHeight: 26,
   },
   table: {
     borderWidth: 1,
