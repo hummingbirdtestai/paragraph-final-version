@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { Eye, EyeOff, Bookmark } from "lucide-react-native";
+import { Eye, EyeOff, Bookmark, XCircle } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { usePracticeData } from "@/hooks/usePracticeData";
@@ -51,7 +51,7 @@ export default function PracticeScreen() {
 
   const [selectedSubject, setSelectedSubject] = useState("General Medicine");
   const [selectedCategory, setSelectedCategory] =
-    useState<"unviewed" | "viewed" | "bookmarked">("unviewed");
+    useState<"unviewed" | "viewed" | "bookmarked" | "wrongmcqs">("unviewed");
   const [userId, setUserId] = useState<string | null>(null);
    // ✅ FIX 1 — declare ref BEFORE scroll effect
   const listRef = React.useRef<FlatList>(null);
@@ -136,6 +136,16 @@ export default function PracticeScreen() {
                   size={20}
                   color={selectedCategory === "bookmarked" ? "#fff" : "#10b981"}
                   fill={selectedCategory === "bookmarked" ? "#fff" : "transparent"}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.categoryIcon, selectedCategory === "wrongmcqs" && styles.categoryIconSelected]}
+                onPress={() => setSelectedCategory("wrongmcqs")}
+              >
+                <XCircle
+                  size={20}
+                  color={selectedCategory === "wrongmcqs" ? "#fff" : "#10b981"}
                 />
               </TouchableOpacity>
             </View>
