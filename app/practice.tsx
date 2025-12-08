@@ -141,7 +141,7 @@ export default function PracticeScreen() {
 
               <TouchableOpacity
                 style={[styles.categoryIcon, selectedCategory === "wrongmcqs" && styles.categoryIconSelected]}
-                onPress={() => setSelectedCategory("wrongmcqs")}
+                onPress={() => setSelectedCategory("wrong")}
               >
                 <XCircle
                   size={20}
