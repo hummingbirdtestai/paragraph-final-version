@@ -59,7 +59,7 @@ export function usePracticeData(
     setOffset(0);                       // 🔥 NEW — reset for new subject/user
     setLoading(true);
     fetchPhases(0);                     // 🔁 MODIFIED — force first page
-  }, [subject, userId]);
+  }, [subject, userId, category]);
 
   // ------------------------------------------------------
   // PULL-TO-REFRESH — also resets pagination
