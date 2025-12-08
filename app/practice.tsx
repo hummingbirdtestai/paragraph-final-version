@@ -62,18 +62,11 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-useEffect(() => {
-  if (listRef.current) {
-    listRef.current.scrollToOffset({ offset: 0, animated: true });
-  }
-}, [selectedCategory, selectedSubject]);
+
   
  const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
  const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
   practiceData;     // 🔥 NEW — supports pagination
-
-const listRef = React.useRef(null);
-
 
   return (
     <MainLayout>
