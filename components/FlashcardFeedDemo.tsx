@@ -11,11 +11,13 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bookmark, Eye, EyeOff } from 'lucide-react-native';
 import { supabase } from '../lib/supabaseClient';
 import Markdown from "react-native-markdown-display";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -419,6 +421,12 @@ const MemoizedFlashcardCard = React.memo(FlashcardCard);
 type CategoryType = 'unviewed' | 'viewed' | 'bookmarked';
 
 const FlashcardFeed: React.FC = () => {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+  const { direction, onScroll } = useScrollDirection();
+  const isHidden = isMobile && direction === "down";
+
   const [selectedSubject, setSelectedSubject] = useState('Anatomy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
   const [userId, setUserId] = useState<string | null>(null);
@@ -620,84 +628,86 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      <View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.subjectScrollContent}
-          style={styles.subjectScrollContainer}
-        >
-          {SUBJECTS.map((item) => (
-            <TouchableOpacity
-              key={item.subject}
-              style={[
-                styles.subjectBubble,
-                selectedSubject === item.subject && styles.subjectBubbleSelected,
-              ]}
-              onPress={() => {
-                if (selectedSubject !== item.subject) {
-                  setSelectedCategory('unviewed');
-                }
-                setSelectedSubject(item.subject);
-              }}
-            >
-              <Text
+      {!isHidden && (
+        <View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.subjectScrollContent}
+            style={styles.subjectScrollContainer}
+          >
+            {SUBJECTS.map((item) => (
+              <TouchableOpacity
+                key={item.subject}
                 style={[
-                  styles.subjectBubbleText,
-                  selectedSubject === item.subject && styles.subjectBubbleTextSelected,
+                  styles.subjectBubble,
+                  selectedSubject === item.subject && styles.subjectBubbleSelected,
                 ]}
+                onPress={() => {
+                  if (selectedSubject !== item.subject) {
+                    setSelectedCategory('unviewed');
+                  }
+                  setSelectedSubject(item.subject);
+                }}
               >
-                {item.subject}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+                <Text
+                  style={[
+                    styles.subjectBubbleText,
+                    selectedSubject === item.subject && styles.subjectBubbleTextSelected,
+                  ]}
+                >
+                  {item.subject}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
 
-        <View style={styles.categoryContainer}>
-        <TouchableOpacity
-          style={[
-            styles.categoryIcon,
-            selectedCategory === 'unviewed' && styles.categoryIconSelected,
-          ]}
-          onPress={() => setSelectedCategory('unviewed')}
-        >
-          <EyeOff
-            size={20}
-            color={selectedCategory === 'unviewed' ? '#ffffff' : '#10b981'}
-            strokeWidth={2}
-          />
-        </TouchableOpacity>
+          <View style={styles.categoryContainer}>
+          <TouchableOpacity
+            style={[
+              styles.categoryIcon,
+              selectedCategory === 'unviewed' && styles.categoryIconSelected,
+            ]}
+            onPress={() => setSelectedCategory('unviewed')}
+          >
+            <EyeOff
+              size={20}
+              color={selectedCategory === 'unviewed' ? '#ffffff' : '#10b981'}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.categoryIcon,
-            selectedCategory === 'viewed' && styles.categoryIconSelected,
-          ]}
-          onPress={() => setSelectedCategory('viewed')}
-        >
-          <Eye
-            size={20}
-            color={selectedCategory === 'viewed' ? '#ffffff' : '#10b981'}
-            strokeWidth={2}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.categoryIcon,
+              selectedCategory === 'viewed' && styles.categoryIconSelected,
+            ]}
+            onPress={() => setSelectedCategory('viewed')}
+          >
+            <Eye
+              size={20}
+              color={selectedCategory === 'viewed' ? '#ffffff' : '#10b981'}
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.categoryIcon,
-            selectedCategory === 'bookmarked' && styles.categoryIconSelected,
-          ]}
-          onPress={() => setSelectedCategory('bookmarked')}
-        >
-          <Bookmark
-            size={20}
-            color={selectedCategory === 'bookmarked' ? '#ffffff' : '#10b981'}
-            strokeWidth={2}
-            fill={selectedCategory === 'bookmarked' ? '#ffffff' : 'transparent'}
-          />
-        </TouchableOpacity>
-      </View>
-      </View>
+          <TouchableOpacity
+            style={[
+              styles.categoryIcon,
+              selectedCategory === 'bookmarked' && styles.categoryIconSelected,
+            ]}
+            onPress={() => setSelectedCategory('bookmarked')}
+          >
+            <Bookmark
+              size={20}
+              color={selectedCategory === 'bookmarked' ? '#ffffff' : '#10b981'}
+              strokeWidth={2}
+              fill={selectedCategory === 'bookmarked' ? '#ffffff' : 'transparent'}
+            />
+          </TouchableOpacity>
+        </View>
+        </View>
+      )}
 
      {isLoggedOut ? (
   <View style={styles.placeholderContainer}>
@@ -720,6 +730,14 @@ useEffect(() => {
     removeClippedSubviews={true}
     onEndReached={loadMore}
     onEndReachedThreshold={0.5}
+    onScroll={isMobile ? onScroll : undefined}
+    scrollEventThrottle={16}
+    onMomentumScrollBegin={isMobile ? onScroll : undefined}
+    onMomentumScrollEnd={isMobile ? onScroll : undefined}
+    onScrollBeginDrag={isMobile ? onScroll : undefined}
+    onScrollEndDrag={isMobile ? onScroll : undefined}
+    disableIntervalMomentum={true}
+    decelerationRate="fast"
   />
 ) : (
   <View style={styles.placeholderContainer}>
