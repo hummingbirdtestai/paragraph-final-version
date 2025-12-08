@@ -66,6 +66,7 @@ export default function PracticeScreen() {
  const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
   practiceData;     // 🔥 NEW — supports pagination
 
+const listRef = React.useRef(null);
 
 
   return (
@@ -135,6 +136,7 @@ export default function PracticeScreen() {
           </View>
         ) : (
    <FlatList
+          ref={listRef}
           data={phases}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <PracticeCard phase={item} />}
