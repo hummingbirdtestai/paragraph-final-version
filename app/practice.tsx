@@ -180,7 +180,6 @@ export default function PracticeScreen() {
             ) : null
           }
         />
-
         )}
       </View>
     </MainLayout>
