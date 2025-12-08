@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-export function usePracticeData(subject: string | null = null, userId: string | null = null) {
+export function usePracticeData(
+  subject: string | null = null,
+  userId: string | null = null,
+  category: "unviewed" | "viewed" | "bookmarked" | "all" = "unviewed"
+) {
   const [phases, setPhases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
