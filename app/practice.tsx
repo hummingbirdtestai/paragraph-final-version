@@ -147,7 +147,7 @@ export default function PracticeScreen() {
           </View>
         ) : (
    <FlatList
-          data={filteredPhases}
+          data={phases}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <PracticeCard phase={item} />}
           contentContainerStyle={styles.cardsWrapper}
