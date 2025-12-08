@@ -921,7 +921,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0d0d0d',
     borderBottomWidth: 1,
     borderBottomColor: '#222',
-    paddingTop: 60,
     paddingBottom: 16,
   },
   subjectScrollContent: {
