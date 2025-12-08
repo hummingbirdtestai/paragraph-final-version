@@ -2,7 +2,12 @@
 
 ## Overview
 
-The Adaptive Table Renderer is a reusable component that automatically detects and reformats Markdown tables based on the viewport size. It solves the problem of rendering complex multi-column tables on mobile devices by transforming them into vertically stacked "fact cards" while maintaining full table layout on web.
+The Adaptive Table Renderer is a comprehensive document rendering system that transforms Markdown content into structured, readable sections with intelligent table handling. It automatically:
+- Parses markdown into distinct sections based on headings (#, ##, ###)
+- Renders each section in a boxed container with highlighted right border
+- Converts complex multi-column tables into vertically stacked "fact cards" on mobile
+- Maintains traditional table layout on web
+- Ensures zero horizontal scrolling on any device
 
 ## Problem Solved
 
@@ -60,12 +65,28 @@ import AdaptiveTableRenderer from '@/components/common/AdaptiveTableRenderer';
 
 ## How It Works
 
-### 1. Content Parsing
-- Splits markdown into blocks (tables vs. regular content)
-- Identifies table boundaries using pipe delimiters
-- Extracts headers and data rows
+### 1. Section Parsing
+- Scans markdown for headings (#, ##, ###)
+- Creates distinct sections for each heading
+- Groups all content under each heading into that section
+- Sections without headings are rendered as standalone blocks
 
-### 2. Mobile Rendering
+### 2. Content Block Parsing
+Within each section:
+- Identifies table boundaries using pipe delimiters
+- Separates tables from regular markdown content
+- Extracts table headers and data rows
+- Preserves all other content (lists, paragraphs, code blocks)
+
+### 3. Section Rendering
+Each section is rendered in a boxed container:
+- Highlighted right border (green accent)
+- Dark background for visual separation
+- Heading displayed at the top with colored underline
+- Content area with proper padding
+- No horizontal overflow
+
+### 4. Mobile Table Rendering
 Each table row becomes a fact card:
 
 ```
@@ -171,16 +192,31 @@ Web Output:
 ```
 markdown content
        ↓
-parseMarkdownContent()
+parseMarkdownIntoSections()
        ↓
-ContentBlock[] (tables + markdown)
+Section[] (heading + content blocks)
+       ↓
+For each section:
+  ┌─────────────────────────┐
+  │ Section Box with Border │
+  │  ┌───────────────────┐  │
+  │  │ Heading (if any)  │  │
+  │  └───────────────────┘  │
+  │  ┌───────────────────┐  │
+  │  │ Content Blocks    │  │
+  │  │  - Markdown       │  │
+  │  │  - Tables         │  │
+  │  └───────────────────┘  │
+  └─────────────────────────┘
        ↓
     isMobile?
     ↙     ↘
 Mobile    Web
   ↓        ↓
-Fact    Standard
-Cards    Table
+Tables → Fact Cards
+Lists → Vertical
+       Standard Tables
+       Standard Lists
 ```
 
 ## Benefits

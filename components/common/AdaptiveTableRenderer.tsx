@@ -12,10 +12,76 @@ interface ContentBlock {
   content: string | TableData;
 }
 
-// Parse markdown to extract tables and other content
-function parseMarkdownContent(markdown: string): ContentBlock[] {
-  const blocks: ContentBlock[] = [];
+interface Section {
+  heading?: string;
+  headingLevel?: number;
+  blocks: ContentBlock[];
+}
+
+// Parse markdown into sections based on headings
+function parseMarkdownIntoSections(markdown: string): Section[] {
   const lines = markdown.split('\n');
+  const sections: Section[] = [];
+  let currentSection: Section = { blocks: [] };
+  let currentContent: string[] = [];
+
+  const isHeading = (line: string) => {
+    return /^#{1,3}\s+/.test(line.trim());
+  };
+
+  const getHeadingLevel = (line: string): number => {
+    const match = line.match(/^(#{1,3})\s+/);
+    return match ? match[1].length : 0;
+  };
+
+  const getHeadingText = (line: string): string => {
+    return line.replace(/^#{1,3}\s+/, '').trim();
+  };
+
+  const flushCurrentContent = () => {
+    if (currentContent.length > 0) {
+      const contentText = currentContent.join('\n').trim();
+      if (contentText) {
+        const contentBlocks = parseContentIntoBlocks(contentText);
+        currentSection.blocks.push(...contentBlocks);
+      }
+      currentContent = [];
+    }
+  };
+
+  for (const line of lines) {
+    if (isHeading(line)) {
+      // Flush current content and save current section
+      flushCurrentContent();
+
+      if (currentSection.heading || currentSection.blocks.length > 0) {
+        sections.push(currentSection);
+      }
+
+      // Start new section
+      currentSection = {
+        heading: getHeadingText(line),
+        headingLevel: getHeadingLevel(line),
+        blocks: [],
+      };
+    } else {
+      currentContent.push(line);
+    }
+  }
+
+  // Flush remaining content
+  flushCurrentContent();
+  if (currentSection.heading || currentSection.blocks.length > 0) {
+    sections.push(currentSection);
+  }
+
+  return sections;
+}
+
+// Parse content into blocks (tables and markdown)
+function parseContentIntoBlocks(content: string): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+  const lines = content.split('\n');
   let currentMarkdown: string[] = [];
   let currentTable: string[] = [];
   let inTable = false;
@@ -296,6 +362,70 @@ function WebTableRenderer({ tableData, styles }: { tableData: TableData; styles:
   );
 }
 
+// Render a single section with its heading and content blocks
+function SectionRenderer({
+  section,
+  markdownStyles,
+  isMobile,
+  sectionIndex,
+}: {
+  section: Section;
+  markdownStyles: any;
+  isMobile: boolean;
+  sectionIndex: number;
+}) {
+  const hasHeading = section.heading && section.heading.length > 0;
+
+  return (
+    <View style={[localStyles.sectionBox, isMobile ? localStyles.sectionBoxMobile : localStyles.sectionBoxWeb]}>
+      {hasHeading && (
+        <View style={localStyles.sectionHeadingContainer}>
+          <Text
+            style={[
+              localStyles.sectionHeading,
+              section.headingLevel === 1 && localStyles.sectionHeading1,
+              section.headingLevel === 2 && localStyles.sectionHeading2,
+              section.headingLevel === 3 && localStyles.sectionHeading3,
+            ]}
+          >
+            {section.heading}
+          </Text>
+        </View>
+      )}
+
+      <View style={localStyles.sectionContent}>
+        {section.blocks.map((block, blockIndex) => {
+          if (block.type === 'markdown') {
+            return (
+              <View key={`block-${blockIndex}`}>
+                <Markdown style={markdownStyles}>
+                  {block.content as string}
+                </Markdown>
+              </View>
+            );
+          } else if (block.type === 'table') {
+            const tableData = block.content as TableData;
+            return isMobile ? (
+              <MobileTableRenderer
+                key={`block-${blockIndex}`}
+                tableData={tableData}
+                styles={localStyles}
+              />
+            ) : (
+              <WebTableRenderer
+                key={`block-${blockIndex}`}
+                tableData={tableData}
+                styles={localStyles}
+              />
+            );
+          }
+          return null;
+        })}
+      </View>
+    </View>
+  );
+}
+
 // Main Adaptive Table Renderer Component
 export default function AdaptiveTableRenderer({
   markdown,
@@ -306,40 +436,19 @@ export default function AdaptiveTableRenderer({
   markdownStyles: any;
   isMobile: boolean;
 }) {
-  const blocks = parseMarkdownContent(markdown);
+  const sections = parseMarkdownIntoSections(markdown);
 
   return (
     <View style={localStyles.container}>
-      {blocks.map((block, index) => {
-        if (block.type === 'markdown') {
-          return (
-            <View
-              key={`md-${index}`}
-              style={isMobile ? localStyles.markdownBlockMobile : localStyles.markdownBlockWeb}
-            >
-              <Markdown style={markdownStyles}>
-                {block.content as string}
-              </Markdown>
-            </View>
-          );
-        } else if (block.type === 'table') {
-          const tableData = block.content as TableData;
-          return isMobile ? (
-            <MobileTableRenderer
-              key={`table-${index}`}
-              tableData={tableData}
-              styles={localStyles}
-            />
-          ) : (
-            <WebTableRenderer
-              key={`table-${index}`}
-              tableData={tableData}
-              styles={localStyles}
-            />
-          );
-        }
-        return null;
-      })}
+      {sections.map((section, index) => (
+        <SectionRenderer
+          key={`section-${index}`}
+          section={section}
+          markdownStyles={markdownStyles}
+          isMobile={isMobile}
+          sectionIndex={index}
+        />
+      ))}
     </View>
   );
 }
@@ -348,26 +457,68 @@ const localStyles = StyleSheet.create({
   container: {
     width: '100%',
   },
-  markdownBlockMobile: {
-    paddingHorizontal: 16,
+
+  // Section Box Styles
+  sectionBox: {
+    marginBottom: 24,
+    borderRightWidth: 4,
+    borderRightColor: '#10b981',
+    backgroundColor: '#0f0f0f',
+    borderRadius: 8,
+    overflow: 'hidden',
   },
-  markdownBlockWeb: {
-    width: '100%',
+  sectionBoxMobile: {
+    marginHorizontal: 12,
+  },
+  sectionBoxWeb: {
+    marginHorizontal: 0,
+  },
+  sectionHeadingContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: '#1a1a1a',
+    borderBottomWidth: 2,
+    borderBottomColor: '#10b981',
+  },
+  sectionHeading: {
+    fontWeight: '700',
+    color: '#10b981',
+  },
+  sectionHeading1: {
+    fontSize: 24,
+    lineHeight: 32,
+  },
+  sectionHeading2: {
+    fontSize: 20,
+    lineHeight: 28,
+    color: '#3b82f6',
+  },
+  sectionHeading3: {
+    fontSize: 17,
+    lineHeight: 24,
+    color: '#8b5cf6',
+  },
+  sectionContent: {
+    padding: 16,
   },
 
   // Mobile Fact Card Styles
   mobileTableContainer: {
-    marginVertical: 16,
+    marginVertical: 12,
     width: '100%',
-    paddingHorizontal: 16,
   },
   factCard: {
     backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    marginBottom: 16,
+    borderRadius: 10,
+    marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: '#2a2a2a',
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
   },
   factCardHeader: {
     backgroundColor: '#0f0f0f',
@@ -426,8 +577,8 @@ const localStyles = StyleSheet.create({
   webTableContainer: {
     borderWidth: 1,
     borderColor: '#333',
-    borderRadius: 10,
-    marginVertical: 18,
+    borderRadius: 8,
+    marginVertical: 12,
     backgroundColor: '#1a1a1a',
     overflow: 'hidden',
   },
