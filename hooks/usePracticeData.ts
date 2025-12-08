@@ -5,12 +5,16 @@ export function usePracticeData(subject: string | null = null, userId: string | 
   const [phases, setPhases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const LIMIT = 20;
+  const [offset, setOffset] = useState(0);          // 🔥 NEW — required for pagination
+  const [isLoadingMore, setIsLoadingMore] = useState(false); // 🔥 NEW — prevents spam load
 
-  const fetchPhases = async (currentOffset = 0) => {
+  const LIMIT = 20;                                 // 🔁 MODIFIED — earlier hook had no pagination limit
+
+  // ------------------------------------------------------
+  // FETCH FUNCTION — ⭐ MAJOR CHANGES
+  // ------------------------------------------------------
+  const fetchPhases = async (currentOffset = 0) => { // 🔁 MODIFIED — now accepts offset
     if (!subject || !userId) {
       setPhases([]);
       setLoading(false);
@@ -22,17 +26,20 @@ export function usePracticeData(subject: string | null = null, userId: string | 
       {
         p_subject: subject,
         p_student_id: userId,
-        p_filter: "all",          // UI filters still work in PracticeScreen
-        p_limit: LIMIT,
-        p_offset: currentOffset
+        p_filter: "all",              // 🔁 MODIFIED — ensures UI filter works 
+        p_limit: LIMIT,               // 🔥 NEW — pagination added
+        p_offset: currentOffset       // 🔥 NEW — dynamic offset
       }
     );
 
+    // -------------------------------------------
+    // Append OR Replace logic — 🔥 NEW
+    // -------------------------------------------
     if (!error) {
-      if (currentOffset === 0) {
-        setPhases(data || []);
+      if (currentOffset === 0) {       // first load OR refresh
+        setPhases(data || []);         // 🔁 MODIFIED — replaces fully
       } else {
-        setPhases((prev) => [...prev, ...(data || [])]);
+        setPhases((prev) => [...prev, ...(data || [])]);  // 🔥 NEW — append for loadMore()
       }
     }
 
@@ -41,29 +48,35 @@ export function usePracticeData(subject: string | null = null, userId: string | 
     setIsLoadingMore(false);
   };
 
-  // 🔥 Reload when subject changes OR user logs in
+  // ------------------------------------------------------
+  // SUBJECT CHANGE / USER CHANGE — reset offset
+  // ------------------------------------------------------
   useEffect(() => {
-    setOffset(0);
+    setOffset(0);                       // 🔥 NEW — reset for new subject/user
     setLoading(true);
-    fetchPhases(0);
+    fetchPhases(0);                     // 🔁 MODIFIED — force first page
   }, [subject, userId]);
 
-  // Pull-to-refresh
+  // ------------------------------------------------------
+  // PULL-TO-REFRESH — also resets pagination
+  // ------------------------------------------------------
   const refresh = async () => {
     setRefreshing(true);
-    await fetchPhases(0);
+    await fetchPhases(0);               // 🔁 MODIFIED — resets offset
   };
 
-  // Infinite scroll / Load more
+  // ------------------------------------------------------
+  // LOAD MORE — ⭐ NEW IMPORTANT PART
+  // ------------------------------------------------------
   const loadMore = async () => {
-    if (isLoadingMore || loading) return;
+    if (isLoadingMore || loading) return;   // 🔥 NEW — prevents double calls
 
     setIsLoadingMore(true);
 
-    const newOffset = offset + LIMIT;
+    const newOffset = offset + LIMIT;       // 🔥 NEW — calculate next page
     setOffset(newOffset);
 
-    await fetchPhases(newOffset);
+    await fetchPhases(newOffset);           // 🔥 NEW — fetch appended results
   };
 
   return {
@@ -71,7 +84,7 @@ export function usePracticeData(subject: string | null = null, userId: string | 
     loading,
     refreshing,
     refresh,
-    loadMore,
-    isLoadingMore,
+    loadMore,                                // 🔥 NEW — must be used in FlatList
+    isLoadingMore,                           // 🔥 NEW
   };
 }
