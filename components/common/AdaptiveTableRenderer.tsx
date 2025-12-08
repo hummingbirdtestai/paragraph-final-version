@@ -31,7 +31,11 @@ function removeFences(text: string): string {
     })
     .join('\n');
 
-  return cleaned;
+  // Also remove any fence blocks that wrap content
+  cleaned = cleaned.replace(/```[a-zA-Z]*\n/g, '');
+  cleaned = cleaned.replace(/\n?```\s*$/g, '');
+
+  return cleaned.trim();
 }
 
 // Parse markdown into sections based on headings
@@ -54,6 +58,7 @@ function parseMarkdownIntoSections(markdown: string): Section[] {
   };
 
   const getHeadingText = (line: string): string => {
+    // Keep markdown formatting intact - it will be rendered by Markdown component
     return line.replace(/^#{1,3}\s+/, '').trim();
   };
 
@@ -435,16 +440,35 @@ function SectionRenderer({
     <View style={[localStyles.sectionBox, isMobile ? localStyles.sectionBoxMobile : localStyles.sectionBoxWeb]}>
       {hasHeading && (
         <View style={localStyles.sectionHeadingContainer}>
-          <Text
-            style={[
-              localStyles.sectionHeading,
-              section.headingLevel === 1 && localStyles.sectionHeading1,
-              section.headingLevel === 2 && localStyles.sectionHeading2,
-              section.headingLevel === 3 && localStyles.sectionHeading3,
-            ]}
+          <Markdown
+            style={{
+              body: {
+                ...localStyles.sectionHeading,
+                ...(section.headingLevel === 1 ? localStyles.sectionHeading1 : {}),
+                ...(section.headingLevel === 2 ? localStyles.sectionHeading2 : {}),
+                ...(section.headingLevel === 3 ? localStyles.sectionHeading3 : {}),
+              },
+              paragraph: {
+                ...localStyles.sectionHeading,
+                ...(section.headingLevel === 1 ? localStyles.sectionHeading1 : {}),
+                ...(section.headingLevel === 2 ? localStyles.sectionHeading2 : {}),
+                ...(section.headingLevel === 3 ? localStyles.sectionHeading3 : {}),
+                margin: 0,
+                padding: 0,
+              },
+              strong: {
+                fontWeight: '700',
+                color: 'inherit',
+              },
+              em: {
+                fontStyle: 'italic',
+                color: 'inherit',
+              },
+            }}
+            rules={markdownRules}
           >
             {section.heading}
-          </Text>
+          </Markdown>
         </View>
       )}
 
