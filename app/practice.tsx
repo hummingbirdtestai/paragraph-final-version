@@ -75,7 +75,7 @@ export default function PracticeScreen() {
   isLoadingMore,
   hasMoreData
 } = practiceData;
-  
+  const PAGE_LIMIT = 20;
  // ✅ FIX 2 — scroll to top when subject/category changes
   useEffect(() => {
     if (listRef.current) {
