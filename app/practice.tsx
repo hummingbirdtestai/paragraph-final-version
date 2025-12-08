@@ -53,6 +53,8 @@ export default function PracticeScreen() {
   const [selectedCategory, setSelectedCategory] =
     useState<"unviewed" | "viewed" | "bookmarked">("unviewed");
   const [userId, setUserId] = useState<string | null>(null);
+   // ✅ FIX 1 — declare ref BEFORE scroll effect
+  const listRef = React.useRef<FlatList>(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -62,7 +64,12 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-
+ // ✅ FIX 2 — scroll to top when subject/category changes
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollToOffset({ offset: 0, animated: true });
+    }
+  }, [selectedCategory, selectedSubject]);
   
  const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
  const { phases, loading, refreshing, refresh, loadMore, isLoadingMore } =
