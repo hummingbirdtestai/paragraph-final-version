@@ -51,7 +51,7 @@ export default function PracticeScreen() {
 
   const [selectedSubject, setSelectedSubject] = useState("General Medicine");
   const [selectedCategory, setSelectedCategory] =
-    useState<"unviewed" | "viewed" | "bookmarked" | "wrongmcqs">("unviewed");
+    useState<"unviewed" | "viewed" | "bookmarked" | "wrong">("unviewed");
   const [userId, setUserId] = useState<string | null>(null);
    // ✅ FIX 1 — declare ref BEFORE scroll effect
   const listRef = React.useRef<FlatList>(null);
