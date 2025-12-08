@@ -259,7 +259,7 @@ const markdownStylesMobile = StyleSheet.create({
   body: {
     color: '#e1e1e1',
     fontSize: 15,
-    lineHeight: 24,
+    lineHeight: 20,
     flexShrink: 1,
     flexWrap: 'wrap',
   },
@@ -283,9 +283,9 @@ const markdownStylesMobile = StyleSheet.create({
   },
   paragraph: {
     marginTop: 0,
-    marginBottom: 14,
+    marginBottom: 10,
     fontSize: 15,
-    lineHeight: 24,
+    lineHeight: 20,
     color: '#e1e1e1',
     flexShrink: 1,
     flexWrap: 'wrap',
@@ -303,15 +303,15 @@ const markdownStylesMobile = StyleSheet.create({
     flexWrap: 'wrap',
   },
   bullet_list: {
-    marginTop: 8,
-    marginBottom: 14,
+    marginTop: 6,
+    marginBottom: 10,
   },
   ordered_list: {
-    marginTop: 8,
-    marginBottom: 14,
+    marginTop: 6,
+    marginBottom: 10,
   },
   list_item: {
-    marginBottom: 8,
+    marginBottom: 6,
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
@@ -323,13 +323,13 @@ const markdownStylesMobile = StyleSheet.create({
     color: '#10b981',
     fontSize: 16,
     marginRight: 8,
-    lineHeight: 24,
+    lineHeight: 20,
   },
   ordered_list_icon: {
     color: '#3b82f6',
     fontSize: 14,
     marginRight: 8,
-    lineHeight: 24,
+    lineHeight: 20,
   },
   table: {
     borderWidth: 1,

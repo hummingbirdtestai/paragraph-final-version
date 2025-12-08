@@ -606,8 +606,8 @@ const localStyles = StyleSheet.create({
     marginHorizontal: 0,
   },
   sectionHeadingContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     backgroundColor: '#1a1a1a',
     borderBottomWidth: 2,
     borderBottomColor: '#10b981',
@@ -618,20 +618,20 @@ const localStyles = StyleSheet.create({
   },
   sectionHeading1: {
     fontSize: 24,
-    lineHeight: 32,
+    lineHeight: 30,
   },
   sectionHeading2: {
     fontSize: 20,
-    lineHeight: 28,
+    lineHeight: 26,
     color: '#3b82f6',
   },
   sectionHeading3: {
     fontSize: 17,
-    lineHeight: 24,
+    lineHeight: 22,
     color: '#8b5cf6',
   },
   sectionContent: {
-    padding: 16,
+    padding: 14,
   },
 
   // Mobile Fact Card Styles
@@ -654,7 +654,7 @@ const localStyles = StyleSheet.create({
   },
   factCardHeader: {
     backgroundColor: '#0f0f0f',
-    padding: 16,
+    padding: 12,
     borderBottomWidth: 2,
     borderBottomColor: '#10b981',
   },
@@ -662,10 +662,10 @@ const localStyles = StyleSheet.create({
     color: '#10b981',
     fontSize: 17,
     fontWeight: '700',
-    lineHeight: 24,
+    lineHeight: 22,
   },
   factCardSection: {
-    padding: 16,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#222',
   },
@@ -676,7 +676,7 @@ const localStyles = StyleSheet.create({
     color: '#3b82f6',
     fontSize: 13,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: 6,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
