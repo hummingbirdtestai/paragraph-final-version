@@ -628,7 +628,7 @@ useEffect(() => {
   ), [selectedSubject, flashcardStates, handleView, handleBookmark]);
 
   return (
-    <MainLayout headerHidden={isHidden}>
+    <MainLayout headerHidden={isMobile ? isHidden : false}>
       <View style={styles.container}>
         {isMobile && !isHidden && (
         <View>
