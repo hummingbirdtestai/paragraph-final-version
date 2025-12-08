@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { supabase } from '@/lib/supabaseClient';
 import Markdown from 'react-native-markdown-display';
+import AdaptiveTableRenderer from '@/components/common/AdaptiveTableRenderer';
 
 function extractMarkdownFromConcept(conceptField: string): string {
   if (!conceptField) return '';
@@ -68,19 +69,13 @@ export default function ConceptChatScreen({
             { opacity: fadeAnim },
           ]}
         >
-          <ScrollView
-            horizontal={isMobile}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.markdownWrapper}
-          >
-            <View style={isMobile ? styles.markdownContentMobile : styles.markdownContentWeb}>
-              <Markdown
-                style={isMobile ? markdownStylesMobile : markdownStylesWeb}
-              >
-                {conceptContent}
-              </Markdown>
-            </View>
-          </ScrollView>
+          <View style={isMobile ? styles.markdownContentMobile : styles.markdownContentWeb}>
+            <AdaptiveTableRenderer
+              markdown={conceptContent}
+              markdownStyles={isMobile ? markdownStylesMobile : markdownStylesWeb}
+              isMobile={isMobile}
+            />
+          </View>
         </Animated.View>
       </ScrollView>
     </View>
@@ -406,12 +401,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: 32,
   },
-  markdownWrapper: {
-    flexGrow: 1,
-  },
   markdownContentMobile: {
-    paddingHorizontal: 16,
-    minWidth: '100%',
+    width: '100%',
   },
   markdownContentWeb: {
     width: '100%',
