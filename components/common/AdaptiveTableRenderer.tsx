@@ -322,7 +322,9 @@ function MobileTableRenderer({ tableData, styles }: { tableData: TableData; styl
                 >
                   <Text style={styles.factCardLabel}>{label}</Text>
                   <View style={styles.factCardValue}>
-                    {renderFormattedText(cell, styles, true)}
+                    <Markdown style={markdownStyles} rules={markdownRules}>
+                      {cell}
+                    </Markdown>
                   </View>
                 </View>
               );
