@@ -111,10 +111,7 @@ const [showCelebration, setShowCelebration] = useState(false);
       console.error("Registration error:", err);
     }
   };
-
-  const { user } = useAuth();
-  const isLoggedIn = !!user;
-
+ const isLoggedIn = !!user;
   return (
     <View style={styles.container}>
       {isMobile ? (
