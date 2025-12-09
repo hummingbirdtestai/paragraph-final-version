@@ -90,9 +90,8 @@ useEffect(() => {
   const closeDrawer = () => setDrawerVisible(false);
 
   // Inject auth into child components
-  const injectedChild = React.cloneElement(children, {
-    onOpenAuth: () => setShowLoginModal(true),
-  });
+   const injectedChild = children;
+
 
   // OTP HANDLERS
   const handleSendOTP = async (phone) => {
