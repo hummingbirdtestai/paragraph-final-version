@@ -18,39 +18,48 @@ const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
 export default function MainLayout({ children }) {
-const { loginWithOTP, verifyOTP, registerUser, user } = useAuth();
-const [drawerVisible, setDrawerVisible] = useState(false);
- const [showLoginModal, setShowLoginModal] = useState(false);
-const [showOTPModal, setShowOTPModal] = useState(false);
-const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-const [notif, setNotif] = useState(null);
-const [showCelebration, setShowCelebration] = useState(false);
-     useEffect(() => {
-      if (!user?.id) return;  // ✅ FIXED: do nothing until logged in
-    
-      const channel = supabase
-        .channel("student_notifications_channel")
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "student_notifications",
-            filter: `student_id=eq.${user.id}`, // ❗ no ? needed
-          },
-          (payload) => {
-            console.log("🔔 Notification received:", payload.new);
-    
-            setNotif(payload.new);
-            setShowCelebration(true);
-          }
-        )
-        .subscribe();
-    
-      return () => supabase.removeChannel(channel);
-    }, [user?.id]);
+  const { loginWithOTP, verifyOTP, registerUser, user } = useAuth();
 
+  // 🔥 Group all states together
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [notif, setNotif] = useState(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
 
+  // 🔥 Clean, safe real–time listener
+  useEffect(() => {
+    if (!user?.id) return;
+
+    let isMounted = true;
+
+    const channel = supabase
+      .channel("student_notifications_channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "student_notifications",
+          filter: `student_id=eq.${user.id}`,
+        },
+        (payload) => {
+          if (!isMounted) return;
+
+          console.log("🔔 Notification received:", payload.new);
+          setNotif(payload.new);
+          setShowCelebration(true);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, supabase]);
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const { width } = useWindowDimensions();
