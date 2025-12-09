@@ -144,7 +144,7 @@ useEffect(() => {
 
   // LOGIN CHECK
   const isLoggedIn = !!user;
-
+  console.log("🎯 showCelebration STATE =", showCelebration);
   return (
     <View style={styles.container}>
       {/* MOBILE */}
