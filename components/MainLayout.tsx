@@ -63,10 +63,18 @@ useEffect(() => {
           return;
         }
 
-        console.log("✨ Showing popup with:", payload.new);
+        console.log("✨ Showing popup with:", payload.new);  
+          // 🔥 DEBUG — ensure we SEE the state change happen
+          console.log("🎉 Setting showCelebration = true NOW!");
+          
+          setNotif(payload.new);
+          setShowCelebration(true);
+          
+          // 🔥 DEBUG — verify React RE-RENDERS immediately
+          setTimeout(() => {
+            console.log("⏳ After 100ms → showCelebration =", showCelebration);
+          }, 100);
 
-        setNotif(payload.new);
-        setShowCelebration(true);
       }
     )
     .subscribe((status) => {
