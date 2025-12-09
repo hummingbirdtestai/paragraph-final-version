@@ -24,14 +24,22 @@ export default function MainLayout({ children }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-
   const [notif, setNotif] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  console.log("🔵 MainLayout rendered. Current user:", user?.id);
+
   // REALTIME CHANNEL
   useEffect(() => {
-    if (!user?.id) return;
+    console.log("🟡 useEffect fired. user?.id =", user?.id);
+
+    if (!user?.id) {
+      console.log("⛔ No user logged in yet. Realtime NOT initialized.");
+      return;
+    }
+
+    console.log("🟢 Subscribing to realtime channel for student_id:", user.id);
 
     let isMounted = true;
 
@@ -46,16 +54,24 @@ export default function MainLayout({ children }) {
           filter: `student_id=eq.${user.id}`,
         },
         (payload) => {
-          if (!isMounted) return;
-          console.log("🔔 Notification received:", payload.new);
+          console.log("🔥 REALTIME EVENT RECEIVED:", payload.new);
 
+          if (!isMounted) {
+            console.log("⚠ Component unmounted. Ignoring event.");
+            return;
+          }
+
+          console.log("✨ Showing popup with:", payload.new);
           setNotif(payload.new);
           setShowCelebration(true);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("📡 Subscription status:", status);
+      });
 
     return () => {
+      console.log("🔻 Cleaning up channel subscription");
       isMounted = false;
       supabase.removeChannel(channel);
     };
@@ -105,9 +121,7 @@ export default function MainLayout({ children }) {
           .eq("id", authUser.id)
           .maybeSingle();
 
-        if (!existing) {
-          setShowRegistrationModal(true);
-        }
+        if (!existing) setShowRegistrationModal(true);
       }, 300);
     } catch (err) {
       console.error("OTP verify error:", err);
@@ -160,7 +174,6 @@ export default function MainLayout({ children }) {
                 <Sidebar onOpenAuth={() => setShowLoginModal(true)} />
               </View>
             )}
-
             <View style={styles.desktopContent}>{injectedChild}</View>
           </View>
         </View>
