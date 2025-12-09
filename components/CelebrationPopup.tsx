@@ -37,6 +37,8 @@ export default function CelebrationPopup({
   gifUrl,
   autoDismissDelay = 2500,
 }: CelebrationPopupProps) {
+  console.log("🎉 CelebrationPopup rendered. visible =", visible, "message =", message);
+
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
   const sparkle1 = useSharedValue(0);
@@ -44,23 +46,35 @@ export default function CelebrationPopup({
   const sparkle3 = useSharedValue(0);
 
   useEffect(() => {
+    console.log("👀 useEffect triggered. visible =", visible);
+
     if (visible) {
+      console.log("🚀 Starting SHOW animation. Message:", message);
+
       if (Platform.OS !== 'web') {
+        console.log("📳 Triggering haptics");
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
 
-      opacity.value = withTiming(1, { duration: 200 });
+      console.log("🌟 Animating opacity to 1");
+      opacity.value = withTiming(1, { duration: 200 }, () => {
+        runOnJS(console.log)("✔ opacity animation complete");
+      });
+
+      console.log("🌟 Animating scale bounce");
       scale.value = withSequence(
         withSpring(1.1, { damping: 8, stiffness: 100 }),
         withSpring(1, { damping: 10, stiffness: 100 })
       );
 
+      console.log("✨ Sparkle 1 animation start");
       sparkle1.value = withSequence(
         withTiming(1, { duration: 400 }),
         withTiming(0, { duration: 400 })
       );
 
       setTimeout(() => {
+        console.log("✨ Sparkle 2 animation start");
         sparkle2.value = withSequence(
           withTiming(1, { duration: 400 }),
           withTiming(0, { duration: 400 })
@@ -68,60 +82,90 @@ export default function CelebrationPopup({
       }, 200);
 
       setTimeout(() => {
+        console.log("✨ Sparkle 3 animation start");
         sparkle3.value = withSequence(
           withTiming(1, { duration: 400 }),
           withTiming(0, { duration: 400 })
         );
       }, 100);
 
+      console.log("⏳ Auto-dismiss timer set for", autoDismissDelay, "ms");
       const timer = setTimeout(() => {
+        console.log("⏰ Auto-dismiss firing handleClose()");
         handleClose();
       }, autoDismissDelay);
 
-      return () => clearTimeout(timer);
+      return () => {
+        console.log("🧹 Clearing timer");
+        clearTimeout(timer);
+      };
     } else {
+      console.log("🔻 Starting HIDE animation");
       opacity.value = withTiming(0, { duration: 200 });
       scale.value = withTiming(0.8, { duration: 200 });
     }
   }, [visible]);
 
   const handleClose = () => {
-    opacity.value = withTiming(0, { duration: 200 });
+    console.log("🔒 handleClose() invoked");
+
+    opacity.value = withTiming(0, { duration: 200 }, () => {
+      console.log("✔ opacity hide complete");
+    });
+
     scale.value = withTiming(0.8, { duration: 200 }, () => {
+      console.log("✔ scale hide complete → calling onClose()");
       runOnJS(onClose)();
     });
   };
 
-  const animatedContainerStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    console.log("🎬 animatedContainerStyle frame → scale:", scale.value, "opacity:", opacity.value);
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    };
+  });
 
-  const animatedSparkle1Style = useAnimatedStyle(() => ({
-    opacity: sparkle1.value,
-    transform: [
-      { scale: sparkle1.value },
-      { translateY: -sparkle1.value * 20 },
-    ],
-  }));
+  const animatedSparkle1Style = useAnimatedStyle(() => {
+    console.log("✨ sparkle1 frame opacity:", sparkle1.value);
+    return {
+      opacity: sparkle1.value,
+      transform: [
+        { scale: sparkle1.value },
+        { translateY: -sparkle1.value * 20 },
+      ],
+    };
+  });
 
-  const animatedSparkle2Style = useAnimatedStyle(() => ({
-    opacity: sparkle2.value,
-    transform: [
-      { scale: sparkle2.value },
-      { translateY: -sparkle2.value * 30 },
-    ],
-  }));
+  const animatedSparkle2Style = useAnimatedStyle(() => {
+    console.log("⭐ sparkle2 frame opacity:", sparkle2.value);
+    return {
+      opacity: sparkle2.value,
+      transform: [
+        { scale: sparkle2.value },
+        { translateY: -sparkle2.value * 30 },
+      ],
+    };
+  });
 
-  const animatedSparkle3Style = useAnimatedStyle(() => ({
-    opacity: sparkle3.value,
-    transform: [
-      { scale: sparkle3.value },
-      { translateY: -sparkle3.value * 25 },
-    ],
-  }));
+  const animatedSparkle3Style = useAnimatedStyle(() => {
+    console.log("✨ sparkle3 frame opacity:", sparkle3.value);
+    return {
+      opacity: sparkle3.value,
+      transform: [
+        { scale: sparkle3.value },
+        { translateY: -sparkle3.value * 25 },
+      ],
+    };
+  });
 
-  if (!visible) return null;
+  if (!visible) {
+    console.log("🙈 Popup not visible → returning null");
+    return null;
+  }
+
+  console.log("🎉 Popup visible → rendering modal");
 
   return (
     <Modal
