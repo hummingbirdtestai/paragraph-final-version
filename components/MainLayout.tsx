@@ -1,6 +1,7 @@
 // MainLayout.tsx
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, useWindowDimensions } from "react-native";
+
 import Sidebar from "./Sidebar";
 import MobileDrawer from "./MobileDrawer";
 import AppHeader from "./AppHeader";
@@ -19,7 +20,7 @@ const MOBILE_BREAKPOINT = 768;
 export default function MainLayout({ children }) {
   const { loginWithOTP, verifyOTP, registerUser, user } = useAuth();
 
-  // STATE
+  // UI STATE
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
@@ -28,18 +29,19 @@ export default function MainLayout({ children }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  // 🌟 DEBUG
   console.log("🔵 MainLayout rendered. Current user:", user?.id);
 
-  // REALTIME CHANNEL
+  // REALTIME LISTENER
   useEffect(() => {
     console.log("🟡 useEffect fired. user?.id =", user?.id);
 
     if (!user?.id) {
-      console.log("⛔ No user logged in yet. Realtime NOT initialized.");
+      console.log("⛔ No user yet → NOT subscribing to realtime.");
       return;
     }
 
-    console.log("🟢 Subscribing to realtime channel for student_id:", user.id);
+    console.log("🟢 Setting up realtime channel for student_id:", user.id);
 
     let isMounted = true;
 
@@ -54,14 +56,15 @@ export default function MainLayout({ children }) {
           filter: `student_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log("🔥 REALTIME EVENT RECEIVED:", payload.new);
+          console.log("🔥 REALTIME EVENT RECEIVED:", payload);
 
           if (!isMounted) {
-            console.log("⚠ Component unmounted. Ignoring event.");
+            console.log("⚠ Component unmounted → ignoring event.");
             return;
           }
 
           console.log("✨ Showing popup with:", payload.new);
+
           setNotif(payload.new);
           setShowCelebration(true);
         }
@@ -71,13 +74,13 @@ export default function MainLayout({ children }) {
       });
 
     return () => {
-      console.log("🔻 Cleaning up channel subscription");
+      console.log("🔻 Cleaning up realtime channel");
       isMounted = false;
       supabase.removeChannel(channel);
     };
   }, [user?.id]);
 
-  // LAYOUT DETECTION
+  // DEVICE TYPE
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
 
@@ -85,7 +88,7 @@ export default function MainLayout({ children }) {
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
 
-  // Inject auth handler into children
+  // Inject auth into child components
   const injectedChild = React.cloneElement(children, {
     onOpenAuth: () => setShowLoginModal(true),
   });
@@ -111,6 +114,7 @@ export default function MainLayout({ children }) {
       setTimeout(async () => {
         const { data } = await supabase.auth.getUser();
         const authUser = data?.user;
+
         if (!authUser) return;
 
         setShowOTPModal(false);
@@ -137,10 +141,12 @@ export default function MainLayout({ children }) {
     }
   };
 
+  // LOGIN CHECK
   const isLoggedIn = !!user;
 
   return (
     <View style={styles.container}>
+      {/* MOBILE */}
       {isMobile ? (
         <>
           <AppHeader
@@ -160,6 +166,7 @@ export default function MainLayout({ children }) {
           />
         </>
       ) : (
+        /* DESKTOP */
         <View style={styles.desktopLayout}>
           {!isLoggedIn && (
             <AppHeader
@@ -174,6 +181,7 @@ export default function MainLayout({ children }) {
                 <Sidebar onOpenAuth={() => setShowLoginModal(true)} />
               </View>
             )}
+
             <View style={styles.desktopContent}>{injectedChild}</View>
           </View>
         </View>
@@ -200,7 +208,7 @@ export default function MainLayout({ children }) {
         onRegister={handleRegister}
       />
 
-      {/* CELEBRATION POPUP */}
+      {/* POPUP */}
       <CelebrationPopup
         visible={showCelebration}
         onClose={() => setShowCelebration(false)}
