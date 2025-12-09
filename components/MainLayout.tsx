@@ -88,7 +88,8 @@ useEffect(() => {
   // DRAWER
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
-
+    // 👉 ADD THIS LINE (exactly here)
+    const onOpenAuth = () => setShowLoginModal(true);
   // Inject auth into child components
    const injectedChild = children;
 
