@@ -87,7 +87,10 @@ useEffect(() => {
     supabase.removeChannel(channel);
   };
 }, [user?.id]);
-
+// DEBUG — log when showCelebration actually changes (REAL value)
+useEffect(() => {
+  console.log("🎉 Celebration state CHANGED →", showCelebration);
+}, [showCelebration]);
 
   // DEVICE TYPE
   const { width } = useWindowDimensions();
