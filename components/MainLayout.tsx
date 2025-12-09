@@ -1,5 +1,5 @@
 // MainLayout.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, useWindowDimensions } from "react-native";
 import Sidebar from "./Sidebar";
 import MobileDrawer from "./MobileDrawer";
@@ -11,7 +11,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
-import { useEffect } from "react";
 import CelebrationPopup from "@/components/CelebrationPopup";
 
 const SIDEBAR_WIDTH = 340;
@@ -20,16 +19,17 @@ const MOBILE_BREAKPOINT = 768;
 export default function MainLayout({ children }) {
   const { loginWithOTP, verifyOTP, registerUser, user } = useAuth();
 
-  // 🔥 Group all states together
+  // STATE
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+
   const [notif, setNotif] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  // 🔥 Clean, safe real–time listener
+  // REALTIME CHANNEL
   useEffect(() => {
     if (!user?.id) return;
 
@@ -47,8 +47,8 @@ export default function MainLayout({ children }) {
         },
         (payload) => {
           if (!isMounted) return;
-
           console.log("🔔 Notification received:", payload.new);
+
           setNotif(payload.new);
           setShowCelebration(true);
         }
@@ -59,20 +59,23 @@ export default function MainLayout({ children }) {
       isMounted = false;
       supabase.removeChannel(channel);
     };
-  }, [user?.id, supabase]);
-  const [phoneNumber, setPhoneNumber] = useState("");
+  }, [user?.id]);
 
+  // LAYOUT DETECTION
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
 
+  // DRAWER
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
 
+  // Inject auth handler into children
   const injectedChild = React.cloneElement(children, {
     onOpenAuth: () => setShowLoginModal(true),
   });
 
-  const handleSendOTP = async (phone: string) => {
+  // OTP HANDLERS
+  const handleSendOTP = async (phone) => {
     try {
       const formatted = phone.startsWith("+91") ? phone : `+91${phone}`;
       await loginWithOTP(formatted);
@@ -85,14 +88,13 @@ export default function MainLayout({ children }) {
     }
   };
 
-  const handleVerifyOTP = async (otp: string) => {
+  const handleVerifyOTP = async (otp) => {
     try {
       await verifyOTP(phoneNumber, otp);
 
       setTimeout(async () => {
         const { data } = await supabase.auth.getUser();
         const authUser = data?.user;
-
         if (!authUser) return;
 
         setShowOTPModal(false);
@@ -112,7 +114,7 @@ export default function MainLayout({ children }) {
     }
   };
 
-  const handleRegister = async (name: string) => {
+  const handleRegister = async (name) => {
     try {
       await registerUser(name, phoneNumber);
       setShowRegistrationModal(false);
@@ -120,7 +122,9 @@ export default function MainLayout({ children }) {
       console.error("Registration error:", err);
     }
   };
- const isLoggedIn = !!user;
+
+  const isLoggedIn = !!user;
+
   return (
     <View style={styles.container}>
       {isMobile ? (
@@ -162,6 +166,7 @@ export default function MainLayout({ children }) {
         </View>
       )}
 
+      {/* AUTH MODALS */}
       <LoginModal
         visible={showLoginModal}
         onClose={() => setShowLoginModal(false)}
@@ -181,12 +186,14 @@ export default function MainLayout({ children }) {
         onClose={() => {}}
         onRegister={handleRegister}
       />
-        <CelebrationPopup
-            visible={showCelebration}
-            onClose={() => setShowCelebration(false)}
-            message={notif?.message}
-            gifUrl={notif?.gif_url}
-          />
+
+      {/* CELEBRATION POPUP */}
+      <CelebrationPopup
+        visible={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        message={notif?.message}
+        gifUrl={notif?.gif_url}
+      />
     </View>
   );
 }
