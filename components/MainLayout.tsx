@@ -11,6 +11,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
+import { useEffect } from "react";
+import CelebrationPopup from "@/components/CelebrationPopup";
 
 const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
@@ -23,6 +25,31 @@ export default function MainLayout({ children }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+const [notif, setNotif] = useState(null);
+const [showCelebration, setShowCelebration] = useState(false);
+  useEffect(() => {
+    const channel = supabase
+      .channel("student_notifications_channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "student_notifications",
+          filter: `student_id=eq.${user?.id}`,
+        },
+        (payload) => {
+          console.log("🔔 Notification received:", payload.new);
+  
+          setNotif(payload.new);
+          setShowCelebration(true);
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -148,6 +175,12 @@ export default function MainLayout({ children }) {
         onClose={() => {}}
         onRegister={handleRegister}
       />
+        <CelebrationPopup
+            visible={showCelebration}
+            onClose={() => setShowCelebration(false)}
+            message={notif?.message}
+            gifUrl={notif?.gif_url}
+          />
     </View>
   );
 }
