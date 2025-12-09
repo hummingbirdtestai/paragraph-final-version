@@ -18,38 +18,38 @@ const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
 export default function MainLayout({ children }) {
-  const { loginWithOTP, verifyOTP, registerUser } = useAuth();
-
-  const [drawerVisible, setDrawerVisible] = useState(false);
-
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showOTPModal, setShowOTPModal] = useState(false);
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+const { loginWithOTP, verifyOTP, registerUser, user } = useAuth();
+const [drawerVisible, setDrawerVisible] = useState(false);
+ const [showLoginModal, setShowLoginModal] = useState(false);
+const [showOTPModal, setShowOTPModal] = useState(false);
+const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 const [notif, setNotif] = useState(null);
 const [showCelebration, setShowCelebration] = useState(false);
-  useEffect(() => {
-    const channel = supabase
-      .channel("student_notifications_channel")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "student_notifications",
-          filter: `student_id=eq.${user?.id}`,
-        },
-        (payload) => {
-          console.log("🔔 Notification received:", payload.new);
-  
-          setNotif(payload.new);
-          setShowCelebration(true);
-        }
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id]);
+     useEffect(() => {
+      if (!user?.id) return;  // ✅ FIXED: do nothing until logged in
+    
+      const channel = supabase
+        .channel("student_notifications_channel")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "student_notifications",
+            filter: `student_id=eq.${user.id}`, // ❗ no ? needed
+          },
+          (payload) => {
+            console.log("🔔 Notification received:", payload.new);
+    
+            setNotif(payload.new);
+            setShowCelebration(true);
+          }
+        )
+        .subscribe();
+    
+      return () => supabase.removeChannel(channel);
+    }, [user?.id]);
+
 
   const [phoneNumber, setPhoneNumber] = useState("");
 
