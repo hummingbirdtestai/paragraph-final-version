@@ -33,52 +33,53 @@ export default function MainLayout({ children }) {
   console.log("🔵 MainLayout rendered. Current user:", user?.id);
 
   // REALTIME LISTENER
-  useEffect(() => {
-    console.log("🟡 useEffect fired. user?.id =", user?.id);
+useEffect(() => {
+  console.log("🟡 useEffect fired. user?.id =", user?.id);
 
-    if (!user?.id) {
-      console.log("⛔ No user yet → NOT subscribing to realtime.");
-      return;
-    }
+  if (!user?.id) {
+    console.log("⛔ No user yet → NOT subscribing to realtime.");
+    return;
+  }
 
-    console.log("🟢 Setting up realtime channel for student_id:", user.id);
+  console.log("🟢 Setting up realtime channel for student_id:", user.id);
 
-    let isMounted = true;
+  let isMounted = true;
 
-    const channel = supabase
-      .channel("student_notifications_channel")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "student_notifications",
-          filter: `student_id=eq.${user.id}`,
-        },
-        (payload) => {
-          console.log("🔥 REALTIME EVENT RECEIVED:", payload);
+  const channel = supabase
+    .channel("student_notifications_channel")
+    .on(
+      "postgres_changes",
+      {
+        event: "insert", // ← MUST be lowercase
+        schema: "public",
+        table: "student_notifications",
+        filter: `student_id=eq.${user.id}`,
+      },
+      (payload) => {
+        console.log("🔥 REALTIME EVENT RECEIVED:", payload);
 
-          if (!isMounted) {
-            console.log("⚠ Component unmounted → ignoring event.");
-            return;
-          }
-
-          console.log("✨ Showing popup with:", payload.new);
-
-          setNotif(payload.new);
-          setShowCelebration(true);
+        if (!isMounted) {
+          console.log("⚠ Component unmounted → ignoring event.");
+          return;
         }
-      )
-      .subscribe((status) => {
-        console.log("📡 Subscription status:", status);
-      });
 
-    return () => {
-      console.log("🔻 Cleaning up realtime channel");
-      isMounted = false;
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id]);
+        console.log("✨ Showing popup with:", payload.new);
+
+        setNotif(payload.new);
+        setShowCelebration(true);
+      }
+    )
+    .subscribe((status) => {
+      console.log("📡 Subscription status:", status);
+    });
+
+  return () => {
+    console.log("🔻 Cleaning up realtime channel");
+    isMounted = false;
+    supabase.removeChannel(channel);
+  };
+}, [user?.id]);
+
 
   // DEVICE TYPE
   const { width } = useWindowDimensions();
