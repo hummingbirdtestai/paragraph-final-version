@@ -71,10 +71,9 @@ useEffect(() => {
           setShowCelebration(true);
           
           // 🔥 DEBUG — verify React RE-RENDERS immediately
-          setTimeout(() => {
-            console.log("⏳ After 100ms → showCelebration =", showCelebration);
-          }, 100);
-
+         setTimeout(() => {
+          console.log("⏳ After 100ms (fresh read) → showCelebration SHOULD be true");
+        }, 100);
       }
     )
     .subscribe((status) => {
