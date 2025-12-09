@@ -155,17 +155,8 @@ if (!onClose && !isLoggedIn) {
           </Pressable>
         </Link>
 
-        <View style={styles.authButtons}>
-  {isLoggedIn ? (
-    // ⭐ SHOW LOGOUT
-    <Pressable
-      style={[styles.loginButton, { backgroundColor: "#ef4444", borderColor: "#ef4444" }]}
-      onPress={logout}
-    >
-      <Text style={[styles.loginText, { color: "#fff" }]}>Logout</Text>
-    </Pressable>
-  ) : (
-    // ⭐ SHOW LOGIN + SIGN UP
+       <View style={styles.authButtons}>
+  {!isLoggedIn && (
     <>
       <Pressable
         style={styles.loginButton}
@@ -183,8 +174,6 @@ if (!onClose && !isLoggedIn) {
     </>
   )}
 </View>
-
-
       </View>
     </View>
   );
