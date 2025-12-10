@@ -44,6 +44,7 @@ export default function NotificationInbox() {
       .from('student_notifications')
       .select('*')
       .eq('student_id', uid)
+      .eq('is_hidden', false)
       .order('created_at', { ascending: false });
 
     if (!error && data) {
@@ -140,7 +141,7 @@ export default function NotificationInbox() {
 
     const { error } = await supabase
       .from('student_notifications')
-      .delete()
+      .update({ is_hidden: true })
       .in('id', idsArray);
 
     if (!error) {
@@ -153,7 +154,7 @@ export default function NotificationInbox() {
   const handleClearAll = async () => {
     const { error } = await supabase
       .from('student_notifications')
-      .delete()
+      .update({ is_hidden: true })
       .eq('student_id', userId);
 
     if (!error) {
