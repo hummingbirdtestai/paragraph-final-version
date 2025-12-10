@@ -140,7 +140,6 @@ try {
   return (
     <View style={styles.container}>
       <ScrollView ref={scrollViewRef} style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        <MentorMessage />
 
         <MCQQuestion
           mcq={item}
