@@ -13,13 +13,32 @@ import { supabase } from '@/lib/supabaseClient';
 import Markdown from 'react-native-markdown-display';
 import AdaptiveTableRenderer from '@/components/common/AdaptiveTableRenderer';
 
-function removeTables(markdown: string): string {
-  // Removes any table block starting with "|" lines
-  return markdown
-    .split("\n")
-    .filter(line => !line.trim().startsWith("|"))
-    .join("\n");
+function removeTablesAndHeadings(markdown: string): string {
+  const lines = markdown.split("\n");
+  const output: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+
+    // 1️⃣ Remove ANY heading that mentions Rapid / Revision / Reckoner
+    if (/^#{1,6}\s.*(Rapid|Revision|Reckoner|Table)/i.test(trimmed)) {
+      continue;
+    }
+
+    // 2️⃣ Remove any heading just before a table
+    if (/^#{1,6}\s/.test(trimmed) && lines[i + 1]?.trim().startsWith("|")) {
+      continue;
+    }
+
+    // 3️⃣ Remove table rows
+    if (trimmed.startsWith("|")) continue;
+
+    output.push(lines[i]);
+  }
+
+  return output.join("\n");
 }
+
 
 function extractMarkdownFromConcept(conceptField: string): string {
   if (!conceptField) return '';
@@ -225,12 +244,12 @@ export default function ConceptChatScreen({
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
-    let conceptContent = extractMarkdownFromConcept(item?.Concept || '');
+  let conceptContent = extractMarkdownFromConcept(item?.Concept || '');
   
-  // 🚫 Remove table ONLY on mobile
   if (isMobile) {
-    conceptContent = removeTables(conceptContent);
+    conceptContent = removeTablesAndHeadings(conceptContent);
   }
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
