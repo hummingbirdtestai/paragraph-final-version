@@ -183,17 +183,6 @@ export default function CelebrationPopup({
       onRequestClose={handleClose}
       statusBarTranslucent
     >
-      <ConfettiCannon
-        ref={confettiRef}
-        count={150}
-        origin={{ x: SCREEN_WIDTH / 2, y: -10 }}
-        autoStart={false}
-        fadeOut={true}
-        fallSpeed={3000}
-        explosionSpeed={350}
-        colors={['#25D366', '#FFFFFF', '#FFD700', '#FF6B6B', '#4ECDC4']}
-      />
-
       <TouchableWithoutFeedback onPress={handleClose}>
         <View style={styles.backdrop}>
           {Platform.OS === 'ios' ? (
@@ -239,6 +228,19 @@ export default function CelebrationPopup({
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
+
+      <View style={styles.confettiContainer} pointerEvents="none">
+        <ConfettiCannon
+          ref={confettiRef}
+          count={150}
+          origin={{ x: SCREEN_WIDTH / 2, y: -10 }}
+          autoStart={false}
+          fadeOut={true}
+          fallSpeed={3000}
+          explosionSpeed={350}
+          colors={['#25D366', '#FFFFFF', '#FFD700', '#FF6B6B', '#4ECDC4']}
+        />
+      </View>
     </Modal>
   );
 }
@@ -325,5 +327,13 @@ const styles = StyleSheet.create({
   sparkle3: {
     bottom: 30,
     left: 30,
+  },
+  confettiContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
   },
 });
