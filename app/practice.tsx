@@ -85,7 +85,7 @@ export default function PracticeScreen() {
 
 
   return (
-    <MainLayout>
+    <MainLayout isHeaderHidden={isHidden}>
       <View style={styles.container}>
 
         {/* ⭐ SUBJECT + CATEGORY HIDE ON SCROLL (mobile only) */}

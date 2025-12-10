@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import FlashcardFeed from '@/components/FlashcardFeedDemo';
 import MainLayout from "@/components/MainLayout";
 
 
 export default function FlashcardFeedDemoScreen() {
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+
   return (
-    <MainLayout>
+    <MainLayout isHeaderHidden={isHeaderHidden}>
     <View style={styles.container}>
-      <FlashcardFeed />
+      <FlashcardFeed onScrollDirectionChange={setIsHeaderHidden} />
     </View>
     </MainLayout>
   );

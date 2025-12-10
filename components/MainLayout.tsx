@@ -17,7 +17,7 @@ import CelebrationPopup from "@/components/CelebrationPopup";
 const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
 
-export default function MainLayout({ children }) {
+export default function MainLayout({ children, isHeaderHidden = false }) {
   const { loginWithOTP, verifyOTP, registerUser, user } = useAuth();
 
   // UI STATE
@@ -159,10 +159,12 @@ export default function MainLayout({ children }) {
       {/* MOBILE */}
       {isMobile ? (
         <>
-          <AppHeader
-            onMenuPress={openDrawer}
-            onOpenAuth={() => setShowLoginModal(true)}
-          />
+          {!isHeaderHidden && (
+            <AppHeader
+              onMenuPress={openDrawer}
+              onOpenAuth={() => setShowLoginModal(true)}
+            />
+          )}
 
           <View style={styles.mobileContent}>{injectedChild}</View>
 

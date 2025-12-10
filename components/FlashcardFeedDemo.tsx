@@ -420,12 +420,20 @@ const MemoizedFlashcardCard = React.memo(FlashcardCard);
 
 type CategoryType = 'unviewed' | 'viewed' | 'bookmarked';
 
-const FlashcardFeed: React.FC = () => {
+interface FlashcardFeedProps {
+  onScrollDirectionChange?: (isHidden: boolean) => void;
+}
+
+const FlashcardFeed: React.FC<FlashcardFeedProps> = ({ onScrollDirectionChange }) => {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
   const { direction, onScroll } = useScrollDirection();
   const isHidden = isMobile && direction === "down";
+
+  useEffect(() => {
+    onScrollDirectionChange?.(isHidden);
+  }, [isHidden, onScrollDirectionChange]);
 
   const [selectedSubject, setSelectedSubject] = useState('Anatomy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
