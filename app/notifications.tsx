@@ -2,19 +2,21 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  SectionList,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Check } from 'lucide-react-native';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function NotificationInbox() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const router = useRouter();
 
   useEffect(() => {
@@ -73,21 +75,133 @@ export default function NotificationInbox() {
     return 'Just now';
   };
 
-  const renderNotification = ({ item }) => (
-    <View style={styles.notificationItem}>
-      <Text style={styles.message}>{item.message}</Text>
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
 
-      <Text style={styles.timestamp}>
-        {formatTimestamp(item.created_at)}
-      </Text>
+    const dateStr = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+    });
 
-      {item.gif_url && (
-        <Text style={styles.gifUrl}>GIF: {item.gif_url}</Text>
-      )}
+    const isToday = date.toDateString() === today.toDateString();
+    const isYesterday = date.toDateString() === yesterday.toDateString();
 
-      {!item.is_read && <View style={styles.unreadDot} />}
+    if (isToday) return `Today — ${dateStr}`;
+    if (isYesterday) return `Yesterday — ${dateStr}`;
+    return dateStr;
+  };
+
+  const groupNotificationsByDate = (notifs) => {
+    const grouped = {};
+
+    notifs.forEach((notif) => {
+      const dateKey = formatDate(notif.created_at);
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(notif);
+    });
+
+    return Object.keys(grouped).map((title) => ({
+      title,
+      data: grouped[title],
+    }));
+  };
+
+  const handleSelectMode = () => {
+    setSelectMode(true);
+    setSelectedIds(new Set());
+  };
+
+  const handleCancel = () => {
+    setSelectMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const toggleSelection = (id) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleClearSelected = async () => {
+    if (selectedIds.size === 0) return;
+
+    const idsArray = Array.from(selectedIds);
+
+    const { error } = await supabase
+      .from('student_notifications')
+      .delete()
+      .in('id', idsArray);
+
+    if (!error) {
+      await fetchNotifications(userId);
+      setSelectMode(false);
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleClearAll = async () => {
+    const { error } = await supabase
+      .from('student_notifications')
+      .delete()
+      .eq('student_id', userId);
+
+    if (!error) {
+      await fetchNotifications(userId);
+      setSelectMode(false);
+      setSelectedIds(new Set());
+    }
+  };
+
+  const renderNotification = ({ item }) => {
+    const isSelected = selectedIds.has(item.id);
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.notificationItem,
+          isSelected && styles.notificationItemSelected,
+        ]}
+        onPress={() => selectMode && toggleSelection(item.id)}
+        disabled={!selectMode}
+      >
+        {selectMode && (
+          <View style={styles.checkboxContainer}>
+            <View style={[styles.checkbox, isSelected && styles.checkboxChecked]}>
+              {isSelected && <Check size={16} color="#FFFFFF" />}
+            </View>
+          </View>
+        )}
+
+        <View style={styles.notificationContent}>
+          <Text style={styles.message}>{item.message}</Text>
+
+          <Text style={styles.timestamp}>
+            {formatTimestamp(item.created_at)}
+          </Text>
+
+          {!item.is_read && <View style={styles.unreadDot} />}
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderSectionHeader = ({ section: { title } }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>{title}</Text>
     </View>
   );
+
+  const sections = groupNotificationsByDate(notifications);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,6 +213,42 @@ export default function NotificationInbox() {
         <View style={styles.placeholder} />
       </View>
 
+      {!selectMode ? (
+        <View style={styles.actionBar}>
+          <TouchableOpacity onPress={handleSelectMode} style={styles.actionButton}>
+            <Text style={styles.actionButtonText}>Select</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={styles.actionBar}>
+          <TouchableOpacity
+            onPress={handleClearSelected}
+            style={[
+              styles.actionButton,
+              selectedIds.size === 0 && styles.actionButtonDisabled,
+            ]}
+            disabled={selectedIds.size === 0}
+          >
+            <Text
+              style={[
+                styles.actionButtonText,
+                selectedIds.size === 0 && styles.actionButtonTextDisabled,
+              ]}
+            >
+              Clear Selected
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleClearAll} style={styles.actionButton}>
+            <Text style={styles.actionButtonText}>Clear All</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleCancel} style={styles.actionButton}>
+            <Text style={styles.actionButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {loading ? (
         <View style={styles.centerContent}>
           <Text style={styles.emptyText}>Loading...</Text>
@@ -108,10 +258,11 @@ export default function NotificationInbox() {
           <Text style={styles.emptyText}>No notifications yet</Text>
         </View>
       ) : (
-        <FlatList
-          data={notifications}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.id}
           renderItem={renderNotification}
+          renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.listContent}
         />
       )}
@@ -144,8 +295,45 @@ const styles = StyleSheet.create({
   placeholder: {
     width: 32,
   },
+  actionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1F2937',
+    gap: 12,
+  },
+  actionButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  actionButtonDisabled: {
+    opacity: 0.4,
+  },
+  actionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#25D366',
+  },
+  actionButtonTextDisabled: {
+    color: '#9CA3AF',
+  },
   listContent: {
     padding: 16,
+  },
+  sectionHeader: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    marginTop: 8,
+  },
+  sectionHeaderText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   notificationItem: {
     backgroundColor: '#1F2937',
@@ -153,6 +341,33 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  notificationItemSelected: {
+    backgroundColor: '#2A3F4F',
+    borderWidth: 1,
+    borderColor: '#25D366',
+  },
+  checkboxContainer: {
+    marginRight: 12,
+    paddingTop: 2,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#9CA3AF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#25D366',
+    borderColor: '#25D366',
+  },
+  notificationContent: {
+    flex: 1,
   },
   message: {
     fontSize: 16,
@@ -164,15 +379,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9CA3AF',
   },
-  gifUrl: {
-    fontSize: 12,
-    color: '#25D366',
-    marginTop: 8,
-  },
   unreadDot: {
     position: 'absolute',
-    top: 16,
-    right: 16,
+    top: 0,
+    right: 0,
     width: 8,
     height: 8,
     borderRadius: 4,
