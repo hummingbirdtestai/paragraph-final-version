@@ -176,14 +176,12 @@ export default function MainLayout({ children }) {
           />
         </>
       ) : (
-        /* DESKTOP */
+        /* DESKTOP/WEB - SHOW HEADER ON BOTH LOGGED IN AND LOGGED OUT */
         <View style={styles.desktopLayout}>
-          {!isLoggedIn && (
-            <AppHeader
-              onMenuPress={() => {}}
-              onOpenAuth={() => setShowLoginModal(true)}
-            />
-          )}
+          <AppHeader
+            onMenuPress={() => {}}
+            onOpenAuth={() => setShowLoginModal(true)}
+          />
 
           <View style={styles.desktopLayoutContent}>
             {isLoggedIn && (
