@@ -13,6 +13,14 @@ import { supabase } from '@/lib/supabaseClient';
 import Markdown from 'react-native-markdown-display';
 import AdaptiveTableRenderer from '@/components/common/AdaptiveTableRenderer';
 
+function removeTables(markdown: string): string {
+  // Removes any table block starting with "|" lines
+  return markdown
+    .split("\n")
+    .filter(line => !line.trim().startsWith("|"))
+    .join("\n");
+}
+
 function extractMarkdownFromConcept(conceptField: string): string {
   if (!conceptField) return '';
 
@@ -212,7 +220,13 @@ export default function ConceptChatScreen({
   reviewMode?: boolean;
   phaseUniqueId: string;
 }) {
-  const conceptContent = extractMarkdownFromConcept(item?.Concept || '');
+  let conceptContent = extractMarkdownFromConcept(item?.Concept || '');
+  
+  // 🚫 Remove table ONLY on mobile
+  if (isMobile) {
+    conceptContent = removeTables(conceptContent);
+  }
+
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const fadeAnim = useRef(new Animated.Value(0)).current;
