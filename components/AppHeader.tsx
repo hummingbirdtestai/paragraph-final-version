@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Link } from 'expo-router';
 import { Menu } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationBell from './NotificationBell';
 
 interface AppHeaderProps {
   onMenuPress?: () => void;
@@ -18,7 +19,7 @@ export default function AppHeader({ onMenuPress, onOpenAuth }: AppHeaderProps) {
       <View style={styles.content}>
 
         {isLoggedIn ? (
-          // ⭐ AFTER LOGIN — SHOW MENU + LOGO
+          // ⭐ AFTER LOGIN — SHOW MENU + LOGO + NOTIFICATION BELL
           <>
             <Pressable onPress={onMenuPress} style={styles.menuButton}>
               <Menu size={24} color="#E5E5E5" strokeWidth={2} />
@@ -34,6 +35,8 @@ export default function AppHeader({ onMenuPress, onOpenAuth }: AppHeaderProps) {
                 <Text style={styles.tagline}>100% AI-Driven NEETPG Self Prep Platform</Text>
               </Pressable>
             </Link>
+
+            <NotificationBell userId={user?.id} />
           </>
         ) : (
           // ⭐ BEFORE LOGIN — SHOW LOGO + AUTH BUTTONS
