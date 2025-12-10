@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationBell from './NotificationBell';
 
 
 
@@ -116,6 +117,14 @@ if (!onClose && !isLoggedIn) {
             <Text style={styles.tagline}>100% AI-Driven NEETPG Self Prep Platform</Text>
           </View>
         )}
+
+        {/* NOTIFICATION BELL - Shows on desktop when logged in, hidden on mobile drawer */}
+        {!onClose && isLoggedIn && (
+          <View style={styles.notificationContainer}>
+            <NotificationBell userId={user?.id} />
+          </View>
+        )}
+
         {onClose && (
           <Pressable onPress={onClose} style={styles.closeButton}>
             <X size={24} color="#E5E5E5" />
@@ -211,6 +220,9 @@ const styles = StyleSheet.create({
     color: '#FFFBED',
     letterSpacing: 0.2,
     lineHeight: 19.2,
+  },
+  notificationContainer: {
+    marginLeft: 8,
   },
   closeButton: {
     padding: 4,
