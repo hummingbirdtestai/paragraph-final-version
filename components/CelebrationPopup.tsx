@@ -19,8 +19,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface CelebrationPopupProps {
   visible: boolean;
@@ -44,6 +45,7 @@ export default function CelebrationPopup({
   const sparkle1 = useSharedValue(0);
   const sparkle2 = useSharedValue(0);
   const sparkle3 = useSharedValue(0);
+  const confettiRef = useRef(null);
 
   useEffect(() => {
     console.log("👀 useEffect triggered. visible =", visible);
@@ -54,6 +56,11 @@ export default function CelebrationPopup({
       if (Platform.OS !== 'web') {
         console.log("📳 Triggering haptics");
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+
+      if (confettiRef.current) {
+        console.log("🎊 Triggering confetti");
+        confettiRef.current.start();
       }
 
       console.log("🌟 Animating opacity to 1");
@@ -175,6 +182,17 @@ export default function CelebrationPopup({
       onRequestClose={handleClose}
       statusBarTranslucent
     >
+      <ConfettiCannon
+        ref={confettiRef}
+        count={150}
+        origin={{ x: SCREEN_WIDTH / 2, y: -10 }}
+        autoStart={false}
+        fadeOut={true}
+        fallSpeed={3000}
+        explosionSpeed={350}
+        colors={['#25D366', '#FFFFFF', '#FFD700', '#FF6B6B', '#4ECDC4']}
+      />
+
       <TouchableWithoutFeedback onPress={handleClose}>
         <View style={styles.backdrop}>
           {Platform.OS === 'ios' ? (
@@ -190,7 +208,7 @@ export default function CelebrationPopup({
                       <Image
                         source={{ uri: gifUrl }}
                         style={styles.gif}
-                        resizeMode="cover"
+                        resizeMode="contain"
                       />
                     ) : (
                       <View style={styles.gifPlaceholder}>
@@ -232,7 +250,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   container: {
-    width: Math.min(280, SCREEN_WIDTH - 40),
+    width: '90%',
+    maxHeight: SCREEN_HEIGHT * 0.8,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -254,7 +273,6 @@ const styles = StyleSheet.create({
   },
   gifContainer: {
     width: '100%',
-    height: 160,
     backgroundColor: '#0F1922',
     justifyContent: 'center',
     alignItems: 'center',
@@ -263,7 +281,8 @@ const styles = StyleSheet.create({
   },
   gif: {
     width: '100%',
-    height: '100%',
+    height: undefined,
+    aspectRatio: 1,
   },
   gifPlaceholder: {
     width: '100%',
