@@ -33,63 +33,62 @@ export default function MainLayout({ children }) {
   console.log("🔵 MainLayout rendered. Current user:", user?.id);
 
   // REALTIME LISTENER
-useEffect(() => {
-  console.log("🟡 useEffect fired. user?.id =", user?.id);
+  useEffect(() => {
+    console.log("🟡 useEffect fired. user?.id =", user?.id);
 
-  if (!user?.id) {
-    console.log("⛔ No user yet → NOT subscribing to realtime.");
-    return;
-  }
+    if (!user?.id) {
+      console.log("⛔ No user yet → NOT subscribing to realtime.");
+      return;
+    }
 
-  console.log("🟢 Setting up realtime channel for student_id:", user.id);
+    console.log("🟢 Setting up realtime channel for student_id:", user.id);
 
-  let isMounted = true;
+    let isMounted = true;
 
-  const channel = supabase
-    .channel("student_notifications_channel")
-    .on(
-      "postgres_changes",
-      {
-        event: "insert", // ← MUST be lowercase
-        schema: "public",
-        table: "student_notifications",
-        filter: `student_id=eq.${user.id}`,
-      },
-      (payload) => {
-        console.log("🔥 REALTIME EVENT RECEIVED:", payload);
+    const channel = supabase
+      .channel("student_notifications_channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "insert",
+          schema: "public",
+          table: "student_notifications",
+          filter: `student_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log("🔥 REALTIME EVENT RECEIVED:", payload);
 
-        if (!isMounted) {
-          console.log("⚠ Component unmounted → ignoring event.");
-          return;
-        }
+          if (!isMounted) {
+            console.log("⚠ Component unmounted → ignoring event.");
+            return;
+          }
 
-        console.log("✨ Showing popup with:", payload.new);  
-          // 🔥 DEBUG — ensure we SEE the state change happen
+          console.log("✨ Showing popup with:", payload.new);
           console.log("🎉 Setting showCelebration = true NOW!");
-          
+
           setNotif(payload.new);
           setShowCelebration(true);
-          
-          // 🔥 DEBUG — verify React RE-RENDERS immediately
-         setTimeout(() => {
-          console.log("⏳ After 100ms (fresh read) → showCelebration SHOULD be true");
-        }, 100);
-      }
-    )
-    .subscribe((status) => {
-      console.log("📡 Subscription status:", status);
-    });
 
-  return () => {
-    console.log("🔻 Cleaning up realtime channel");
-    isMounted = false;
-    supabase.removeChannel(channel);
-  };
-}, [user?.id]);
-// DEBUG — log when showCelebration actually changes (REAL value)
-useEffect(() => {
-  console.log("🎉 Celebration state CHANGED →", showCelebration);
-}, [showCelebration]);
+          setTimeout(() => {
+            console.log("⏳ After 100ms (fresh read) → showCelebration SHOULD be true");
+          }, 100);
+        }
+      )
+      .subscribe((status) => {
+        console.log("📡 Subscription status:", status);
+      });
+
+    return () => {
+      console.log("🔻 Cleaning up realtime channel");
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
+  // DEBUG — log when showCelebration actually changes (REAL value)
+  useEffect(() => {
+    console.log("🎉 Celebration state CHANGED →", showCelebration);
+  }, [showCelebration]);
 
   // DEVICE TYPE
   const { width } = useWindowDimensions();
@@ -98,11 +97,10 @@ useEffect(() => {
   // DRAWER
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
-    // 👉 ADD THIS LINE (exactly here)
-    const onOpenAuth = () => setShowLoginModal(true);
-  // Inject auth into child components
-   const injectedChild = children;
+  const onOpenAuth = () => setShowLoginModal(true);
 
+  // Inject auth into child components
+  const injectedChild = children;
 
   // OTP HANDLERS
   const handleSendOTP = async (phone) => {
@@ -155,6 +153,7 @@ useEffect(() => {
   // LOGIN CHECK
   const isLoggedIn = !!user;
   console.log("🎯 showCelebration STATE =", showCelebration);
+
   return (
     <View style={styles.container}>
       {/* MOBILE */}
@@ -219,7 +218,7 @@ useEffect(() => {
         onRegister={handleRegister}
       />
 
-      {/* POPUP */}
+      {/* CELEBRATION POPUP - WORKS ON BOTH MOBILE AND WEB */}
       <CelebrationPopup
         visible={showCelebration}
         onClose={() => setShowCelebration(false)}

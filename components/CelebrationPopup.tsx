@@ -54,11 +54,15 @@ export default function CelebrationPopup({
     if (visible) {
       console.log("🚀 Starting SHOW animation. Message:", message);
 
+      // Haptics only on mobile (web-safe fallback)
       if (Platform.OS !== 'web') {
         console.log("📳 Triggering haptics");
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        console.log("🌐 Running on web - skipping haptics");
       }
 
+      // Confetti works on both mobile and web
       if (confettiRef.current) {
         console.log("🎊 Triggering confetti");
         confettiRef.current.start();
@@ -183,77 +187,90 @@ export default function CelebrationPopup({
       onRequestClose={handleClose}
       statusBarTranslucent
     >
-      <TouchableWithoutFeedback onPress={handleClose}>
-        <View style={styles.backdrop}>
-          {Platform.OS === 'ios' ? (
-            <BlurView intensity={10} style={StyleSheet.absoluteFill} />
-          ) : null}
+      <View style={styles.modalWrapper}>
+        <TouchableWithoutFeedback onPress={handleClose}>
+          <View style={styles.backdrop}>
+            {Platform.OS === 'ios' ? (
+              <BlurView intensity={10} style={StyleSheet.absoluteFill} />
+            ) : null}
 
-          <TouchableWithoutFeedback>
-            <Animated.View style={[styles.container, animatedContainerStyle]}>
-              <View style={styles.glowContainer}>
-                <View style={styles.popup}>
-                  <View style={styles.gifContainer}>
-                    {gifUrl ? (
-                      <Image
-                        source={{ uri: gifUrl }}
-                        style={styles.gif}
-                        resizeMode="contain"
-                      />
-                    ) : (
-                      <View style={styles.gifPlaceholder}>
-                        <Text style={styles.placeholderIcon}>🎉</Text>
-                      </View>
-                    )}
+            <TouchableWithoutFeedback>
+              <Animated.View style={[styles.container, animatedContainerStyle]}>
+                <View style={styles.glowContainer}>
+                  <View style={styles.popup}>
+                    <View style={styles.gifContainer}>
+                      {gifUrl ? (
+                        <Image
+                          source={{ uri: gifUrl }}
+                          style={styles.gif}
+                          resizeMode="contain"
+                        />
+                      ) : (
+                        <View style={styles.gifPlaceholder}>
+                          <Text style={styles.placeholderIcon}>🎉</Text>
+                        </View>
+                      )}
+                    </View>
+
+                    <View style={styles.messageContainer}>
+                      <Text style={styles.message}>{message}</Text>
+                    </View>
+
+                    <Animated.View style={[styles.sparkle, styles.sparkle1, animatedSparkle1Style]}>
+                      <Text style={styles.sparkleText}>✨</Text>
+                    </Animated.View>
+
+                    <Animated.View style={[styles.sparkle, styles.sparkle2, animatedSparkle2Style]}>
+                      <Text style={styles.sparkleText}>⭐</Text>
+                    </Animated.View>
+
+                    <Animated.View style={[styles.sparkle, styles.sparkle3, animatedSparkle3Style]}>
+                      <Text style={styles.sparkleText}>✨</Text>
+                    </Animated.View>
                   </View>
-
-                  <View style={styles.messageContainer}>
-                    <Text style={styles.message}>{message}</Text>
-                  </View>
-
-                  <Animated.View style={[styles.sparkle, styles.sparkle1, animatedSparkle1Style]}>
-                    <Text style={styles.sparkleText}>✨</Text>
-                  </Animated.View>
-
-                  <Animated.View style={[styles.sparkle, styles.sparkle2, animatedSparkle2Style]}>
-                    <Text style={styles.sparkleText}>⭐</Text>
-                  </Animated.View>
-
-                  <Animated.View style={[styles.sparkle, styles.sparkle3, animatedSparkle3Style]}>
-                    <Text style={styles.sparkleText}>✨</Text>
-                  </Animated.View>
                 </View>
-              </View>
-            </Animated.View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
 
-      <View style={styles.confettiContainer} pointerEvents="none">
-        <ConfettiCannon
-          ref={confettiRef}
-          count={150}
-          origin={{ x: SCREEN_WIDTH / 2, y: -10 }}
-          autoStart={false}
-          fadeOut={true}
-          fallSpeed={3000}
-          explosionSpeed={350}
-          colors={['#25D366', '#FFFFFF', '#FFD700', '#FF6B6B', '#4ECDC4']}
-        />
+        <View style={styles.confettiContainer} pointerEvents="none">
+          <ConfettiCannon
+            ref={confettiRef}
+            count={150}
+            origin={{ x: SCREEN_WIDTH / 2, y: -10 }}
+            autoStart={false}
+            fadeOut={true}
+            fallSpeed={3000}
+            explosionSpeed={350}
+            colors={['#25D366', '#FFFFFF', '#FFD700', '#FF6B6B', '#4ECDC4']}
+          />
+        </View>
       </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  modalWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 99999,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.75)',
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
   container: {
     width: '90%',
+    maxWidth: 500,
     maxHeight: SCREEN_HEIGHT * 0.8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -334,6 +351,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 9999,
+    zIndex: 99999,
   },
 });
