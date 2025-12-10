@@ -220,15 +220,17 @@ export default function ConceptChatScreen({
   reviewMode?: boolean;
   phaseUniqueId: string;
 }) {
-  let conceptContent = extractMarkdownFromConcept(item?.Concept || '');
+
+
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+    let conceptContent = extractMarkdownFromConcept(item?.Concept || '');
   
   // 🚫 Remove table ONLY on mobile
   if (isMobile) {
     conceptContent = removeTables(conceptContent);
   }
-
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
