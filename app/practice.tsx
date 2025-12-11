@@ -76,12 +76,13 @@ export default function PracticeScreen() {
   hasMoreData
 } = practiceData;
   const PAGE_LIMIT = 20;
- // ✅ FIX 2 — scroll to top when subject/category changes
+ // Scroll to top ONLY when subject or category changes
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollToOffset({ offset: 0, animated: true });
     }
-  }, [selectedCategory, selectedSubject, phases.length]);
+  }, [selectedCategory, selectedSubject]);
+
 
 
   return (
