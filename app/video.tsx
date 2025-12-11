@@ -1,4 +1,4 @@
-// practice.tsx
+// video.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -13,13 +13,14 @@ import {
 import { Eye, EyeOff, Bookmark, XCircle } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
-import { usePracticeData } from "@/hooks/usePracticeData";
+import { VideoCard } from "@/components/video/VideoCard";
+import { useVideoData } from "@/hooks/useVideoData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { FlatList } from "react-native";   // 🔥 REQUIRED FOR PAGINATION
 
-export default function PracticeScreen() {
+export default function VideoScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
@@ -65,7 +66,7 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-  const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
+  const practiceData = useVideoData(selectedSubject, userId, selectedCategory);
  const {
   phases,
   loading,
@@ -164,7 +165,11 @@ export default function PracticeScreen() {
   ref={listRef}
   data={phases}
   keyExtractor={(item) => item.id}
-  renderItem={({ item }) => <PracticeCard phase={item} />}
+    renderItem={({ item }) =>
+      item.phase_type === "video"
+        ? <VideoCard phase={item} />
+        : <PracticeCard phase={item} />
+}
   contentContainerStyle={styles.cardsWrapper}
   refreshControl={
     <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
