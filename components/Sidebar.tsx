@@ -11,6 +11,7 @@ import {
   BarChart3,
   Settings,
   X,
+  Video,
 } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
@@ -32,6 +33,7 @@ const navItems: NavItem[] = [
   { id: "home", label: "Home", href: "/", icon: Home },
   { id: "practice", label: "Concepts", href: "/practice", icon: BookOpen },
   { id: "flash", label: "Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
+  { id: "videos", label: "Videos", href: "/videos", icon: Video },
   { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
   { id: "battle", label: "Battles", href: "/battle", icon: Swords },
   { id: "analytics", label: "Analytics", href: "/analyticspage", icon: BarChart3 },
