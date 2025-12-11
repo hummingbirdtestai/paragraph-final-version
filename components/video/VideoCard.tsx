@@ -1,4 +1,4 @@
-// PracticeCard.tsx — FINAL WITH VIDEO + LIKE + VIDEO BOOKMARK (SEPARATE) WITHOUT TOUCHING EXISTING PHASE LOGIC
+– Videocard.tsx — FINAL WITH VIDEO ADDED WITHOUT TOUCHING EXISTING CODE
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
