@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, Pressable, Animated } from 'react-native';
-import { X } from 'lucide-react-native';
 import { theme } from '@/constants/theme';
 import { InputField } from '@/components/common/InputField';
 import { PrimaryButton } from '@/components/common/PrimaryButton';
@@ -71,9 +70,9 @@ export function LoginModal({ visible, onClose, onSendOTP }: LoginModalProps) {
       visible={visible}
       transparent
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={() => {}}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
         <Animated.View
           style={[
             styles.modalContainer,
@@ -85,10 +84,7 @@ export function LoginModal({ visible, onClose, onSendOTP }: LoginModalProps) {
         >
           <Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
             <View style={styles.header}>
-              <Text style={styles.title}><Text style={styles.title}>Login or Sign Up</Text></Text>
-              <Pressable onPress={onClose} style={styles.closeButton}>
-                <X size={24} color={theme.colors.textSecondary} />
-              </Pressable>
+              <Text style={styles.title}>Login or Sign Up</Text>
             </View>
 
             <View style={styles.content}>
@@ -114,7 +110,7 @@ export function LoginModal({ visible, onClose, onSendOTP }: LoginModalProps) {
             </View>
           </Pressable>
         </Animated.View>
-      </Pressable>
+      </View>
     </Modal>
   );
 }
@@ -148,9 +144,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: theme.typography.heading.fontSize,
     fontWeight: '600',
-  },
-  closeButton: {
-    padding: theme.spacing.xs,
+    flex: 1,
   },
   content: {
     paddingHorizontal: theme.spacing.xl,

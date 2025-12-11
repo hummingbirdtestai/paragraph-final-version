@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, Pressable, Animated, TextInput, TouchableOpacity } from 'react-native';
-import { X } from 'lucide-react-native';
 import { theme } from '@/constants/theme';
 import { PrimaryButton } from '@/components/common/PrimaryButton';
 
@@ -113,9 +112,9 @@ const handleResend = () => {
       visible={visible}
       transparent
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={() => {}}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
         <Animated.View
           style={[
             styles.modalContainer,
@@ -128,9 +127,6 @@ const handleResend = () => {
           <Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
             <View style={styles.header}>
               <Text style={styles.title}>Verify Your Number</Text>
-              <Pressable onPress={onClose} style={styles.closeButton}>
-                <X size={24} color={theme.colors.textSecondary} />
-              </Pressable>
             </View>
 
             <View style={styles.content}>
@@ -181,7 +177,7 @@ const handleResend = () => {
             </View>
           </Pressable>
         </Animated.View>
-      </Pressable>
+      </View>
     </Modal>
   );
 }
@@ -215,9 +211,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: theme.typography.heading.fontSize,
     fontWeight: '600',
-  },
-  closeButton: {
-    padding: theme.spacing.xs,
+    flex: 1,
   },
   content: {
     paddingHorizontal: theme.spacing.xl,
