@@ -28,6 +28,9 @@ export default function PracticeScreen() {
   const isHidden = isMobile && direction === "down";
 
   const subjects = [
+    "General Medicine",
+    "General Surgery",
+    "Obstetrics and Gynaecology",
     "Anatomy",
     "Anesthesia",
     "Biochemistry",
@@ -35,10 +38,7 @@ export default function PracticeScreen() {
     "Dermatology",
     "ENT",
     "Forensic Medicine",
-    "General Medicine",
-    "General Surgery",
     "Microbiology",
-    "Obstetrics and Gynaecology",
     "Ophthalmology",
     "Orthopedics",
     "Pathology",
