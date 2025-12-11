@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { Eye, EyeOff, Bookmark, XCircle } from "lucide-react-native";
+import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { VideoCard } from "@/components/video/VideoCard";
@@ -54,6 +54,7 @@ export default function VideoScreen() {
   const [selectedCategory, setSelectedCategory] =
     useState<"unviewed" | "viewed" | "bookmarked" | "wrong">("unviewed");
   const [userId, setUserId] = useState<string | null>(null);
+  const [showScrollControls, setShowScrollControls] = useState(false);
    // ✅ FIX 1 — declare ref BEFORE scroll effect
   const listRef = React.useRef<FlatList>(null);
  
@@ -174,7 +175,11 @@ export default function VideoScreen() {
   refreshControl={
     <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
   }
-  onScroll={isMobile ? onScroll : undefined}
+  onScroll={(event) => {
+    if (isMobile) onScroll(event);
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowScrollControls(offsetY > 100);
+  }}
   scrollEventThrottle={16}
 
   initialNumToRender={8}
@@ -202,6 +207,33 @@ export default function VideoScreen() {
     ) : null
   }
 />
+        )}
+
+        {showScrollControls && (
+          <View style={styles.scrollControlsWrapper}>
+            <TouchableOpacity
+              style={styles.scrollBtn}
+              onPress={() =>
+                listRef?.current?.scrollToOffset({
+                  offset: 0,
+                  animated: true
+                })
+              }
+            >
+              <ArrowUp size={24} color="#fff" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.scrollBtn}
+              onPress={() =>
+                listRef?.current?.scrollToEnd({
+                  animated: true
+                })
+              }
+            >
+              <ArrowDown size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     </MainLayout>
@@ -251,5 +283,27 @@ const styles = StyleSheet.create({
   categoryIconSelected: {
     backgroundColor: "#10b981",
     borderColor: "#10b981",
+  },
+
+  scrollControlsWrapper: {
+    position: "absolute",
+    bottom: 30,
+    right: 20,
+    alignItems: "center",
+    zIndex: 999,
+  },
+
+  scrollBtn: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#10b981",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
   },
 });

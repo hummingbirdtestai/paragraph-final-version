@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bookmark, Eye, EyeOff } from 'lucide-react-native';
+import { Bookmark, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react-native';
 import { supabase } from '../lib/supabaseClient';
 import Markdown from "react-native-markdown-display";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -438,6 +438,7 @@ const FlashcardFeed: React.FC<FlashcardFeedProps> = ({ onScrollDirectionChange }
   const [selectedSubject, setSelectedSubject] = useState('Anatomy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
   const [userId, setUserId] = useState<string | null>(null);
+  const [showScrollControls, setShowScrollControls] = useState(false);
   const [flashcards, setFlashcards] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const isLoggedOut = userId === null;
@@ -738,7 +739,11 @@ useEffect(() => {
     removeClippedSubviews={true}
     onEndReached={loadMore}
     onEndReachedThreshold={0.5}
-    onScroll={isMobile ? onScroll : undefined}
+    onScroll={(event) => {
+      if (isMobile) onScroll(event);
+      const offsetY = event.nativeEvent.contentOffset.y;
+      setShowScrollControls(offsetY > 100);
+    }}
     scrollEventThrottle={16}
     onMomentumScrollBegin={isMobile ? onScroll : undefined}
     onMomentumScrollEnd={isMobile ? onScroll : undefined}
@@ -755,6 +760,32 @@ useEffect(() => {
   </View>
 )}
 
+      {showScrollControls && (
+        <View style={styles.scrollControlsWrapper}>
+          <TouchableOpacity
+            style={styles.scrollBtn}
+            onPress={() =>
+              flatListRef?.current?.scrollToOffset({
+                offset: 0,
+                animated: true
+              })
+            }
+          >
+            <ArrowUp size={24} color="#fff" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.scrollBtn}
+            onPress={() =>
+              flatListRef?.current?.scrollToEnd({
+                animated: true
+              })
+            }
+          >
+            <ArrowDown size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -1004,6 +1035,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     marginRight: 12,
+  },
+  scrollControlsWrapper: {
+    position: "absolute",
+    bottom: 30,
+    right: 20,
+    alignItems: "center",
+    zIndex: 999,
+  },
+  scrollBtn: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#10b981",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
   },
 });
 
