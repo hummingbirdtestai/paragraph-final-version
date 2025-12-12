@@ -19,6 +19,7 @@ import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { FlatList } from "react-native";   // 🔥 REQUIRED FOR PAGINATION
+import HighYieldFactsScreen from "@/components/types/HighYieldFactsScreen";
 
 export default function VideoScreen() {
   const { width } = useWindowDimensions();
@@ -166,11 +167,23 @@ export default function VideoScreen() {
   ref={listRef}
   data={phases}
   keyExtractor={(item) => item.id}
-    renderItem={({ item }) =>
-      item.phase_type === "video"
-        ? <VideoCard phase={item} />
-        : <PracticeCard phase={item} />
-}
+  renderItem={({ item }) => {
+  if (item.phase_type === "video") {
+    return <VideoCard phase={item} />;
+  }
+
+  if (item.phase_type === "concept") {
+    return (
+      <HighYieldFactsScreen
+        topic={item.phase_json?.topic ?? "Concept"}
+        conceptMarkdown={item.phase_json?.concept ?? ""}
+      />
+    );
+  }
+
+  // fallback (mcq or others)
+  return <PracticeCard phase={item} />;
+}}
   contentContainerStyle={styles.cardsWrapper}
   refreshControl={
     <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
