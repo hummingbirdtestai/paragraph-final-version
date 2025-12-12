@@ -244,7 +244,9 @@ export default function ConceptChatScreen({
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
-  let conceptContent = extractMarkdownFromConcept(item?.Concept || '');
+  let conceptContent = extractMarkdownFromConcept(
+  item?.Concept || item?.concept || ''
+);
   
   if (isMobile) {
     conceptContent = removeTablesAndHeadings(conceptContent);
