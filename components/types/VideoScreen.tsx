@@ -1,4 +1,3 @@
-// components/types/VideoScreen.tsx
 import React, { useRef, useState, useEffect } from "react";
 import {
   View,
@@ -12,9 +11,12 @@ import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 
+/* --------------------------------------------------
+   CORE COMPONENT
+-------------------------------------------------- */
 function VideoScreen({
   videoUrl,
-  videoUrlPath, // ✅ ADD THIS (bunny_video_path)
+  videoUrlPath,
   posterUrl,
   speedControls = true,
   phaseUniqueId,
@@ -37,7 +39,6 @@ function VideoScreen({
       ? progress_percent / 100
       : 0;
 
-  // ⭐ Resume From Last Watched Position
   useEffect(() => {
     if (!resumePosition) return;
 
@@ -47,11 +48,6 @@ function VideoScreen({
 
       const s = await player.getStatusAsync();
       if (s?.isLoaded && s?.durationMillis) {
-        console.log("[VIDEO] Resume", {
-          phaseUniqueId,
-          resumePercent: Math.round(resumePosition * 100),
-        });
-
         await player.setPositionAsync(
           s.durationMillis * resumePosition
         );
@@ -62,7 +58,6 @@ function VideoScreen({
     return () => clearTimeout(t);
   }, [fullScreen]);
 
-  // ⭐ Report Progress
   async function updateProgress(s) {
     if (!user?.id) return;
     if (!s?.positionMillis || !s?.durationMillis) return;
@@ -70,10 +65,6 @@ function VideoScreen({
     const percent = Math.floor(
       (s.positionMillis / s.durationMillis) * 100
     );
-
-    if (percent % 10 === 0) {
-      console.log("[VIDEO] Progress", { phaseUniqueId, percent });
-    }
 
     await supabase.rpc("update_video_progress_v1", {
       p_student_id: user.id,
@@ -89,11 +80,8 @@ function VideoScreen({
     }
   }
 
-  // ⭐ AUTO RE-SIGN (minimal & safe)
   const resignAndReload = async () => {
     try {
-      console.log("[VIDEO] Re-signing Bunny URL", { phaseUniqueId });
-
       const { data } = await supabase.functions.invoke(
         "smart-action",
         { body: { path: videoUrlPath } }
@@ -111,27 +99,14 @@ function VideoScreen({
         { uri: data.signedUrl },
         { shouldPlay: true, positionMillis: pos }
       );
-
-      console.log("[VIDEO] Re-sign successful", { phaseUniqueId });
-    } catch (e) {
-      console.error("[VIDEO] Re-sign failed", e);
-    }
+    } catch {}
   };
 
-  // ⭐ Shared playback handler
   const handlePlayback = (s) => {
     updateProgress(s);
-
-    if (s?.error) {
-      console.warn("[VIDEO] Playback error → token expired", {
-        phaseUniqueId,
-        error: s.error,
-      });
-      resignAndReload(); // ✅ AUTO RECOVERY
-    }
+    if (s?.error) resignAndReload();
   };
 
-  // ⭐ Like Toggle
   async function toggleLike() {
     if (!user?.id) return;
     setLiked(!liked);
@@ -142,7 +117,6 @@ function VideoScreen({
     });
   }
 
-  // ⭐ Bookmark Toggle
   async function toggleBookmark() {
     if (!user?.id) return;
     setBookmark(!bookmark);
@@ -155,7 +129,6 @@ function VideoScreen({
 
   return (
     <View>
-      {/* VIDEO PLAYER */}
       <TouchableOpacity onPress={() => setFullScreen(true)}>
         <Video
           ref={inlineRef}
@@ -170,7 +143,6 @@ function VideoScreen({
         />
       </TouchableOpacity>
 
-      {/* SPEED CONTROLS */}
       {speedControls && (
         <View style={styles.speedRow}>
           {[1, 1.25, 1.5, 2].map((s) => (
@@ -188,7 +160,6 @@ function VideoScreen({
         </View>
       )}
 
-      {/* LIKE + BOOKMARK */}
       <View style={styles.actionRow}>
         <TouchableOpacity onPress={toggleLike}>
           <Heart
@@ -207,7 +178,6 @@ function VideoScreen({
         </TouchableOpacity>
       </View>
 
-      {/* FULL SCREEN MODAL */}
       <Modal visible={fullScreen} animationType="slide">
         <View style={styles.fullBox}>
           <TouchableOpacity
@@ -232,10 +202,15 @@ function VideoScreen({
   );
 }
 
-/* 🔑 EXPORTS — THIS IS THE FIX */
+/* --------------------------------------------------
+   EXPORTS (THIS IS THE FIX)
+-------------------------------------------------- */
 export default VideoScreen;
-export const VideoCard = VideoScreen;
+export { VideoScreen as VideoCard };
 
+/* --------------------------------------------------
+   STYLES
+-------------------------------------------------- */
 const styles = StyleSheet.create({
   video: {
     width: "100%",
