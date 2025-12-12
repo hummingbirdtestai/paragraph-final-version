@@ -174,10 +174,12 @@ export default function VideoScreen() {
 
   if (item.phase_type === "concept") {
     return (
-      <HighYieldFactsScreen
-        topic={item.phase_json?.topic ?? "Concept"}
-        conceptMarkdown={item.phase_json?.concept ?? ""}
-      />
+      <View style={Platform.OS === "web" ? styles.conceptCardWrapper : undefined}>
+        <HighYieldFactsScreen
+          topic={item.phase_json?.topic ?? "Concept"}
+          conceptMarkdown={item.phase_json?.concept ?? ""}
+        />
+      </View>
     );
   }
 
@@ -318,5 +320,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 6,
+  },
+
+  conceptCardWrapper: {
+    alignSelf: "center",
+    width: "100%",
+    maxWidth: 800,
   },
 });
