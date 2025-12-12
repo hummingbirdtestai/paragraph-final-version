@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
-  Platform,
 } from "react-native";
 import { Video, ResizeMode } from "expo-av";
 import { Bookmark, Heart } from "lucide-react-native";
@@ -15,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function VideoScreen({
   videoUrl,
+  videoUrlPath, // ✅ ADD THIS (bunny_video_path)
   posterUrl,
   speedControls = true,
   phaseUniqueId,
@@ -24,8 +24,9 @@ export default function VideoScreen({
 }) {
   const { user } = useAuth();
 
-  const videoRef = useRef(null);
-  const [status, setStatus] = useState({});
+  const inlineRef = useRef(null);
+  const fullscreenRef = useRef(null);
+
   const [speed, setSpeed] = useState(1.0);
   const [fullScreen, setFullScreen] = useState(false);
   const [bookmark, setBookmark] = useState(isBookmarked);
@@ -38,31 +39,41 @@ export default function VideoScreen({
 
   // ⭐ Resume From Last Watched Position
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (!resumePosition) return;
 
-    const load = async () => {
-      if (resumePosition > 0) {
-        const player = videoRef.current;
-        const totalMillis = player._durationMillis;
-        if (totalMillis) {
-          player.setPositionAsync(resumePosition * totalMillis);
-        }
+    const resume = async () => {
+      const player = fullScreen ? fullscreenRef.current : inlineRef.current;
+      if (!player) return;
+
+      const s = await player.getStatusAsync();
+      if (s?.isLoaded && s?.durationMillis) {
+        console.log("[VIDEO] Resume", {
+          phaseUniqueId,
+          resumePercent: Math.round(resumePosition * 100),
+        });
+
+        await player.setPositionAsync(
+          s.durationMillis * resumePosition
+        );
       }
     };
 
-    const timer = setTimeout(load, 800);
-    return () => clearTimeout(timer);
-  }, [videoRef.current]);
+    const t = setTimeout(resume, 600);
+    return () => clearTimeout(t);
+  }, [fullScreen]);
 
-  // ⭐ Report Progress to Supabase
-  async function updateProgress(status) {
+  // ⭐ Report Progress
+  async function updateProgress(s) {
     if (!user?.id) return;
-
-    if (!status?.positionMillis || !status?.durationMillis) return;
+    if (!s?.positionMillis || !s?.durationMillis) return;
 
     const percent = Math.floor(
-      (status.positionMillis / status.durationMillis) * 100
+      (s.positionMillis / s.durationMillis) * 100
     );
+
+    if (percent % 10 === 0) {
+      console.log("[VIDEO] Progress", { phaseUniqueId, percent });
+    }
 
     await supabase.rpc("update_video_progress_v1", {
       p_student_id: user.id,
@@ -78,10 +89,51 @@ export default function VideoScreen({
     }
   }
 
+  // ⭐ AUTO RE-SIGN (minimal & safe)
+  const resignAndReload = async () => {
+    try {
+      console.log("[VIDEO] Re-signing Bunny URL", { phaseUniqueId });
+
+      const { data } = await supabase.functions.invoke(
+        "smart-action",
+        { body: { path: videoUrlPath } }
+      );
+
+      if (!data?.signedUrl) return;
+
+      const player = fullScreen ? fullscreenRef.current : inlineRef.current;
+      if (!player) return;
+
+      const s = await player.getStatusAsync();
+      const pos = s?.positionMillis || 0;
+
+      await player.loadAsync(
+        { uri: data.signedUrl },
+        { shouldPlay: true, positionMillis: pos }
+      );
+
+      console.log("[VIDEO] Re-sign successful", { phaseUniqueId });
+    } catch (e) {
+      console.error("[VIDEO] Re-sign failed", e);
+    }
+  };
+
+  // ⭐ Shared playback handler
+  const handlePlayback = (s) => {
+    updateProgress(s);
+
+    if (s?.error) {
+      console.warn("[VIDEO] Playback error → token expired", {
+        phaseUniqueId,
+        error: s.error,
+      });
+      resignAndReload(); // ✅ AUTO RECOVERY
+    }
+  };
+
   // ⭐ Like Toggle
   async function toggleLike() {
     if (!user?.id) return;
-
     setLiked(!liked);
 
     await supabase.rpc("toggle_video_like_v1", {
@@ -93,7 +145,6 @@ export default function VideoScreen({
   // ⭐ Bookmark Toggle
   async function toggleBookmark() {
     if (!user?.id) return;
-
     setBookmark(!bookmark);
 
     await supabase.rpc("toggle_video_bookmark_v1", {
@@ -107,18 +158,15 @@ export default function VideoScreen({
       {/* VIDEO PLAYER */}
       <TouchableOpacity onPress={() => setFullScreen(true)}>
         <Video
-          ref={videoRef}
+          ref={inlineRef}
           style={styles.video}
           source={{ uri: videoUrl }}
           posterSource={{ uri: posterUrl }}
           usePoster={!!posterUrl}
           resizeMode={ResizeMode.CONTAIN}
           useNativeControls
-          onPlaybackStatusUpdate={(s) => {
-            setStatus(s);
-            updateProgress(s);
-          }}
           rate={speed}
+          onPlaybackStatusUpdate={handlePlayback}
         />
       </TouchableOpacity>
 
@@ -170,16 +218,13 @@ export default function VideoScreen({
           </TouchableOpacity>
 
           <Video
-            ref={videoRef}
+            ref={fullscreenRef}
             style={styles.fullVideo}
             source={{ uri: videoUrl }}
             resizeMode={ResizeMode.CONTAIN}
             useNativeControls
-            onPlaybackStatusUpdate={(s) => {
-              setStatus(s);
-              updateProgress(s);
-            }}
             rate={speed}
+            onPlaybackStatusUpdate={handlePlayback}
           />
         </View>
       </Modal>
