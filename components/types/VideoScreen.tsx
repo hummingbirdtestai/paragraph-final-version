@@ -12,7 +12,7 @@ import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function VideoScreen({
+function VideoScreen({
   videoUrl,
   videoUrlPath, // ✅ ADD THIS (bunny_video_path)
   posterUrl,
@@ -231,6 +231,10 @@ export default function VideoScreen({
     </View>
   );
 }
+
+/* 🔑 EXPORTS — THIS IS THE FIX */
+export default VideoScreen;
+export const VideoCard = VideoScreen;
 
 const styles = StyleSheet.create({
   video: {
