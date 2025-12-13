@@ -195,7 +195,13 @@ export default function VideoScreen() {
       );
     
       return isWeb ? (
-        <View style={styles.webFeedColumn}>{content}</View>
+        <View style={styles.webFeedShell}>
+          <View style={styles.webFeedColumn}>
+            <View style={{ alignSelf: "center", width: "100%", maxWidth: 420 }}>
+              {content}
+            </View>
+          </View>
+        </View>
       ) : (
         content
       );
@@ -366,10 +372,9 @@ videoFeedItem: {
     elevation: 6,
   },
 
-    webFeedColumn: {
-    alignSelf: "center",
+  webFeedColumn: {
     width: "100%",
-    maxWidth: 420,        // 🔥 phone-like width (LinkedIn magic)
+    maxWidth: 720,          // ✅ ChatGPT-like width
   },
 
     webFeedShell: {
