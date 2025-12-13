@@ -636,7 +636,9 @@ parsed.subject_id = data.subject_id || subjectId;
   />
 )}
 
-      {isMobile && !headerVisible && (
+      <BottomNav />
+
+      {isMobile && !headerVisible && hasScrolled && (
         <TouchableOpacity
           style={styles.fab}
           onPress={() => setHeaderVisible(true)}
@@ -644,8 +646,6 @@ parsed.subject_id = data.subject_id || subjectId;
           <Filter size={24} color="#fff" />
         </TouchableOpacity>
       )}
-
-      <BottomNav />
 
       {/* AUTH MODALS */}
       <LoginModal
