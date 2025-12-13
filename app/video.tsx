@@ -24,8 +24,13 @@ import HighYieldFactsScreen from "@/components/types/HighYieldFactsScreen";
 import { Platform } from "react-native";
 
 export default function VideoScreen() {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
+  const { width, height } = useWindowDimensions();
+  
+  // Mobile = native mobile OR mobile browser
+  const isMobile =
+    Platform.OS === "ios" ||
+    Platform.OS === "android" ||
+    (Platform.OS === "web" && width < 1024);
 
   // Scroll detection
   const { direction, onScroll } = useScrollDirection();
