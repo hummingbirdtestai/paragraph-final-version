@@ -296,11 +296,13 @@ const styles = StyleSheet.create({
   },
 
   /* ⭐ SURGICAL ADDITION */
-  videoWrapper: {
-    width: "100%",
-    marginHorizontal: -16, // cancels card padding
-    backgroundColor: "black",
-  },
+videoWrapper: {
+  width: "100%",
+  marginHorizontal: -16, // cancels card padding
+  backgroundColor: "black",
+  aspectRatio:
+    phase.phase_json?.aspect_ratio === "portrait" ? 9 / 16 : 16 / 9,
+},
 
   watchedBadge: {
     position: "absolute",
