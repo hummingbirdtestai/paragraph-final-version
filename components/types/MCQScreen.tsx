@@ -430,8 +430,25 @@ function FeedbackSection({
 }
 
 /* MARKUP PARSER */
-function renderMarkupText(content: string, baseStyle: any) {
+function renderMarkupText(content: string | undefined | null, baseStyle: any) {
+  if (!content || typeof content !== "string") {
+    return null;
+  }
+
   const lines = content.split("\n");
+
+  return (
+    <Text style={baseStyle}>
+      {lines.map((line, lineIndex) => (
+        <React.Fragment key={lineIndex}>
+          {parseInlineMarkup(line)}
+          {lineIndex < lines.length - 1 && "\n"}
+        </React.Fragment>
+      ))}
+    </Text>
+  );
+}
+
 
   return (
     <Text style={baseStyle}>
