@@ -197,9 +197,6 @@ export default function VideoScreen() {
       return isWeb ? (
         <View style={styles.webFeedShell}>
           <View style={styles.webFeedColumn}>
-            <View style={{ alignSelf: "center", width: "100%", maxWidth: 420 }}>
-              {content}
-            </View>
           </View>
         </View>
       ) : (
