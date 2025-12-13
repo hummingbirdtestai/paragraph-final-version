@@ -1,13 +1,19 @@
 import { useEffect, useRef } from "react";
 import Player from "@vimeo/player";
 
+type VimeoPlayerProps = {
+  vimeoId: number | string;
+  onProgress?: (current: number, duration: number) => void;
+  onEnded?: () => void;
+};
+
 export default function VimeoPlayer({
   vimeoId,
   onProgress,
   onEnded,
-}) {
+}: VimeoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<Player | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || !vimeoId) return;
@@ -22,10 +28,10 @@ export default function VimeoPlayer({
 
     let lastSent = 0;
 
-    // ⏱ Progress tracking (throttled)
+    // ⏱ Throttled progress tracking (every 5s)
     player.on("timeupdate", (data) => {
       const now = Date.now();
-      if (now - lastSent > 5000) {
+      if (now - lastSent >= 5000) {
         lastSent = now;
         onProgress?.(data.seconds, data.duration);
       }
@@ -37,18 +43,17 @@ export default function VimeoPlayer({
 
     return () => {
       player.destroy();
+      playerRef.current = null;
     };
-  }, [vimeoId]);
+  }, [vimeoId, onProgress, onEnded]);
 
   return (
     <div
       ref={containerRef}
       style={{
         width: "100%",
-        aspectRatio: "9 / 16",
-        borderRadius: 12,
-        overflow: "hidden",
-        background: "#000",
+        height: "100%",
+        backgroundColor: "#000",
       }}
     />
   );
