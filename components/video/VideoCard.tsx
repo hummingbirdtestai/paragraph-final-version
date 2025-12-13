@@ -68,7 +68,15 @@ export function VideoCard({ phase }) {
 
       {/* ⭐⭐⭐ VIDEO BLOCK — SURGICAL & SAFE ⭐⭐⭐ */}
       {isVideo && phase.phase_json?.vimeo_video_id ? (
-        <View style={styles.videoWrapper}>
+        <View
+  style={[
+    styles.videoWrapper,
+    {
+      aspectRatio:
+        phase.phase_json?.aspect_ratio === "portrait" ? 9 / 16 : 16 / 9,
+    },
+  ]}
+>
           <VimeoPlayer
             vimeoId={phase.phase_json.vimeo_video_id}
             onProgress={(current, duration) => {
