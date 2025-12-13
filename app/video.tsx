@@ -176,8 +176,29 @@ export default function VideoScreen() {
     });
   
     if (item.phase_type === "video") {
-      return <VideoCard phase={item} />;
+      return (
+        <View
+          style={[
+            styles.videoFeedItem,
+            {
+              aspectRatio:
+                item.phase_json?.aspect_ratio === "portrait" ? 9 / 16 : 16 / 9,
+            },
+          ]}
+        >
+          <VimeoPlayer
+            vimeoId={item.phase_json?.vimeo_video_id}
+            onProgress={(current, duration) => {
+              console.log("⏱ progress", item.id, current, duration);
+            }}
+            onEnded={() => {
+              console.log("🏁 ended", item.id);
+            }}
+          />
+        </View>
+      );
     }
+
   
     if (item.phase_type === "concept") {
       return (
