@@ -64,19 +64,16 @@ export default function BunnyMobilePlayer({
     <View style={{ height: 400, borderRadius: 12, overflow: "hidden" }}>
       <WebView
         source={{ html }}
+        javaScriptEnabled={true}
+        originWhitelist={["*"]}
+        allowsInlineMediaPlayback={true}
+        mediaPlaybackRequiresUserAction={true}
         allowsFullscreenVideo
-        mediaPlaybackRequiresUserAction
         onMessage={(event) => {
           try {
             const msg = JSON.parse(event.nativeEvent.data);
-
-            if (msg.type === "progress") {
-              onProgress?.(msg.current, msg.duration);
-            }
-
-            if (msg.type === "ended") {
-              onEnded?.();
-            }
+            if (msg.type === "progress") onProgress?.(msg.current, msg.duration);
+            if (msg.type === "ended") onEnded?.();
           } catch {}
         }}
       />
