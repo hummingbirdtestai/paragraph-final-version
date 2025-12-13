@@ -429,18 +429,20 @@ const FlashcardFeed: React.FC<FlashcardFeedProps> = ({ onScrollDirectionChange }
   const isMobile = width < 768;
 
   const { direction, onScroll } = useScrollDirection();
-  const [containersVisible, setContainersVisible] = useState(true);
-  const isHidden = isMobile && direction === "down" && !containersVisible;
+  const [manualOverride, setManualOverride] = useState(false);
+
+  const shouldHideContainers = isMobile && direction === "down" && !manualOverride;
+  const shouldShowFab = isMobile && direction === "down";
 
   useEffect(() => {
-    if (isMobile && direction === "down") {
-      setContainersVisible(false);
+    if (direction === "up") {
+      setManualOverride(false);
     }
-  }, [direction, isMobile]);
+  }, [direction]);
 
   useEffect(() => {
-    onScrollDirectionChange?.(isHidden);
-  }, [isHidden, onScrollDirectionChange]);
+    onScrollDirectionChange?.(shouldHideContainers);
+  }, [shouldHideContainers, onScrollDirectionChange]);
 
   const [selectedSubject, setSelectedSubject] = useState('Anatomy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
@@ -644,7 +646,7 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      {!isHidden && (
+      {!shouldHideContainers && (
         <View>
           <ScrollView
             horizontal
@@ -794,10 +796,10 @@ useEffect(() => {
         </View>
       )}
 
-      {isMobile && !containersVisible && (
+      {shouldShowFab && (
         <TouchableOpacity
           style={styles.fab}
-          onPress={() => setContainersVisible(true)}
+          onPress={() => setManualOverride(true)}
         >
           <Filter size={24} color="#fff" />
         </TouchableOpacity>
