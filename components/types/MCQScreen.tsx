@@ -39,6 +39,7 @@ export default function MCQChatScreen({
   phaseUniqueId,
   practicecardId,
   subject,
+  mode = "practice",   // 👈 ADD THIS (DEFAULT)
 }: {
   item: MCQData;
   onNext?: () => void;
@@ -56,6 +57,7 @@ export default function MCQChatScreen({
   phaseUniqueId: string;
   practicecardId?: string;
   subject?: string;
+  mode?: "practice" | "video";   // 👈 ADD THIS
 }) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
