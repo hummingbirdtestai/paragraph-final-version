@@ -107,30 +107,58 @@ const handleOptionSelect = async (option: string) => {
     return;
   }
 
-// ⭐ NORMAL MODE — Call new RPC: my_answers
-console.log("📤 [MCQScreen] Submitting MCQ RPC → my_answers", {
-  p_student_id: studentId,
-  p_mcq_id: mcqId,
-  p_student_answer: option,
-  p_is_correct: is_correct,
-  p_correct_answer: correct_answer,
-});
+// ==============================
+// PRACTICE MODE (DEFAULT)
+// ==============================
+if (mode === "practice") {
+  console.log("📤 PRACTICE MCQ → my_answers", mcqId);
 
-try {
-  const { data, error } = await supabase.rpc("my_answers", {
-    p_student_id: studentId,
-    p_mcq_id: mcqId,
-    p_student_answer: option,
-    p_is_correct: is_correct,
-    p_correct_answer: correct_answer,
-  });
+  try {
+    const { error } = await supabase.rpc("my_answers", {
+      p_student_id: studentId,
+      p_mcq_id: mcqId,
+      p_student_answer: option,
+      p_is_correct: is_correct,
+      p_correct_answer: correct_answer,
+    });
 
-  if (error) {
-    console.log("❌ [MCQScreen] RPC ERROR my_answers:", error);
-    return;
+    if (error) {
+      console.log("❌ my_answers error:", error);
+    }
+  } catch (err) {
+    console.log("🔥 my_answers exception:", err);
   }
 
-  console.log("🟢 [MCQScreen] RPC SUCCESS → my_answers submitted");
+  return;
+}
+
+// ==============================
+// VIDEO MODE
+// ==============================
+if (mode === "video") {
+  console.log("📤 VIDEO MCQ → submit_video_mcq_answer_v1", mcqId);
+
+  try {
+    const { error } = await supabase.rpc(
+      "submit_video_mcq_answer_v1",
+      {
+        p_student_id: studentId,
+        p_video_mcq_id: mcqId,
+        p_student_answer: option,
+        p_is_correct: is_correct,
+        p_correct_answer: correct_answer,
+        p_video_mcq_unique_id: phaseUniqueId,
+      }
+    );
+
+    if (error) {
+      console.log("❌ submit_video_mcq_answer_v1 error:", error);
+    }
+  } catch (err) {
+    console.log("🔥 submit_video_mcq_answer_v1 exception:", err);
+  }
+
+  return;
 } catch (exception) {
   console.log("🔥 [MCQScreen] EXCEPTION during my_answers submit:", exception);
 }
