@@ -58,13 +58,6 @@ export function VideoCard({ phase }) {
       });
     }
   }, [phase]);
-
-  // 🔧 FIX: Reset hover state on unmount (web list recycling safety)
-  React.useEffect(() => {
-    return () => {
-      setIsHovered(false);
-    };
-  }, []);
   
   const ORCHESTRATOR_URL =
     "https://paragraph-pg-production.up.railway.app/orchestrate";
