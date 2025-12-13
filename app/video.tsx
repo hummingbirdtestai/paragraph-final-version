@@ -31,6 +31,7 @@ export default function VideoScreen() {
     Platform.OS === "ios" ||
     Platform.OS === "android" ||
     (Platform.OS === "web" && width < 1024);
+  const isLandscape = width > height;
 
   // Scroll detection
   const { direction, onScroll } = useScrollDirection();
@@ -65,8 +66,7 @@ export default function VideoScreen() {
   const [showScrollControls, setShowScrollControls] = useState(false);
    // ✅ FIX 1 — declare ref BEFORE scroll effect
   const listRef = React.useRef<FlatList>(null);
-   const isWeb = Platform.OS === "web";
-
+  const isWeb = Platform.OS === "web" && !isMobile;
   
   useEffect(() => {
     const loadUser = async () => {
