@@ -449,17 +449,6 @@ function renderMarkupText(content: string | undefined | null, baseStyle: any) {
   );
 }
 
-    <Text style={baseStyle}>
-      {lines.map((line, lineIndex) => (
-        <React.Fragment key={lineIndex}>
-          {parseInlineMarkup(line)}
-          {lineIndex < lines.length - 1 && "\n"}
-        </React.Fragment>
-      ))}
-    </Text>
-  );
-}
-
 function parseInlineMarkup(text: string) {
   const parts: React.ReactNode[] = [];
   let key = 0;
