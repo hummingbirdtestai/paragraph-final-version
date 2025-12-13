@@ -216,7 +216,9 @@ export default function VideoScreen() {
       );
 
       return isWeb ? (
-        <View style={styles.webFeedColumn}>{content}</View>
+        <View style={styles.webFeedShell}>
+          <View style={styles.webFeedColumn}>{content}</View>
+        </View>
       ) : (
         content
       );
@@ -225,10 +227,12 @@ export default function VideoScreen() {
     const content = <PracticeCard phase={item} />;
     
     return isWeb ? (
-      <View style={styles.webFeedColumn}>{content}</View>
+      <View style={styles.webFeedShell}>
+        <View style={styles.webFeedColumn}>{content}</View>
+      </View>
     ) : (
       content
-    );
+    ); 
   }}
   contentContainerStyle={styles.cardsWrapper}
   refreshControl={
