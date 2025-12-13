@@ -203,7 +203,19 @@ export default function VideoScreen() {
   
     if (item.phase_type === "concept") {
       return (
-        <View style={Platform.OS === "web" ? styles.conceptCardWrapper : undefined}>
+        const content = (
+            <HighYieldFactsScreen
+              topic={item.phase_json?.topic ?? "Concept"}
+              conceptMarkdown={item.phase_json?.concept ?? ""}
+            />
+          );
+          
+          return isWeb ? (
+            <View style={styles.webFeedColumn}>{content}</View>
+          ) : (
+            content
+          );
+
           <HighYieldFactsScreen
             topic={item.phase_json?.topic ?? "Concept"}
             conceptMarkdown={item.phase_json?.concept ?? ""}
