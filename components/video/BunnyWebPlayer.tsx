@@ -21,9 +21,18 @@ export default function BunnyWebPlayer({
       preload: "metadata",
     });
 
+    let lastSent = 0;
+    
     player.on("timeupdate", (t) => {
-      onProgress?.(t.currentTime, t.duration);
+      const now = Date.now();
+    
+      // send only once every 5 seconds
+      if (now - lastSent > 5000) {
+        lastSent = now;
+        onProgress?.(t.currentTime, t.duration);
+      }
     });
+
 
     player.on("ended", () => {
       onEnded?.();
