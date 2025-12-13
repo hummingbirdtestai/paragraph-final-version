@@ -17,11 +17,11 @@ interface MCQData {
   id: string;
   stem: string;
   options: { [key: string]: string } | string[];
-  feedback: {
+  feedback: string | {
     wrong: string;
     correct: string;
   };
-  learning_gap: string;
+  learning_gap?: string;
   correct_answer: string;
 }
 
@@ -110,7 +110,9 @@ export default function VideoMCQScreen({
         {(reviewMode || selectedOption) && (
           <FeedbackSection
             feedback={
-              reviewMode
+              typeof item.feedback === "string"
+                ? item.feedback
+                : reviewMode
                 ? item.feedback.correct
                 : isCorrect
                 ? item.feedback.correct
@@ -288,10 +290,11 @@ function FeedbackSection({
         {renderMarkupText(feedback, styles.feedbackText)}
       </View>
 
-      <View style={styles.learningGapCard}>
-        <Text style={styles.learningGapTitle}>Learning Gap</Text>
-        {renderMarkupText(learningGap, styles.learningGapText)}
-      </View>
+      {learningGap && (
+        <View style={styles.learningGapCard}>
+          {renderMarkupText(learningGap, styles.learningGapText)}
+        </View>
+      )}
 
       <View style={styles.correctAnswerCard}>
         <Text style={styles.correctAnswerText}>
