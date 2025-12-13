@@ -168,25 +168,30 @@ export default function VideoScreen() {
   ref={listRef}
   data={phases}
   keyExtractor={(item) => item.id}
-  renderItem={({ item }) => {
-  if (item.phase_type === "video") {
-    return <VideoCard phase={item} />;
-  }
-
-  if (item.phase_type === "concept") {
-    return (
-      <View style={Platform.OS === "web" ? styles.conceptCardWrapper : undefined}>
-        <HighYieldFactsScreen
-          topic={item.phase_json?.topic ?? "Concept"}
-          conceptMarkdown={item.phase_json?.concept ?? ""}
-        />
-      </View>
-    );
-  }
-
-  // fallback (mcq or others)
-  return <PracticeCard phase={item} />;
-}}
+  renderItem={({ item, index }) => {
+    console.log("📦 renderItem", {
+      index,
+      id: item.id,
+      type: item.phase_type,
+    });
+  
+    if (item.phase_type === "video") {
+      return <VideoCard phase={item} />;
+    }
+  
+    if (item.phase_type === "concept") {
+      return (
+        <View style={Platform.OS === "web" ? styles.conceptCardWrapper : undefined}>
+          <HighYieldFactsScreen
+            topic={item.phase_json?.topic ?? "Concept"}
+            conceptMarkdown={item.phase_json?.concept ?? ""}
+          />
+        </View>
+      );
+    }
+  
+    return <PracticeCard phase={item} />;
+  }}
   contentContainerStyle={styles.cardsWrapper}
   refreshControl={
     <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
