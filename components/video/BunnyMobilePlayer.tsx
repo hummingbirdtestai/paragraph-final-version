@@ -32,15 +32,23 @@ export default function BunnyMobilePlayer({
         autoplay: false
       });
 
+      let lastSent = 0;
+
       player.on("timeupdate", (t) => {
-        window.ReactNativeWebView.postMessage(
-          JSON.stringify({
-            type: "progress",
-            current: t.currentTime,
-            duration: t.duration
-          })
-        );
+        const now = Date.now();
+      
+        if (now - lastSent > 5000) {
+          lastSent = now;
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({
+              type: "progress",
+              current: t.currentTime,
+              duration: t.duration
+            })
+          );
+        }
       });
+
 
       player.on("ended", () => {
         window.ReactNativeWebView.postMessage(
