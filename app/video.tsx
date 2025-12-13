@@ -223,7 +223,17 @@ export default function VideoScreen() {
       );
     }
   
-    const content = <PracticeCard phase={item} />;
+    if (item.phase_type === "mcq") {
+  const content = <VideoCard phase={item} />;
+
+  return isWeb ? (
+    <View style={styles.webFeedShell}>
+      <View style={styles.webFeedColumn}>{content}</View>
+    </View>
+  ) : (
+    content
+  );
+}
     
     return isWeb ? (
       <View style={styles.webFeedShell}>
