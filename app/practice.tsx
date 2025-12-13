@@ -10,22 +10,20 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown } from "lucide-react-native";
+import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { usePracticeData } from "@/hooks/usePracticeData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
-import { FlatList } from "react-native";   // 🔥 REQUIRED FOR PAGINATION
+import { FlatList } from "react-native";
 
 export default function PracticeScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
-  // Scroll detection
-  const { direction, onScroll } = useScrollDirection();
-  const isHidden = isMobile && direction === "down";
+  const [containersVisible, setContainersVisible] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   const subjects = [
     "General Medicine",
@@ -87,11 +85,10 @@ export default function PracticeScreen() {
 
 
   return (
-    <MainLayout isHeaderHidden={isHidden}>
+    <MainLayout isHeaderHidden={isMobile && !containersVisible}>
       <View style={styles.container}>
 
-        {/* ⭐ SUBJECT + CATEGORY HIDE ON SCROLL (mobile only) */}
-        {!isHidden && (
+        {(containersVisible || !isMobile) && (
           <View style={styles.headerBlock}>
             <ScrollView
               horizontal
@@ -172,10 +169,17 @@ export default function PracticeScreen() {
     <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
   }
   onScroll={(e) => {
-    if (isMobile) {
-      onScroll(e);
-    }
     const offsetY = e.nativeEvent.contentOffset.y;
+
+    if (isMobile && offsetY > 10) {
+      if (!hasScrolled) {
+        setHasScrolled(true);
+      }
+      if (containersVisible) {
+        setContainersVisible(false);
+      }
+    }
+
     if (offsetY > 100) {
       setShowScrollControls(true);
     } else {
@@ -209,6 +213,15 @@ export default function PracticeScreen() {
     ) : null
   }
 />
+        )}
+
+        {isMobile && !containersVisible && (
+          <TouchableOpacity
+            style={styles.fab}
+            onPress={() => setContainersVisible(true)}
+          >
+            <Filter size={24} color="#fff" />
+          </TouchableOpacity>
         )}
 
         {showScrollControls && (
@@ -298,5 +311,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 6,
+  },
+
+  fab: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#10b981",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
   },
 });

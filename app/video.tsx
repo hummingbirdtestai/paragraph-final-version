@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown } from "lucide-react-native";
+import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import VimeoPlayer from "@/components/video/VimeoPlayer";
@@ -18,23 +18,20 @@ import { VideoCard } from "@/components/video/VideoCard";
 import { useVideoData } from "@/hooks/useVideoData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
-import { FlatList } from "react-native";   // 🔥 REQUIRED FOR PAGINATION
+import { FlatList } from "react-native";
 import HighYieldFactsScreen from "@/components/types/HighYieldFactsScreen";
 
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
-  
-  // Mobile = native mobile OR mobile browser
+
   const isMobile =
     Platform.OS === "ios" ||
     Platform.OS === "android" ||
     (Platform.OS === "web" && width < 1024);
   const isLandscape = width > height;
 
-  // Scroll detection
-  const { direction, onScroll } = useScrollDirection();
-  const isHidden = isMobile && direction === "down";
+  const [containersVisible, setContainersVisible] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   const subjects = [
     "Anatomy",
@@ -95,11 +92,10 @@ export default function VideoScreen() {
 
 
   return (
-    <MainLayout isHeaderHidden={isHidden}>
+    <MainLayout isHeaderHidden={isMobile && !containersVisible}>
       <View style={styles.container}>
 
-        {/* ⭐ SUBJECT + CATEGORY HIDE ON SCROLL (mobile only) */}
-        {!isHidden && (
+        {(containersVisible || !isMobile) && (
           <View style={styles.headerBlock}>
             <ScrollView
               horizontal
@@ -242,8 +238,17 @@ export default function VideoScreen() {
     <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
   }
   onScroll={(event) => {
-    if (isMobile) onScroll(event);
     const offsetY = event.nativeEvent.contentOffset.y;
+
+    if (isMobile && offsetY > 10) {
+      if (!hasScrolled) {
+        setHasScrolled(true);
+      }
+      if (containersVisible) {
+        setContainersVisible(false);
+      }
+    }
+
     setShowScrollControls(offsetY > 100);
   }}
   scrollEventThrottle={16}
@@ -274,6 +279,15 @@ removeClippedSubviews={false}
     ) : null
   }
 />
+        )}
+
+        {isMobile && !containersVisible && (
+          <TouchableOpacity
+            style={styles.fab}
+            onPress={() => setContainersVisible(true)}
+          >
+            <Filter size={24} color="#fff" />
+          </TouchableOpacity>
         )}
 
         {showScrollControls && (
@@ -379,14 +393,31 @@ videoFeedItem: {
     elevation: 6,
   },
 
-  webFeedColumn: {
-    width: "100%",
-    maxWidth: 720,          // ✅ ChatGPT-like width
+  fab: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#10b981",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
   },
 
-    webFeedShell: {
+  webFeedColumn: {
     width: "100%",
-    paddingHorizontal: 24,   // 👈 reduces excessive dark sides
+    maxWidth: 720,
+  },
+
+  webFeedShell: {
+    width: "100%",
+    paddingHorizontal: 24,
     alignItems: "center",
   },
 });
