@@ -36,6 +36,14 @@ export function VideoCard({ phase }) {
     is_bookmarked: phase.is_video_bookmarked ?? false,
   });
 
+React.useEffect(() => {
+  console.log("🟢 VideoCard MOUNT", phase.id);
+
+  return () => {
+    console.log("🔴 VideoCard UNMOUNT", phase.id);
+  };
+}, []);
+  
   // DEBUG LOGS — UNTOUCHED
   React.useEffect(() => {
     if (isConcept) {
