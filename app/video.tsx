@@ -21,6 +21,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { FlatList } from "react-native";   // 🔥 REQUIRED FOR PAGINATION
 import HighYieldFactsScreen from "@/components/types/HighYieldFactsScreen";
+import { Platform } from "react-native";
 
 export default function VideoScreen() {
   const { width } = useWindowDimensions();
