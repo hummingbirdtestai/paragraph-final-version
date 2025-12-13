@@ -13,6 +13,7 @@ import {
 import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
+import VimeoPlayer from "@/components/video/VimeoPlayer";
 import { VideoCard } from "@/components/video/VideoCard";
 import { useVideoData } from "@/hooks/useVideoData";
 import MainLayout from "@/components/MainLayout";
@@ -277,7 +278,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 100,
   },
-
+// 🎬 VIDEO FEED ITEM (ADD THIS)
+videoFeedItem: {
+  width: "100%",
+  backgroundColor: "#000",
+  marginBottom: 16,
+},
   categoryContainer: {
     flexDirection: "row",
     gap: 16,
