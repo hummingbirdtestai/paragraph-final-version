@@ -218,6 +218,7 @@ React.useEffect(() => {
           reviewMode={false}
           hideInternalNext={true}
           phaseUniqueId={phase.id}
+          mode="video"
         />
       )}
 
