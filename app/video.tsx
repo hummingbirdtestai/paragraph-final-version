@@ -202,25 +202,17 @@ export default function VideoScreen() {
     }
   
     if (item.phase_type === "concept") {
-      return (
-        const content = (
-            <HighYieldFactsScreen
-              topic={item.phase_json?.topic ?? "Concept"}
-              conceptMarkdown={item.phase_json?.concept ?? ""}
-            />
-          );
-          
-          return isWeb ? (
-            <View style={styles.webFeedColumn}>{content}</View>
-          ) : (
-            content
-          );
+      const content = (
+        <HighYieldFactsScreen
+          topic={item.phase_json?.topic ?? "Concept"}
+          conceptMarkdown={item.phase_json?.concept ?? ""}
+        />
+      );
 
-          <HighYieldFactsScreen
-            topic={item.phase_json?.topic ?? "Concept"}
-            conceptMarkdown={item.phase_json?.concept ?? ""}
-          />
-        </View>
+      return isWeb ? (
+        <View style={styles.webFeedColumn}>{content}</View>
+      ) : (
+        content
       );
     }
   
