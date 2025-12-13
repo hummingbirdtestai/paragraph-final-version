@@ -428,21 +428,11 @@ const FlashcardFeed: React.FC<FlashcardFeedProps> = ({ onScrollDirectionChange }
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
-  const { direction, onScroll } = useScrollDirection();
-  const [manualOverride, setManualOverride] = useState(false);
-
-  const shouldHideContainers = isMobile && direction === "down" && !manualOverride;
-  const shouldShowFab = isMobile && direction === "down";
+  const [containersVisible, setContainersVisible] = useState(true);
 
   useEffect(() => {
-    if (direction === "up") {
-      setManualOverride(false);
-    }
-  }, [direction]);
-
-  useEffect(() => {
-    onScrollDirectionChange?.(shouldHideContainers);
-  }, [shouldHideContainers, onScrollDirectionChange]);
+    onScrollDirectionChange?.(!containersVisible && isMobile);
+  }, [containersVisible, isMobile, onScrollDirectionChange]);
 
   const [selectedSubject, setSelectedSubject] = useState('Anatomy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('unviewed');
@@ -646,7 +636,7 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      {!shouldHideContainers && (
+      {(containersVisible || !isMobile) && (
         <View>
           <ScrollView
             horizontal
@@ -749,15 +739,21 @@ useEffect(() => {
     onEndReached={loadMore}
     onEndReachedThreshold={0.5}
     onScroll={(event) => {
-      if (isMobile) onScroll(event);
       const offsetY = event.nativeEvent.contentOffset.y;
-      setShowScrollControls(offsetY > 100);
+
+      if (isMobile && offsetY > 10) {
+        if (containersVisible) {
+          setContainersVisible(false);
+        }
+      }
+
+      if (offsetY > 100) {
+        setShowScrollControls(true);
+      } else {
+        setShowScrollControls(false);
+      }
     }}
     scrollEventThrottle={16}
-    onMomentumScrollBegin={isMobile ? onScroll : undefined}
-    onMomentumScrollEnd={isMobile ? onScroll : undefined}
-    onScrollBeginDrag={isMobile ? onScroll : undefined}
-    onScrollEndDrag={isMobile ? onScroll : undefined}
     disableIntervalMomentum={true}
     decelerationRate="fast"
   />
@@ -796,10 +792,10 @@ useEffect(() => {
         </View>
       )}
 
-      {shouldShowFab && (
+      {isMobile && !containersVisible && (
         <TouchableOpacity
           style={styles.fab}
-          onPress={() => setManualOverride(true)}
+          onPress={() => setContainersVisible(true)}
         >
           <Filter size={24} color="#fff" />
         </TouchableOpacity>
