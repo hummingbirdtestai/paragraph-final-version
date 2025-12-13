@@ -169,6 +169,7 @@ export default function VideoScreen() {
   ref={listRef}
   data={phases}
   keyExtractor={(item) => item.id}
+  contentContainerStyle={styles.cardsWrapper}   // ✅ ADD THIS LINE
   renderItem={({ item, index }) => {
     console.log("📦 renderItem", {
       index,
@@ -238,30 +239,8 @@ if (item.phase_type === "mcq") {
 console.warn("⚠️ Unknown phase_type in VideoScreen", item.phase_type);
 
 return null;
-
-    // ✅ ONLY non-video, non-concept, non-mcq items
-const content = <PracticeCard phase={item} />;
-
-return isWeb ? (
-  <View style={styles.webFeedShell}>
-    <View style={styles.webFeedColumn}>{content}</View>
-  </View>
-) : (
-  content
-);
-    
-    return isWeb ? (
-      <View style={styles.webFeedShell}>
-        <View style={styles.webFeedColumn}>{content}</View>
-      </View>
-    ) : (
-      content
-    ); 
-  }}
-  contentContainerStyle={styles.cardsWrapper}
-  refreshControl={
-    <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
-  }
+}}
+     
   onScroll={(event) => {
     const offsetY = event.nativeEvent.contentOffset.y;
 
