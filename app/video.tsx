@@ -366,4 +366,10 @@ videoFeedItem: {
     width: "100%",
     maxWidth: 800,
   },
+
+  webFeedColumn: {
+  alignSelf: "center",
+  width: "100%",
+  maxWidth: 420,        // 🔥 phone-like width (LinkedIn magic)
+},
 });
