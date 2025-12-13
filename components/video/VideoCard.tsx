@@ -15,6 +15,8 @@ import { Bookmark, Heart } from "lucide-react-native";
 
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { Platform } from "react-native";
+
 
 export function VideoCard({ phase }) {
   const isConcept = phase.phase_type === "concept";
