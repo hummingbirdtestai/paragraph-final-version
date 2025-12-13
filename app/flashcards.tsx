@@ -50,7 +50,7 @@ export default function FlashcardsChatScreen() {
   const [profile, setProfile] = useState(null);
   const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [allCompleted, setAllCompleted] = useState(false);
-  const [headerVisible, setHeaderVisible] = useState(true);
+  const [containersVisible, setContainersVisible] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
 
 
@@ -318,7 +318,7 @@ if (data.completed) {
   return (
     <SafeAreaView style={styles.container}>
 
-      {(headerVisible || !isMobile) && (
+      {(containersVisible || !isMobile) && (
         <PageHeader title="Flashcards">
           {phaseData?.seq_num && phaseData?.total_count ? (
             <Text style={styles.progressCount}>
@@ -340,8 +340,8 @@ if (data.completed) {
             if (!hasScrolled) {
               setHasScrolled(true);
             }
-            if (headerVisible) {
-              setHeaderVisible(false);
+            if (containersVisible) {
+              setContainersVisible(false);
             }
           }
         }}
@@ -638,10 +638,10 @@ parsed.subject_id = data.subject_id || subjectId;
 
       <BottomNav />
 
-      {isMobile && !headerVisible && hasScrolled && (
+      {isMobile && !containersVisible && (
         <TouchableOpacity
           style={styles.fab}
-          onPress={() => setHeaderVisible(true)}
+          onPress={() => setContainersVisible(true)}
         >
           <Filter size={24} color="#fff" />
         </TouchableOpacity>
