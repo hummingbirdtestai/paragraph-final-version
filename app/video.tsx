@@ -222,7 +222,7 @@ export default function VideoScreen() {
       );
     }
   
-    if (item.phase_type === "mcq") {
+if (item.phase_type === "mcq") {
   const content = <VideoCard phase={item} />;
 
   return isWeb ? (
@@ -233,6 +233,11 @@ export default function VideoScreen() {
     content
   );
 }
+
+// 🚨 Defensive fallback — should NEVER happen in video feed
+console.warn("⚠️ Unknown phase_type in VideoScreen", item.phase_type);
+
+return null;
 
     // ✅ ONLY non-video, non-concept, non-mcq items
 const content = <PracticeCard phase={item} />;
