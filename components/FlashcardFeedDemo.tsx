@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bookmark, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react-native';
+import { Bookmark, Eye, EyeOff, ArrowUp, ArrowDown, Filter } from 'lucide-react-native';
 import { supabase } from '../lib/supabaseClient';
 import Markdown from "react-native-markdown-display";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -429,7 +429,14 @@ const FlashcardFeed: React.FC<FlashcardFeedProps> = ({ onScrollDirectionChange }
   const isMobile = width < 768;
 
   const { direction, onScroll } = useScrollDirection();
-  const isHidden = isMobile && direction === "down";
+  const [containersVisible, setContainersVisible] = useState(true);
+  const isHidden = isMobile && direction === "down" && !containersVisible;
+
+  useEffect(() => {
+    if (isMobile && direction === "down") {
+      setContainersVisible(false);
+    }
+  }, [direction, isMobile]);
 
   useEffect(() => {
     onScrollDirectionChange?.(isHidden);
@@ -786,6 +793,15 @@ useEffect(() => {
           </TouchableOpacity>
         </View>
       )}
+
+      {isMobile && !containersVisible && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => setContainersVisible(true)}
+        >
+          <Filter size={24} color="#fff" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -1055,6 +1071,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 6,
+  },
+  fab: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#10b981",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
   },
 });
 
