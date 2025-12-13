@@ -4,7 +4,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 
 import ConceptChatScreen from "@/components/types/Conceptscreen";
 import MCQChatScreen from "@/components/types/MCQScreen";
-import VideoScreen from "@/components/types/VideoScreen";
+import UnifiedVideoPlayer from "@/components/video/UnifiedVideoPlayer";
 
 import { StudentBubble } from "@/components/chat/StudentBubble";
 import MentorBubbleReply from "@/components/types/MentorBubbleReply";
@@ -74,13 +74,27 @@ export function VideoCard({ phase }) {
 {isVideo && (
   <View>
     {/* 🎬 VIDEO */}
-    <VideoScreen
+    <UnifiedVideoPlayer
       videoUrl={phase.phase_json?.videoUrl}
       posterUrl={phase.phase_json?.posterUrl}
-      speedControls={true}
-      phaseUniqueId={phase.id}
-      progress_percent={phase.progress_percent}
+      onProgress={(current, duration) => {
+        const percent = Math.floor((current / duration) * 100);
+    
+        supabase.rpc("update_video_progress_v1", {
+          p_student_id: user.id,
+          p_phase_id: phase.id,
+          p_progress_percent: percent,
+        });
+    
+        if (percent >= 90) {
+          supabase.rpc("mark_video_completed_v1", {
+            p_student_id: user.id,
+            p_phase_id: phase.id,
+          });
+        }
+      }}
     />
+
 
     {/* WATCHED BADGE */}
     {phase.is_viewed && (
