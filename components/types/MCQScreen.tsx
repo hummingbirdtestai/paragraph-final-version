@@ -131,6 +131,17 @@ if (mode === "practice") {
 
   return;
 }
+if (!studentId) return;
+
+if (mode === "practice") {
+  try { my_answers } catch {}
+  return;
+}
+
+if (mode === "video") {
+  try { submit_video_mcq_answer_v1 } catch {}
+  return;
+}
 
 // ==============================
 // VIDEO MODE
