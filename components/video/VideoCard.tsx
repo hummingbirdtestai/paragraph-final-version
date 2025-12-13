@@ -87,7 +87,8 @@ export function VideoCard({ phase }) {
         </Text>
       </View>
     )}
-
+ </View>
+)}
     {/* PROGRESS BAR */}
     {phase.progress_percent > 0 && phase.progress_percent < 1 && (
       <View
