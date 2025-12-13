@@ -68,6 +68,9 @@ export function VideoCard({ phase }) {
 
       {/* ORIGINAL BOOKMARK (Concept/MCQ only) */}
       {/* ⭐⭐⭐ VIDEO BLOCK (Clean, no hover) ⭐⭐⭐ */}
+{isVideo && (
+  <View>
+    {/* 🎬 VIMEO PLAYER GOES HERE (later) */}
 
     {/* WATCHED BADGE */}
     {phase.is_viewed && (
@@ -87,8 +90,7 @@ export function VideoCard({ phase }) {
         </Text>
       </View>
     )}
- </View>
-)}
+
     {/* PROGRESS BAR */}
     {phase.progress_percent > 0 && phase.progress_percent < 1 && (
       <View
@@ -120,11 +122,7 @@ export function VideoCard({ phase }) {
     >
       {/* ❤️ LIKE */}
       <TouchableOpacity
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginRight: 16,
-        }}
+        style={{ flexDirection: "row", alignItems: "center", marginRight: 16 }}
         onPress={async () => {
           if (!user?.id) return;
 
@@ -185,7 +183,7 @@ export function VideoCard({ phase }) {
     </View>
   </View>
 )}
-      {/* END OF VIDEO BLOCK */}
+{/* END OF VIDEO BLOCK */}
 
 
       {/* ⭐⭐⭐ ORIGINAL CONCEPT BLOCK — UNTOUCHED ⭐⭐⭐ */}
