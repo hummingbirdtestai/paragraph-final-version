@@ -28,7 +28,7 @@ export function VideoCard({ phase }) {
   const [conversation, setConversation] = React.useState([]);
   const [isSending, setIsSending] = React.useState(false);
   const [isTyping, setIsTyping] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
+  
   // ORIGINAL bookmark for concept/mcq
   const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
