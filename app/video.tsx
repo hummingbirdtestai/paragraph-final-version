@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
-import { PracticeCard } from "@/components/PracticeCard";
 import VimeoPlayer from "@/components/video/VimeoPlayer";
 import { VideoCard } from "@/components/video/VideoCard";
 import { useVideoData } from "@/hooks/useVideoData";
