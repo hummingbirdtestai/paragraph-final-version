@@ -200,7 +200,8 @@ export default function VideoScreen() {
   initialNumToRender={8}
   maxToRenderPerBatch={6}
   windowSize={10}
-  removeClippedSubviews={true}
+removeClippedSubviews={false}
+
 
   onEndReached={() => {
     if (
