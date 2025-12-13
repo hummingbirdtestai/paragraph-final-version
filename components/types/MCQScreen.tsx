@@ -154,8 +154,13 @@ if (mode === "video") {
     if (error) {
       console.log("❌ submit_video_mcq_answer_v1 error:", error);
     }
+  } catch (err) {
+    console.log("🔥 submit_video_mcq_answer_v1 exception:", err);
+  }
 
   return;
+}
+
 } catch (exception) {
   console.log("🔥 [MCQScreen] EXCEPTION during my_answers submit:", exception);
 }
