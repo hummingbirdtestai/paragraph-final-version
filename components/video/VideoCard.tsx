@@ -74,15 +74,20 @@ export function VideoCard({ phase }) {
 <VimeoPlayer
   vimeoId={phase.phase_json?.vimeo_video_id}
   onProgress={(current, duration) => {
+    if (!user?.id) return;
+    if (!duration || duration === 0) return;
+
     const percent = Math.floor((current / duration) * 100);
 
+    // 🔁 update progress (throttle handled inside SDK component)
     supabase.rpc("update_video_progress_v1", {
       p_student_id: user.id,
       p_phase_id: phase.id,
       p_progress_percent: percent,
     });
 
-    if (percent >= 90) {
+    // ✅ mark completed once
+    if (percent >= 90 && !phase.is_viewed) {
       supabase.rpc("mark_video_completed_v1", {
         p_student_id: user.id,
         p_phase_id: phase.id,
@@ -90,12 +95,14 @@ export function VideoCard({ phase }) {
     }
   }}
   onEnded={() => {
+      if (!user?.id) return;
     supabase.rpc("mark_video_completed_v1", {
       p_student_id: user.id,
       p_phase_id: phase.id,
     });
   }}
 />
+
 
 
     {/* WATCHED BADGE */}
