@@ -176,6 +176,13 @@ export default function VideoScreen() {
     });
   
     if (item.phase_type === "video") {
+  const vimeoId = item.phase_json?.vimeo_video_id;
+
+  // 🚫 NO VIDEO URL → SKIP RENDER COMPLETELY
+  if (!vimeoId) {
+        return null;
+      }
+    
       return (
         <View
           style={[
@@ -187,7 +194,7 @@ export default function VideoScreen() {
           ]}
         >
           <VimeoPlayer
-            vimeoId={item.phase_json?.vimeo_video_id}
+            vimeoId={vimeoId}
             onProgress={(current, duration) => {
               console.log("⏱ progress", item.id, current, duration);
             }}
@@ -198,7 +205,6 @@ export default function VideoScreen() {
         </View>
       );
     }
-
   
     if (item.phase_type === "concept") {
       return (
