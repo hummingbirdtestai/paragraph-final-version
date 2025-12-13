@@ -449,8 +449,6 @@ function renderMarkupText(content: string | undefined | null, baseStyle: any) {
   );
 }
 
-
-  return (
     <Text style={baseStyle}>
       {lines.map((line, lineIndex) => (
         <React.Fragment key={lineIndex}>
