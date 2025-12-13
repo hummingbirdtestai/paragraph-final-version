@@ -131,17 +131,6 @@ if (mode === "practice") {
 
   return;
 }
-if (!studentId) return;
-
-if (mode === "practice") {
-  try { my_answers } catch {}
-  return;
-}
-
-if (mode === "video") {
-  try { submit_video_mcq_answer_v1 } catch {}
-  return;
-}
 
 // ==============================
 // VIDEO MODE
@@ -170,10 +159,6 @@ if (mode === "video") {
   }
 
   return;
-}
-
-} catch (exception) {
-  console.log("🔥 [MCQScreen] EXCEPTION during my_answers submit:", exception);
 }
 
 // ✅ CLOSE the handleOptionSelect function
