@@ -13,7 +13,7 @@ import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Platform } from "react-native";
-
+import VimeoPlayer from "@/components/video/VimeoPlayer";
 
 export function VideoCard({ phase }) {
   const isConcept = phase.phase_type === "concept";
@@ -70,7 +70,33 @@ export function VideoCard({ phase }) {
       {/* ⭐⭐⭐ VIDEO BLOCK (Clean, no hover) ⭐⭐⭐ */}
 {isVideo && (
   <View>
-    {/* 🎬 VIMEO PLAYER GOES HERE (later) */}
+
+<VimeoPlayer
+  vimeoId={phase.phase_json?.vimeo_video_id}
+  onProgress={(current, duration) => {
+    const percent = Math.floor((current / duration) * 100);
+
+    supabase.rpc("update_video_progress_v1", {
+      p_student_id: user.id,
+      p_phase_id: phase.id,
+      p_progress_percent: percent,
+    });
+
+    if (percent >= 90) {
+      supabase.rpc("mark_video_completed_v1", {
+        p_student_id: user.id,
+        p_phase_id: phase.id,
+      });
+    }
+  }}
+  onEnded={() => {
+    supabase.rpc("mark_video_completed_v1", {
+      p_student_id: user.id,
+      p_phase_id: phase.id,
+    });
+  }}
+/>
+
 
     {/* WATCHED BADGE */}
     {phase.is_viewed && (
