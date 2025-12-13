@@ -15,6 +15,17 @@ export default function VimeoPlayer({
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Player | null>(null);
 
+  // 🔒 Stable refs for callbacks (CRITICAL FIX)
+  const onProgressRef = useRef(onProgress);
+  const onEndedRef = useRef(onEnded);
+
+  // Update refs without re-creating player
+  useEffect(() => {
+    onProgressRef.current = onProgress;
+    onEndedRef.current = onEnded;
+  }, [onProgress, onEnded]);
+
+  // 🎬 Create / destroy player ONLY when video ID changes
   useEffect(() => {
     if (!containerRef.current || !vimeoId) return;
 
@@ -33,19 +44,19 @@ export default function VimeoPlayer({
       const now = Date.now();
       if (now - lastSent >= 5000) {
         lastSent = now;
-        onProgress?.(data.seconds, data.duration);
+        onProgressRef.current?.(data.seconds, data.duration);
       }
     });
 
     player.on("ended", () => {
-      onEnded?.();
+      onEndedRef.current?.();
     });
 
     return () => {
-      player.destroy();
+      player.destroy(); // ✅ runs ONLY when vimeoId changes or component unmounts
       playerRef.current = null;
     };
-  }, [vimeoId, onProgress, onEnded]);
+  }, [vimeoId]);
 
   return (
     <div
