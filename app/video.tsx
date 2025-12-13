@@ -224,7 +224,13 @@ export default function VideoScreen() {
       );
     }
   
-    return <PracticeCard phase={item} />;
+    const content = <PracticeCard phase={item} />;
+    
+    return isWeb ? (
+      <View style={styles.webFeedColumn}>{content}</View>
+    ) : (
+      content
+    );
   }}
   contentContainerStyle={styles.cardsWrapper}
   refreshControl={
