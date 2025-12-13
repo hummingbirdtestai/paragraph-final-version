@@ -59,6 +59,13 @@ export function VideoCard({ phase }) {
     }
   }, [phase]);
 
+  // 🔧 FIX: Reset hover state on unmount (web list recycling safety)
+  React.useEffect(() => {
+    return () => {
+      setIsHovered(false);
+    };
+  }, []);
+  
   const ORCHESTRATOR_URL =
     "https://paragraph-pg-production.up.railway.app/orchestrate";
 
@@ -142,6 +149,7 @@ export function VideoCard({ phase }) {
                   backgroundColor: "#000",
                 }}
                 resizeMode="cover"
+                pointerEvents="none"   // 🔧 FIX: allow clicks to pass through
               />
             ) : (
               /* 🎬 NORMAL VIDEO */
