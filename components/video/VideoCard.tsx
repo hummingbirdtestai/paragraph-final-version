@@ -68,9 +68,8 @@ export function VideoCard({ phase }) {
 
       {/* ORIGINAL BOOKMARK (Concept/MCQ only) */}
       {/* ⭐⭐⭐ VIDEO BLOCK (Clean, no hover) ⭐⭐⭐ */}
-{isVideo && (
-  <View>
-
+{isVideo && phase.phase_json?.vimeo_video_id && (
+ <View style={{ width: "100%", overflow: "hidden" }}>
 <VimeoPlayer
   vimeoId={phase.phase_json?.vimeo_video_id}
   onProgress={(current, duration) => {
