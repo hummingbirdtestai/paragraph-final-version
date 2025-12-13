@@ -4,15 +4,12 @@ import { View, Text, Image, StyleSheet } from "react-native";
 
 import ConceptChatScreen from "@/components/types/Conceptscreen";
 import MCQChatScreen from "@/components/types/MCQScreen";
-import UnifiedVideoPlayer from "@/components/video/UnifiedVideoPlayer";
-
 import { StudentBubble } from "@/components/chat/StudentBubble";
 import MentorBubbleReply from "@/components/types/MentorBubbleReply";
 import { MessageInput } from "@/components/chat/MessageInput";
 
 import { TouchableOpacity } from "react-native";
 import { Bookmark, Heart } from "lucide-react-native";
-
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { Platform } from "react-native";
@@ -54,7 +51,7 @@ export function VideoCard({ phase }) {
     if (isVideo) {
       console.log("🎬 Video Loaded", {
         video_id: phase.id,
-        url: phase.phase_json?.videoUrl,
+        vimeo_id: phase.phase_json?.vimeo_video_id,
       });
     }
   }, [phase]);
@@ -71,30 +68,6 @@ export function VideoCard({ phase }) {
 
       {/* ORIGINAL BOOKMARK (Concept/MCQ only) */}
       {/* ⭐⭐⭐ VIDEO BLOCK (Clean, no hover) ⭐⭐⭐ */}
-{isVideo && (
-  <View>
-    {/* 🎬 VIDEO */}
-    <UnifiedVideoPlayer
-      videoUrl={phase.phase_json?.videoUrl}
-      posterUrl={phase.phase_json?.posterUrl}
-      onProgress={(current, duration) => {
-        const percent = Math.floor((current / duration) * 100);
-    
-        supabase.rpc("update_video_progress_v1", {
-          p_student_id: user.id,
-          p_phase_id: phase.id,
-          p_progress_percent: percent,
-        });
-    
-        if (percent >= 90) {
-          supabase.rpc("mark_video_completed_v1", {
-            p_student_id: user.id,
-            p_phase_id: phase.id,
-          });
-        }
-      }}
-    />
-
 
     {/* WATCHED BADGE */}
     {phase.is_viewed && (
