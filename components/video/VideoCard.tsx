@@ -28,7 +28,7 @@ export function VideoCard({ phase }) {
   const [conversation, setConversation] = React.useState([]);
   const [isSending, setIsSending] = React.useState(false);
   const [isTyping, setIsTyping] = React.useState(false);
-
+  const [isHovered, setIsHovered] = React.useState(false);
   // ORIGINAL bookmark for concept/mcq
   const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
@@ -54,7 +54,7 @@ export function VideoCard({ phase }) {
     if (isVideo) {
       console.log("🎬 Video Loaded", {
         video_id: phase.id,
-        url: phase.phase_json?.video_url,
+        url: phase.phase_json?.videoUrl,
       });
     }
   }, [phase]);
@@ -111,16 +111,49 @@ export function VideoCard({ phase }) {
 
       {/* ⭐⭐⭐ VIDEO BLOCK (New) ⭐⭐⭐ */}
       {isVideo && (
-        <View>
-
-          {/* ▶️ Video */}
-          <VideoScreen
-            videoUrl={phase.phase_json?.video_url}
-            posterUrl={phase.phase_json?.poster_url}
-            speedControls={true}
-            phaseUniqueId={phase.id}
-            progress={phase.progress_percent}
-          />
+                  <View>
+          
+                    {/* ▶️ Video */}
+                    <View
+            onMouseEnter={() => {
+              if (
+                Platform.OS === "web" &&
+                phase.phase_json?.previewUrl
+              ) {
+                setIsHovered(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (Platform.OS === "web") {
+                setIsHovered(false);
+              }
+            }}
+          >
+            {Platform.OS === "web" &&
+            isHovered &&
+            phase.phase_json?.previewUrl ? (
+              /* 🔁 HOVER PREVIEW (animated WebP) */
+              <Image
+                source={{ uri: phase.phase_json.previewUrl }}
+                style={{
+                  width: "100%",
+                  height: 300,
+                  borderRadius: 10,
+                  backgroundColor: "#000",
+                }}
+                resizeMode="cover"
+              />
+            ) : (
+              /* 🎬 NORMAL VIDEO */
+              <VideoScreen
+                videoUrl={phase.phase_json?.videoUrl}
+                posterUrl={phase.phase_json?.posterUrl}
+                speedControls={true}
+                phaseUniqueId={phase.id}
+                progress_percent={phase.progress_percent}
+              />
+            )}
+          </View>
 
           {/* WATCHED BADGE */}
           {phase.is_viewed && (
