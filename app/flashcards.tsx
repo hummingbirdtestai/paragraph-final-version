@@ -1,5 +1,5 @@
 //app/flashcards.tsx
-import React, { useState ,useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -7,11 +7,13 @@ import {
   SafeAreaView,
   Pressable,
   ScrollView,
+  TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 import { theme } from "@/constants/theme";
 import { MentorBubble } from "@/components/chat/MentorBubble";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
-import MCQChatScreen from "@/components/types/MCQScreen"; // ✅ added
+import MCQChatScreen from "@/components/types/MCQScreen";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { LoginModal } from "@/components/auth/LoginModal";
@@ -24,13 +26,15 @@ import MentorIntroScreen from "@/components/types/MentorIntroScreen";
 import MentorBubbleReply from "@/components/types/MentorBubbleReply";
 import FlashcardSubjectSelection from "@/components/types/FlashcardSubjectSelection";
 import FlashcardScreen from "@/components/types/FlashcardScreen";
-import { Bookmark } from "lucide-react-native";
+import { Bookmark, Filter } from "lucide-react-native";
 import FlashcardsScreen from "@/components/landing/FlashcardIntro";
 import PageHeader from "@/components/common/PageHeader";
 
 export default function FlashcardsChatScreen() {
   const { user, loginWithOTP, verifyOTP } = useAuth();
   const isLoggedIn = !!user;
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
 
   const [canType, setCanType] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
@@ -39,14 +43,15 @@ export default function FlashcardsChatScreen() {
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phaseData, setPhaseData] = useState<any>(null);
-  // 💬 Local chat state and send lock
-const [conversation, setConversation] = useState<{ role: string; content: string }[]>([]);
-const [isSending, setIsSending] = useState(false);
+  const [conversation, setConversation] = useState<{ role: string; content: string }[]>([]);
+  const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
   const [profile, setProfile] = useState(null);
-const [showBlockedModal, setShowBlockedModal] = useState(false);
+  const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [allCompleted, setAllCompleted] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
 
   // ───────────────────────────────────────────────
@@ -313,21 +318,35 @@ if (data.completed) {
   return (
     <SafeAreaView style={styles.container}>
 
-      <PageHeader title="Flashcards">
-        {phaseData?.seq_num && phaseData?.total_count ? (
-          <Text style={styles.progressCount}>
-            {phaseData.seq_num} / {phaseData.total_count}
-          </Text>
-        ) : null}
-      </PageHeader>
-
+      {(headerVisible || !isMobile) && (
+        <PageHeader title="Flashcards">
+          {phaseData?.seq_num && phaseData?.total_count ? (
+            <Text style={styles.progressCount}>
+              {phaseData.seq_num} / {phaseData.total_count}
+            </Text>
+          ) : null}
+        </PageHeader>
+      )}
 
       <ScrollView
         ref={scrollViewRef}
-  style={styles.scroll}
-  contentContainerStyle={{ padding: 16, flexGrow: 1 }}
-  showsVerticalScrollIndicator={false}
->
+        style={styles.scroll}
+        contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        onScroll={(e) => {
+          const offsetY = e.nativeEvent.contentOffset.y;
+
+          if (isMobile && offsetY > 10) {
+            if (!hasScrolled) {
+              setHasScrolled(true);
+            }
+            if (headerVisible) {
+              setHeaderVisible(false);
+            }
+          }
+        }}
+        scrollEventThrottle={16}
+      >
   {/* 🗨️ Render live chat messages */}
   {!isLoggedIn ? (
   <FlashcardsScreen onSignUp={() => setShowLoginModal(true)} />
@@ -617,7 +636,14 @@ parsed.subject_id = data.subject_id || subjectId;
   />
 )}
 
-
+      {isMobile && !headerVisible && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => setHeaderVisible(true)}
+        >
+          <Filter size={24} color="#fff" />
+        </TouchableOpacity>
+      )}
 
       <BottomNav />
 
@@ -737,13 +763,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   progressCount: {
-  position: "absolute",
-  right: 16,
-  top: "50%",
-  transform: [{ translateY: -8 }],
-  color: "#25D366",          // WhatsApp green
-  fontWeight: "700",
-  fontSize: 16,
-},
+    position: "absolute",
+    right: 16,
+    top: "50%",
+    transform: [{ translateY: -8 }],
+    color: "#25D366",
+    fontWeight: "700",
+    fontSize: 16,
+  },
 
+  fab: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#25D366",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
+  },
 });
