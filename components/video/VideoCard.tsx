@@ -209,7 +209,7 @@ React.useEffect(() => {
 
       {/* MCQ — UNTOUCHED */}
       {isMCQ && (
-        <MCQChatScreen
+        <VideoMCQScreen
           item={phase.phase_json}
           conceptId={phase.concept_id_before_this_mcq}
           mcqId={phase.id}
@@ -218,7 +218,6 @@ React.useEffect(() => {
           reviewMode={false}
           hideInternalNext={true}
           phaseUniqueId={phase.id}
-          mode="video"
         />
       )}
 
