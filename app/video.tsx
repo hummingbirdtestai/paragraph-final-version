@@ -234,6 +234,17 @@ export default function VideoScreen() {
     content
   );
 }
+
+    // ✅ ONLY non-video, non-concept, non-mcq items
+const content = <PracticeCard phase={item} />;
+
+return isWeb ? (
+  <View style={styles.webFeedShell}>
+    <View style={styles.webFeedColumn}>{content}</View>
+  </View>
+) : (
+  content
+);
     
     return isWeb ? (
       <View style={styles.webFeedShell}>
