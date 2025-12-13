@@ -236,8 +236,7 @@ if (item.phase_type === "mcq") {
 }
 
 // 🚨 Defensive fallback — should NEVER happen in video feed
-console.warn("⚠️ Unknown phase_type in VideoScreen", item.phase_type);
-
+console.error("❌ Unknown phase_type in VideoScreen", item.phase_type);
 return null;
 }}
      
