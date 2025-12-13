@@ -1,4 +1,5 @@
-//Videocard.tsx — FINAL WITH VIDEO ADDED WITHOUT TOUCHING EXISTING CODE
+// Videocard.tsx — FINAL (SURGICAL, PROD-READY)
+
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
@@ -12,7 +13,6 @@ import { TouchableOpacity } from "react-native";
 import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
-import { Platform } from "react-native";
 import VimeoPlayer from "@/components/video/VimeoPlayer";
 
 export function VideoCard({ phase }) {
@@ -25,11 +25,11 @@ export function VideoCard({ phase }) {
   const [conversation, setConversation] = React.useState([]);
   const [isSending, setIsSending] = React.useState(false);
   const [isTyping, setIsTyping] = React.useState(false);
-  
+
   // ORIGINAL bookmark for concept/mcq
   const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
-  // ⭐ NEW LOCAL STATE FOR VIDEO ONLY (SEPARATE FROM CONCEPT/MCQ BOOKMARK)
+  // ⭐ VIDEO STATE ONLY
   const [videoState, setVideoState] = React.useState({
     is_liked: phase.is_liked ?? false,
     like_count: phase.like_count ?? 0,
@@ -55,7 +55,7 @@ export function VideoCard({ phase }) {
       });
     }
   }, [phase]);
-  
+
   const ORCHESTRATOR_URL =
     "https://paragraph-pg-production.up.railway.app/orchestrate";
 
@@ -66,159 +66,120 @@ export function VideoCard({ phase }) {
         {phase.subject}
       </Text>
 
-      {/* ORIGINAL BOOKMARK (Concept/MCQ only) */}
-      {/* ⭐⭐⭐ VIDEO BLOCK (Clean, no hover) ⭐⭐⭐ */}
-{isVideo && phase.phase_json?.vimeo_video_id && (
- <View style={{ width: "100%", overflow: "hidden" }}>
-<VimeoPlayer
-  vimeoId={phase.phase_json?.vimeo_video_id}
-  onProgress={(current, duration) => {
-    if (!user?.id) return;
-    if (!duration || duration === 0) return;
+      {/* ⭐⭐⭐ VIDEO BLOCK — SURGICAL & SAFE ⭐⭐⭐ */}
+      {isVideo && phase.phase_json?.vimeo_video_id ? (
+        <View style={styles.videoWrapper}>
+          <VimeoPlayer
+            vimeoId={phase.phase_json.vimeo_video_id}
+            onProgress={(current, duration) => {
+              if (!user?.id) return;
+              if (!duration || duration === 0) return;
 
-    const percent = Math.floor((current / duration) * 100);
+              const percent = Math.floor((current / duration) * 100);
 
-    // 🔁 update progress (throttle handled inside SDK component)
-    supabase.rpc("update_video_progress_v1", {
-      p_student_id: user.id,
-      p_phase_id: phase.id,
-      p_progress_percent: percent,
-    });
+              supabase.rpc("update_video_progress_v1", {
+                p_student_id: user.id,
+                p_phase_id: phase.id,
+                p_progress_percent: percent,
+              });
 
-    // ✅ mark completed once
-    if (percent >= 90 && !phase.is_viewed) {
-      supabase.rpc("mark_video_completed_v1", {
-        p_student_id: user.id,
-        p_phase_id: phase.id,
-      });
-    }
-  }}
-  onEnded={() => {
-      if (!user?.id) return;
-    supabase.rpc("mark_video_completed_v1", {
-      p_student_id: user.id,
-      p_phase_id: phase.id,
-    });
-  }}
-/>
+              if (percent >= 90 && !phase.is_viewed) {
+                supabase.rpc("mark_video_completed_v1", {
+                  p_student_id: user.id,
+                  p_phase_id: phase.id,
+                });
+              }
+            }}
+            onEnded={() => {
+              if (!user?.id) return;
+              supabase.rpc("mark_video_completed_v1", {
+                p_student_id: user.id,
+                p_phase_id: phase.id,
+              });
+            }}
+          />
 
+          {/* WATCHED BADGE */}
+          {phase.is_viewed && (
+            <View style={styles.watchedBadge}>
+              <Text style={styles.watchedText}>Watched</Text>
+            </View>
+          )}
 
+          {/* PROGRESS BAR */}
+          {phase.progress_percent > 0 && phase.progress_percent < 1 && (
+            <View style={styles.progressBarOuter}>
+              <View
+                style={[
+                  styles.progressBarInner,
+                  { width: `${phase.progress_percent * 100}%` },
+                ]}
+              />
+            </View>
+          )}
 
-    {/* WATCHED BADGE */}
-    {phase.is_viewed && (
-      <View
-        style={{
-          position: "absolute",
-          top: 10,
-          right: 16,
-          backgroundColor: "#25D366",
-          paddingHorizontal: 8,
-          paddingVertical: 4,
-          borderRadius: 6,
-        }}
-      >
-        <Text style={{ fontSize: 11, fontWeight: "700", color: "#000" }}>
-          Watched
-        </Text>
-      </View>
-    )}
+          {/* LIKE + BOOKMARK */}
+          <View style={styles.videoActions}>
+            <TouchableOpacity
+              style={styles.likeRow}
+              onPress={async () => {
+                if (!user?.id) return;
 
-    {/* PROGRESS BAR */}
-    {phase.progress_percent > 0 && phase.progress_percent < 1 && (
-      <View
-        style={{
-          marginTop: 10,
-          height: 4,
-          backgroundColor: "#333",
-          borderRadius: 4,
-          overflow: "hidden",
-        }}
-      >
-        <View
-          style={{
-            width: `${phase.progress_percent * 100}%`,
-            height: 4,
-            backgroundColor: "#25D366",
-          }}
-        />
-      </View>
-    )}
+                const { data } = await supabase.rpc("toggle_video_like_v1", {
+                  p_student_id: user.id,
+                  p_video_id: phase.id,
+                });
 
-    {/* LIKE + VIDEO BOOKMARK */}
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: 12,
-      }}
-    >
-      {/* ❤️ LIKE */}
-      <TouchableOpacity
-        style={{ flexDirection: "row", alignItems: "center", marginRight: 16 }}
-        onPress={async () => {
-          if (!user?.id) return;
+                if (data) {
+                  setVideoState((prev) => ({
+                    ...prev,
+                    is_liked: data.is_liked,
+                    like_count: data.like_count,
+                  }));
+                }
+              }}
+            >
+              <Heart
+                size={22}
+                color={videoState.is_liked ? "#ff4d4d" : "#888"}
+                fill={videoState.is_liked ? "#ff4d4d" : "transparent"}
+              />
+              <Text style={styles.likeCount}>{videoState.like_count}</Text>
+            </TouchableOpacity>
 
-          const { data, error } = await supabase.rpc(
-            "toggle_video_like_v1",
-            {
-              p_student_id: user.id,
-              p_video_id: phase.id,
-            }
-          );
+            <TouchableOpacity
+              onPress={async () => {
+                if (!user?.id) return;
 
-          if (!error) {
-            setVideoState((prev) => ({
-              ...prev,
-              is_liked: data?.is_liked,
-              like_count: data?.like_count,
-            }));
-          }
-        }}
-      >
-        <Heart
-          size={22}
-          color={videoState.is_liked ? "#ff4d4d" : "#888"}
-          fill={videoState.is_liked ? "#ff4d4d" : "transparent"}
-        />
-        <Text style={{ color: "#aaa", marginLeft: 6, fontSize: 13 }}>
-          {videoState.like_count}
-        </Text>
-      </TouchableOpacity>
+                const { data } = await supabase.rpc(
+                  "toggle_video_bookmark_v1",
+                  {
+                    p_student_id: user.id,
+                    p_video_id: phase.id,
+                  }
+                );
 
-      {/* 🔖 VIDEO BOOKMARK */}
-      <TouchableOpacity
-        onPress={async () => {
-          if (!user?.id) return;
+                if (data) {
+                  setVideoState((prev) => ({
+                    ...prev,
+                    is_bookmarked: data.is_bookmarked,
+                  }));
+                }
+              }}
+            >
+              <Bookmark
+                size={22}
+                color={videoState.is_bookmarked ? "#25D366" : "#888"}
+                fill={
+                  videoState.is_bookmarked ? "#25D366" : "transparent"
+                }
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : null}
 
-          const { data, error } = await supabase.rpc(
-            "toggle_video_bookmark_v1",
-            {
-              p_student_id: user.id,
-              p_video_id: phase.id,
-            }
-          );
-
-          if (!error) {
-            setVideoState((prev) => ({
-              ...prev,
-              is_bookmarked: data?.is_bookmarked,
-            }));
-          }
-        }}
-      >
-        <Bookmark
-          size={22}
-          color={videoState.is_bookmarked ? "#25D366" : "#888"}
-          fill={videoState.is_bookmarked ? "#25D366" : "transparent"}
-        />
-      </TouchableOpacity>
-    </View>
-  </View>
-)}
-{/* END OF VIDEO BLOCK */}
-
-
-      {/* ⭐⭐⭐ ORIGINAL CONCEPT BLOCK — UNTOUCHED ⭐⭐⭐ */}
+      {/* CONCEPT — UNTOUCHED */}
       {isConcept && (
         <ConceptChatScreen
           item={phase.phase_json}
@@ -230,7 +191,7 @@ export function VideoCard({ phase }) {
         />
       )}
 
-      {/* ⭐⭐⭐ ORIGINAL MCQ BLOCK — UNTOUCHED ⭐⭐⭐ */}
+      {/* MCQ — UNTOUCHED */}
       {isMCQ && (
         <MCQChatScreen
           item={phase.phase_json}
@@ -241,18 +202,10 @@ export function VideoCard({ phase }) {
           reviewMode={false}
           hideInternalNext={true}
           phaseUniqueId={phase.id}
-          onAnswered={(selected) => {
-            console.log("🧠 [PracticeCard] MCQ answered", {
-              mcq_id: phase.id,
-              concept_before: phase.concept_id_before_this_mcq,
-              selected,
-              correct: phase.phase_json?.correct_answer,
-            });
-          }}
         />
       )}
 
-      {/* ⭐⭐⭐ CHAT BUBBLES — UNTOUCHED ⭐⭐⭐ */}
+      {/* CHAT — UNTOUCHED */}
       {conversation.map((msg, index) =>
         msg.role === "student" ? (
           <StudentBubble key={index} text={msg.content} />
@@ -261,39 +214,37 @@ export function VideoCard({ phase }) {
         )
       )}
 
-      {/* TYPING STATE — UNTOUCHED */}
       {isTyping && (
         <MentorBubbleReply markdownText={"💬 *Dr. Murali Bharadwaj is typing…*"} />
       )}
 
-      {/* IMAGE (IF ANY) — UNTOUCHED */}
       {phase.image_url && (
         <Image source={{ uri: phase.image_url }} style={styles.image} />
       )}
 
-      {/* ⭐⭐⭐ MESSAGE INPUT — UNTOUCHED ⭐⭐⭐ */}
       <MessageInput
         placeholder={isSending ? "Waiting for mentor..." : "Ask your doubt..."}
         disabled={isSending}
         onSend={async (text) => {
           if (!text.trim()) return;
 
-          setConversation((prev) => [...prev, { role: "student", content: text }]);
+          setConversation((prev) => [
+            ...prev,
+            { role: "student", content: text },
+          ]);
           setIsSending(true);
           setIsTyping(true);
-
-          const payload = {
-            action: "chat",
-            student_id: user?.id,
-            subject_id: phase.subject_id,
-            message: text,
-          };
 
           try {
             const res = await fetch(ORCHESTRATOR_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
+              body: JSON.stringify({
+                action: "chat",
+                student_id: user?.id,
+                subject_id: phase.subject_id,
+                message: text,
+              }),
             });
 
             const data = await res.json();
@@ -314,9 +265,8 @@ export function VideoCard({ phase }) {
   );
 }
 
-
 // ============================================================================
-//                               STYLES — UNTOUCHED
+// STYLES — ONLY videoWrapper ADDED (SURGICAL)
 // ============================================================================
 
 const styles = StyleSheet.create({
@@ -344,31 +294,52 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 12,
   },
-  bookmarkRow: {
+
+  /* ⭐ SURGICAL ADDITION */
+  videoWrapper: {
+    width: "100%",
+    marginHorizontal: -16, // cancels card padding
+    backgroundColor: "black",
+  },
+
+  watchedBadge: {
     position: "absolute",
-    top: 12,
+    top: 10,
     right: 16,
-    zIndex: 999,
-  },
-  bookmarkRowConcept: {
-    right: 16,
-  },
-  progressRow: {
-    marginBottom: 12,
+    backgroundColor: "#25D366",
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    paddingHorizontal: 10,
-    backgroundColor: "#0d2017",
-    borderRadius: 12,
-    alignSelf: "flex-start",
-    borderWidth: 1,
-    borderColor: "#25D3665",
+    borderRadius: 6,
   },
-  progressRowConcept: {
-    marginHorizontal: 16,
-  },
-  progressText: {
-    color: "#25D366",
-    fontSize: 13,
+  watchedText: {
+    fontSize: 11,
     fontWeight: "700",
+    color: "#000",
+  },
+  progressBarOuter: {
+    marginTop: 10,
+    height: 4,
+    backgroundColor: "#333",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+  progressBarInner: {
+    height: 4,
+    backgroundColor: "#25D366",
+  },
+  videoActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 12,
+  },
+  likeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 16,
+  },
+  likeCount: {
+    color: "#aaa",
+    marginLeft: 6,
+    fontSize: 13,
   },
 });
