@@ -70,207 +70,133 @@ export function VideoCard({ phase }) {
       </Text>
 
       {/* ORIGINAL BOOKMARK (Concept/MCQ only) */}
-      {!isVideo && (
-        <View style={[styles.bookmarkRow, isConcept && styles.bookmarkRowConcept]}>
-          <TouchableOpacity
-            onPress={async () => {
-              if (!user?.id) return;
+      {/* ⭐⭐⭐ VIDEO BLOCK (Clean, no hover) ⭐⭐⭐ */}
+{isVideo && (
+  <View>
+    {/* 🎬 VIDEO */}
+    <VideoScreen
+      videoUrl={phase.phase_json?.videoUrl}
+      posterUrl={phase.phase_json?.posterUrl}
+      speedControls={true}
+      phaseUniqueId={phase.id}
+      progress_percent={phase.progress_percent}
+    />
 
-              const { data, error } = await supabase.rpc(
-                "toggle_practice_bookmark_v1",
-                {
-                  p_student_id: user.id,
-                  p_practicecard_id: phase.id,
-                  p_subject: phase.subject,
-                }
-              );
-
-              if (error) return;
-
-              const newState = data?.is_bookmark ?? !isBookmarked;
-              setIsBookmarked(newState);
-            }}
-          >
-            <Bookmark
-              size={22}
-              color="#10b981"
-              strokeWidth={2}
-              fill={isBookmarked ? "#10b981" : "transparent"}
-            />
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* PROGRESS */}
-      <View style={[styles.progressRow, isConcept && styles.progressRowConcept]}>
-        <Text style={styles.progressText}>
-          {isMCQ ? "🧩 MCQ" : isVideo ? "🎬 Video" : "🧠 Concept"}{" "}
-          {phase.react_order_final} / {phase.total_count}
+    {/* WATCHED BADGE */}
+    {phase.is_viewed && (
+      <View
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 16,
+          backgroundColor: "#25D366",
+          paddingHorizontal: 8,
+          paddingVertical: 4,
+          borderRadius: 6,
+        }}
+      >
+        <Text style={{ fontSize: 11, fontWeight: "700", color: "#000" }}>
+          Watched
         </Text>
       </View>
+    )}
 
-      {/* ⭐⭐⭐ VIDEO BLOCK (New) ⭐⭐⭐ */}
-      {isVideo && (
-                  <View>
-          
-                    {/* ▶️ Video */}
-                    <View
-            onMouseEnter={() => {
-              if (
-                Platform.OS === "web" &&
-                phase.phase_json?.previewUrl
-              ) {
-                setIsHovered(true);
-              }
-            }}
-            onMouseLeave={() => {
-              if (Platform.OS === "web") {
-                setIsHovered(false);
-              }
-            }}
-          >
-            {Platform.OS === "web" &&
-            isHovered &&
-            phase.phase_json?.previewUrl ? (
-              /* 🔁 HOVER PREVIEW (animated WebP) */
-              <Image
-                source={{ uri: phase.phase_json.previewUrl }}
-                style={{
-                  width: "100%",
-                  height: 300,
-                  borderRadius: 10,
-                  backgroundColor: "#000",
-                }}
-                resizeMode="cover"
-                pointerEvents="none"   // 🔧 FIX: allow clicks to pass through
-              />
-            ) : (
-              /* 🎬 NORMAL VIDEO */
-              <VideoScreen
-                videoUrl={phase.phase_json?.videoUrl}
-                posterUrl={phase.phase_json?.posterUrl}
-                speedControls={true}
-                phaseUniqueId={phase.id}
-                progress_percent={phase.progress_percent}
-              />
-            )}
-          </View>
+    {/* PROGRESS BAR */}
+    {phase.progress_percent > 0 && phase.progress_percent < 1 && (
+      <View
+        style={{
+          marginTop: 10,
+          height: 4,
+          backgroundColor: "#333",
+          borderRadius: 4,
+          overflow: "hidden",
+        }}
+      >
+        <View
+          style={{
+            width: `${phase.progress_percent * 100}%`,
+            height: 4,
+            backgroundColor: "#25D366",
+          }}
+        />
+      </View>
+    )}
 
-          {/* WATCHED BADGE */}
-          {phase.is_viewed && (
-            <View
-              style={{
-                position: "absolute",
-                top: 10,
-                right: 16,
-                backgroundColor: "#25D366",
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 6,
-              }}
-            >
-              <Text style={{ fontSize: 11, fontWeight: "700", color: "#000" }}>
-                Watched
-              </Text>
-            </View>
-          )}
+    {/* LIKE + VIDEO BOOKMARK */}
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 12,
+      }}
+    >
+      {/* ❤️ LIKE */}
+      <TouchableOpacity
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginRight: 16,
+        }}
+        onPress={async () => {
+          if (!user?.id) return;
 
-          {/* PROGRESS BAR */}
-          {phase.progress_percent > 0 && phase.progress_percent < 1 && (
-            <View
-              style={{
-                marginTop: 10,
-                height: 4,
-                backgroundColor: "#333",
-                borderRadius: 4,
-                overflow: "hidden",
-              }}
-            >
-              <View
-                style={{
-                  width: `${phase.progress_percent * 100}%`,
-                  height: 4,
-                  backgroundColor: "#25D366",
-                }}
-              />
-            </View>
-          )}
+          const { data, error } = await supabase.rpc(
+            "toggle_video_like_v1",
+            {
+              p_student_id: user.id,
+              p_video_id: phase.id,
+            }
+          );
 
-          {/* LIKE + VIDEO BOOKMARK */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 12,
-            }}
-          >
-            {/* ❤️ LIKE */}
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginRight: 16,
-              }}
-              onPress={async () => {
-                if (!user?.id) return;
+          if (!error) {
+            setVideoState((prev) => ({
+              ...prev,
+              is_liked: data?.is_liked,
+              like_count: data?.like_count,
+            }));
+          }
+        }}
+      >
+        <Heart
+          size={22}
+          color={videoState.is_liked ? "#ff4d4d" : "#888"}
+          fill={videoState.is_liked ? "#ff4d4d" : "transparent"}
+        />
+        <Text style={{ color: "#aaa", marginLeft: 6, fontSize: 13 }}>
+          {videoState.like_count}
+        </Text>
+      </TouchableOpacity>
 
-                const { data, error } = await supabase.rpc(
-                  "toggle_video_like_v1",
-                  {
-                    p_student_id: user.id,
-                    p_video_id: phase.id,
-                  }
-                );
+      {/* 🔖 VIDEO BOOKMARK */}
+      <TouchableOpacity
+        onPress={async () => {
+          if (!user?.id) return;
 
-                if (!error) {
-                  setVideoState((prev) => ({
-                    ...prev,
-                    is_liked: data?.is_liked,
-                    like_count: data?.like_count,
-                  }));
-                }
-              }}
-            >
-              <Heart
-                size={22}
-                color={videoState.is_liked ? "#ff4d4d" : "#888"}
-                fill={videoState.is_liked ? "#ff4d4d" : "transparent"}
-              />
-              <Text style={{ color: "#aaa", marginLeft: 6, fontSize: 13 }}>
-                {videoState.like_count}
-              </Text>
-            </TouchableOpacity>
+          const { data, error } = await supabase.rpc(
+            "toggle_video_bookmark_v1",
+            {
+              p_student_id: user.id,
+              p_video_id: phase.id,
+            }
+          );
 
-            {/* 🔖 VIDEO BOOKMARK */}
-            <TouchableOpacity
-              onPress={async () => {
-                if (!user?.id) return;
-
-                const { data, error } = await supabase.rpc(
-                  "toggle_video_bookmark_v1",
-                  {
-                    p_student_id: user.id,
-                    p_video_id: phase.id,
-                  }
-                );
-
-                if (!error) {
-                  setVideoState((prev) => ({
-                    ...prev,
-                    is_bookmarked: data?.is_bookmarked,
-                  }));
-                }
-              }}
-            >
-              <Bookmark
-                size={22}
-                color={videoState.is_bookmarked ? "#25D366" : "#888"}
-                fill={videoState.is_bookmarked ? "#25D366" : "transparent"}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
+          if (!error) {
+            setVideoState((prev) => ({
+              ...prev,
+              is_bookmarked: data?.is_bookmarked,
+            }));
+          }
+        }}
+      >
+        <Bookmark
+          size={22}
+          color={videoState.is_bookmarked ? "#25D366" : "#888"}
+          fill={videoState.is_bookmarked ? "#25D366" : "transparent"}
+        />
+      </TouchableOpacity>
+    </View>
+  </View>
+)}
       {/* END OF VIDEO BLOCK */}
 
 
