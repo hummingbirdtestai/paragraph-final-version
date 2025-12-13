@@ -1,4 +1,4 @@
-//BunnyWebPlayer.tsx
+// BunnyWebPlayer.tsx
 import { useEffect, useRef } from "react";
 
 export default function BunnyWebPlayer({
@@ -10,72 +10,49 @@ export default function BunnyWebPlayer({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!videoUrl) return;
-    useEffect(() => {
-  if (!videoUrl || !ref.current) return;
+    if (!videoUrl || !ref.current) return;
 
-  let player: any;
-  let tries = 0;
+    let player: any = null;
+    let tries = 0;
+    let destroyed = false;
 
-  const init = () => {
-    if ((window as any).BunnyPlayer) {
-      player = (window as any).BunnyPlayer.setup({
-        container: ref.current,
-        hls: videoUrl,
-        poster: posterUrl,
-        controls: true,
-      });
+    const init = () => {
+      if (destroyed) return;
 
-      let lastSent = 0;
-          player.on("timeupdate", (t) => {
-            const now = Date.now();
-            if (now - lastSent > 5000) {
-              lastSent = now;
-              onProgress?.(t.currentTime, t.duration);
-            }
-          });
-    
-          player.on("ended", onEnded);
-        } else if (tries < 10) {
-          tries++;
-          setTimeout(init, 300);
-        }
-      };
-    
-      init();
-    
-      return () => {
-        player?.destroy?.();
-      };
-    }, [videoUrl]);
+      if ((window as any).BunnyPlayer) {
+        player = (window as any).BunnyPlayer.setup({
+          container: ref.current,
+          hls: videoUrl,
+          poster: posterUrl,
+          controls: true,
+        });
 
-    const player = (window as any).BunnyPlayer.setup({
-      container: ref.current,
-      hls: videoUrl,
-      poster: posterUrl,
-      controls: true,
-      preload: "metadata",
-    });
+        let lastSent = 0;
 
-    let lastSent = 0;
-    
-    player.on("timeupdate", (t) => {
-      const now = Date.now();
-    
-      // send only once every 5 seconds
-      if (now - lastSent > 5000) {
-        lastSent = now;
-        onProgress?.(t.currentTime, t.duration);
+        player.on("timeupdate", (t) => {
+          const now = Date.now();
+          if (now - lastSent > 5000) {
+            lastSent = now;
+            onProgress?.(t.currentTime, t.duration);
+          }
+        });
+
+        player.on("ended", () => {
+          onEnded?.();
+        });
+      } else if (tries < 10) {
+        tries++;
+        setTimeout(init, 300);
+      } else {
+        console.error("❌ BunnyPlayer failed to load");
       }
-    });
+    };
 
-
-    player.on("ended", () => {
-      onEnded?.();
-    });
+    init();
 
     return () => {
-      player.destroy?.();
+      destroyed = true;
+      player?.destroy?.();
     };
   }, [videoUrl]);
 
