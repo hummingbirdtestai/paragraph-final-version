@@ -374,12 +374,6 @@ videoFeedItem: {
     elevation: 6,
   },
 
-  conceptCardWrapper: {
-    alignSelf: "center",
-    width: "100%",
-    maxWidth: 800,
-  },
-
     webFeedColumn: {
     alignSelf: "center",
     width: "100%",
