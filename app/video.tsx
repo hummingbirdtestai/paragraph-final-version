@@ -59,7 +59,8 @@ export default function VideoScreen() {
   const [showScrollControls, setShowScrollControls] = useState(false);
    // ✅ FIX 1 — declare ref BEFORE scroll effect
   const listRef = React.useRef<FlatList>(null);
- 
+   const isWeb = Platform.OS === "web";
+
   
   useEffect(() => {
     const loadUser = async () => {
@@ -176,14 +177,10 @@ export default function VideoScreen() {
     });
   
     if (item.phase_type === "video") {
-  const vimeoId = item.phase_json?.vimeo_video_id;
-
-  // 🚫 NO VIDEO URL → SKIP RENDER COMPLETELY
-  if (!vimeoId) {
-        return null;
-      }
+      const vimeoId = item.phase_json?.vimeo_video_id;
+      if (!vimeoId) return null;
     
-      return (
+      const content = (
         <View
           style={[
             styles.videoFeedItem,
@@ -193,16 +190,14 @@ export default function VideoScreen() {
             },
           ]}
         >
-          <VimeoPlayer
-            vimeoId={vimeoId}
-            onProgress={(current, duration) => {
-              console.log("⏱ progress", item.id, current, duration);
-            }}
-            onEnded={() => {
-              console.log("🏁 ended", item.id);
-            }}
-          />
+          <VimeoPlayer vimeoId={vimeoId} />
         </View>
+      );
+    
+      return isWeb ? (
+        <View style={styles.webFeedColumn}>{content}</View>
+      ) : (
+        content
       );
     }
   
