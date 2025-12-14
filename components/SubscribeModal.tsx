@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
   TextInput,
 } from 'react-native';
-import { X, Check, Zap, BookOpen, Brain, Image as ImageIcon, Video, FileText, MessageSquare } from 'lucide-react-native';
+import { X, Check, Zap, BookOpen, Brain, Image as ImageIcon, Video, FileText, MessageSquare, Users } from 'lucide-react-native';
 
 interface SubscribeModalProps {
   visible: boolean;
@@ -126,6 +126,21 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
                   'Exam-level difficulty',
                   'Rank prediction & analysis',
                 ]}
+                isDesktop={isDesktop}
+              />
+
+              <FeatureBlock
+                icon={<Users size={24} color="#10b981" />}
+                title="Daily Group Quizzes"
+                time="450 MCQs daily"
+                bullets={[
+                  '15 group quizzes every day (9 AM – 10 PM)',
+                  'Each quiz has 30 MCQs',
+                  'Covers all 19 NEET-PG subjects',
+                  '20 seconds per MCQ',
+                  'Compete live with other aspirants',
+                ]}
+                description="Build exam temperament. Stay competitive every single day."
                 isDesktop={isDesktop}
               />
 
