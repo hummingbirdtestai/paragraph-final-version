@@ -96,6 +96,64 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
             </Text>
           </View>
 
+          <View style={styles.promoSectionTop}>
+            <View style={styles.promoCard}>
+              <View style={styles.promoHeader}>
+                <Tag size={20} color="#10b981" />
+                <Text style={styles.promoTitle}>Have a Promo Code?</Text>
+              </View>
+              <Text style={styles.promoSubtitle}>Apply your discount code before selecting a plan</Text>
+
+              <View style={styles.promoInputContainer}>
+                <View style={styles.promoInputWrapper}>
+                  <TextInput
+                    style={styles.promoInput}
+                    placeholder="Enter promo code"
+                    placeholderTextColor="#6b7280"
+                    value={promoCode}
+                    onChangeText={(text) => {
+                      setPromoCode(text);
+                      setPromoError('');
+                    }}
+                    autoCapitalize="characters"
+                  />
+                </View>
+                {!appliedPromo ? (
+                  <TouchableOpacity
+                    style={styles.applyButton}
+                    onPress={applyPromoCode}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.applyButtonText}>Apply</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.removeButton}
+                    onPress={removePromo}
+                    activeOpacity={0.8}
+                  >
+                    <X size={16} color="#ef4444" />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {promoError ? (
+                <View style={styles.promoMessage}>
+                  <Text style={styles.promoError}>{promoError}</Text>
+                </View>
+              ) : null}
+
+              {appliedPromo ? (
+                <View style={styles.promoSuccess}>
+                  <Check size={16} color="#10b981" />
+                  <Text style={styles.promoSuccessText}>
+                    {PROMO_CODES[appliedPromo].label} applied successfully!
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+
           <View style={styles.divider} />
 
           <View style={styles.featuresSection}>
@@ -174,56 +232,6 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
               title="24×7 AI Chat"
               description="Clear doubts instantly. No waiting. No teachers' availability issues."
             />
-          </View>
-
-          <View style={styles.divider} />
-
-          <View style={styles.promoSection}>
-            <Text style={styles.sectionTitle}>Have a Promo Code?</Text>
-            <View style={styles.promoInputContainer}>
-              <View style={styles.promoInputWrapper}>
-                <Tag size={20} color="#9ca3af" style={styles.promoIcon} />
-                <TextInput
-                  style={styles.promoInput}
-                  placeholder="Enter promo code"
-                  placeholderTextColor="#6b7280"
-                  value={promoCode}
-                  onChangeText={(text) => {
-                    setPromoCode(text);
-                    setPromoError('');
-                  }}
-                  autoCapitalize="characters"
-                />
-              </View>
-              {!appliedPromo ? (
-                <TouchableOpacity
-                  style={styles.applyButton}
-                  onPress={applyPromoCode}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.applyButtonText}>Apply</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.removeButton}
-                  onPress={removePromo}
-                  activeOpacity={0.8}
-                >
-                  <X size={16} color="#ef4444" />
-                </TouchableOpacity>
-              )}
-            </View>
-            {promoError ? (
-              <Text style={styles.promoError}>{promoError}</Text>
-            ) : null}
-            {appliedPromo ? (
-              <View style={styles.promoSuccess}>
-                <Check size={16} color="#10b981" />
-                <Text style={styles.promoSuccessText}>
-                  {PROMO_CODES[appliedPromo].label} applied successfully!
-                </Text>
-              </View>
-            ) : null}
           </View>
 
           <View style={styles.divider} />
@@ -633,8 +641,37 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
-  promoSection: {
+  promoSectionTop: {
+    marginVertical: 24,
+  },
+  promoCard: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    padding: 20,
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  promoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  promoTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+    marginLeft: 8,
+  },
+  promoSubtitle: {
+    fontSize: 13,
+    color: '#9ca3af',
     marginBottom: 16,
+    lineHeight: 18,
   },
   promoInputContainer: {
     flexDirection: 'row',
@@ -643,61 +680,61 @@ const styles = StyleSheet.create({
   },
   promoInputWrapper: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1f2937',
+    backgroundColor: '#0f0f0f',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#374151',
-    paddingHorizontal: 12,
-  },
-  promoIcon: {
-    marginRight: 8,
+    paddingHorizontal: 16,
   },
   promoInput: {
     flex: 1,
-    paddingVertical: 12,
-    fontSize: 14,
+    paddingVertical: 14,
+    fontSize: 15,
     color: '#fff',
+    fontWeight: '500',
   },
   applyButton: {
     backgroundColor: '#10b981',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
     borderRadius: 8,
   },
   applyButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#fff',
   },
   removeButton: {
-    backgroundColor: '#1f2937',
-    padding: 12,
+    backgroundColor: '#2a1a1a',
+    padding: 14,
     borderRadius: 8,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#ef4444',
   },
+  promoMessage: {
+    marginTop: 12,
+  },
   promoError: {
-    marginTop: 8,
     fontSize: 13,
     color: '#ef4444',
+    fontWeight: '500',
   },
   promoSuccess: {
-    marginTop: 8,
+    marginTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a3a2e',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
+    backgroundColor: '#0a2f1f',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#10b981',
   },
   promoSuccessText: {
-    marginLeft: 6,
-    fontSize: 13,
+    marginLeft: 8,
+    fontSize: 14,
     color: '#10b981',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   pricingContainer: {
     alignItems: 'flex-start',
