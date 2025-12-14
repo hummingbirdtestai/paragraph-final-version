@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,66 @@ import {
   TouchableOpacity,
   Modal,
   useWindowDimensions,
+  TextInput,
 } from 'react-native';
-import { X, Check, Zap, BookOpen, Brain, Image as ImageIcon, Video, FileText, MessageSquare } from 'lucide-react-native';
+import { X, Check, Zap, BookOpen, Brain, Image as ImageIcon, Video, FileText, MessageSquare, Tag } from 'lucide-react-native';
 
 interface SubscribeModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubscribe: (plan: '3' | '6' | '12') => void;
+  onSubscribe: (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => void;
 }
+
+const PROMO_CODES: Record<string, { discount: number; label: string }> = {
+  'NEET25': { discount: 0.25, label: '25% off' },
+  'SAVE500': { discount: 500, label: '₹500 off' },
+  'FIRST50': { discount: 0.50, label: '50% off first month' },
+  'STUDENT20': { discount: 0.20, label: '20% off' },
+};
 
 export default function SubscribeModal({ visible, onClose, onSubscribe }: SubscribeModalProps) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
+  const [promoError, setPromoError] = useState('');
+
+  const applyPromoCode = () => {
+    const code = promoCode.trim().toUpperCase();
+    if (PROMO_CODES[code]) {
+      setAppliedPromo(code);
+      setPromoError('');
+    } else {
+      setPromoError('Invalid promo code');
+      setAppliedPromo(null);
+    }
+  };
+
+  const removePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    setPromoError('');
+  };
+
+  const calculatePrice = (basePrice: number): { original: number; final: number; discount: number } => {
+    if (!appliedPromo) return { original: basePrice, final: basePrice, discount: 0 };
+
+    const promo = PROMO_CODES[appliedPromo];
+    let discount = 0;
+
+    if (promo.discount < 1) {
+      discount = basePrice * promo.discount;
+    } else {
+      discount = promo.discount;
+    }
+
+    return {
+      original: basePrice,
+      final: Math.max(0, basePrice - discount),
+      discount: discount,
+    };
+  };
 
   return (
     <Modal
@@ -130,12 +178,63 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
 
           <View style={styles.divider} />
 
+          <View style={styles.promoSection}>
+            <Text style={styles.sectionTitle}>Have a Promo Code?</Text>
+            <View style={styles.promoInputContainer}>
+              <View style={styles.promoInputWrapper}>
+                <Tag size={20} color="#9ca3af" style={styles.promoIcon} />
+                <TextInput
+                  style={styles.promoInput}
+                  placeholder="Enter promo code"
+                  placeholderTextColor="#6b7280"
+                  value={promoCode}
+                  onChangeText={(text) => {
+                    setPromoCode(text);
+                    setPromoError('');
+                  }}
+                  autoCapitalize="characters"
+                />
+              </View>
+              {!appliedPromo ? (
+                <TouchableOpacity
+                  style={styles.applyButton}
+                  onPress={applyPromoCode}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.applyButtonText}>Apply</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={removePromo}
+                  activeOpacity={0.8}
+                >
+                  <X size={16} color="#ef4444" />
+                </TouchableOpacity>
+              )}
+            </View>
+            {promoError ? (
+              <Text style={styles.promoError}>{promoError}</Text>
+            ) : null}
+            {appliedPromo ? (
+              <View style={styles.promoSuccess}>
+                <Check size={16} color="#10b981" />
+                <Text style={styles.promoSuccessText}>
+                  {PROMO_CODES[appliedPromo].label} applied successfully!
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          <View style={styles.divider} />
+
           <View style={styles.plansSection}>
             <Text style={styles.sectionTitle}>Subscription Plans</Text>
 
             <PlanCard
               duration="3 Months"
-              price="₹12,000"
+              basePrice={12000}
+              pricing={calculatePrice(12000)}
               color="#10b981"
               features={[
                 'Ideal for focused revision phase',
@@ -143,12 +242,16 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
                 'Videos, Images & AI Chat',
                 'Mock tests included',
               ]}
-              onSubscribe={() => onSubscribe('3')}
+              onSubscribe={() => {
+                const pricing = calculatePrice(12000);
+                onSubscribe('3', pricing.final, appliedPromo || undefined);
+              }}
             />
 
             <PlanCard
               duration="6 Months"
-              price="₹20,000"
+              basePrice={20000}
+              pricing={calculatePrice(20000)}
               color="#3b82f6"
               features={[
                 'Strong foundation + revision',
@@ -156,12 +259,16 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
                 'All mock tests during period',
                 'Best value for serious aspirants',
               ]}
-              onSubscribe={() => onSubscribe('6')}
+              onSubscribe={() => {
+                const pricing = calculatePrice(20000);
+                onSubscribe('6', pricing.final, appliedPromo || undefined);
+              }}
             />
 
             <PlanCard
               duration="12 Months"
-              price="₹36,000"
+              basePrice={36000}
+              pricing={calculatePrice(36000)}
               color="#8b5cf6"
               recommended
               features={[
@@ -170,7 +277,10 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
                 'Daily videos, images & revisions',
                 'Maximum rank optimisation',
               ]}
-              onSubscribe={() => onSubscribe('12')}
+              onSubscribe={() => {
+                const pricing = calculatePrice(36000);
+                onSubscribe('12', pricing.final, appliedPromo || undefined);
+              }}
             />
           </View>
 
@@ -179,7 +289,6 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
           <View style={styles.trustSection}>
             <TrustBadge text="No ads" />
             <TrustBadge text="No distractions" />
-            <TrustBadge text="Cancel anytime" />
             <TrustBadge text="Secure payments" />
             <TrustBadge text="Instant access after payment" />
           </View>
@@ -244,19 +353,23 @@ function FeatureBlock({
 
 function PlanCard({
   duration,
-  price,
+  basePrice,
+  pricing,
   color,
   recommended,
   features,
   onSubscribe,
 }: {
   duration: string;
-  price: string;
+  basePrice: number;
+  pricing: { original: number; final: number; discount: number };
   color: string;
   recommended?: boolean;
   features: string[];
   onSubscribe: () => void;
 }) {
+  const hasDiscount = pricing.discount > 0;
+
   return (
     <View style={[styles.planCard, recommended && styles.planCardRecommended]}>
       {recommended && (
@@ -266,7 +379,17 @@ function PlanCard({
       )}
       <View style={styles.planHeader}>
         <Text style={styles.planDuration}>{duration}</Text>
-        <Text style={styles.planPrice}>{price}</Text>
+        {hasDiscount ? (
+          <View style={styles.pricingContainer}>
+            <Text style={styles.planPriceOriginal}>₹{pricing.original.toLocaleString('en-IN')}</Text>
+            <Text style={[styles.planPrice, { color }]}>₹{pricing.final.toLocaleString('en-IN')}</Text>
+            <View style={styles.savingsBadge}>
+              <Text style={styles.savingsText}>Save ₹{pricing.discount.toLocaleString('en-IN')}</Text>
+            </View>
+          </View>
+        ) : (
+          <Text style={styles.planPrice}>₹{pricing.final.toLocaleString('en-IN')}</Text>
+        )}
       </View>
       <View style={styles.planFeatures}>
         {features.map((feature, index) => (
@@ -321,7 +444,7 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#fff',
+    color: '#F5E6D3',
     marginBottom: 16,
     lineHeight: 38,
   },
@@ -509,5 +632,93 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     textAlign: 'center',
     lineHeight: 22,
+  },
+  promoSection: {
+    marginBottom: 16,
+  },
+  promoInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  promoInputWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#374151',
+    paddingHorizontal: 12,
+  },
+  promoIcon: {
+    marginRight: 8,
+  },
+  promoInput: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#fff',
+  },
+  applyButton: {
+    backgroundColor: '#10b981',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  applyButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  removeButton: {
+    backgroundColor: '#1f2937',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ef4444',
+  },
+  promoError: {
+    marginTop: 8,
+    fontSize: 13,
+    color: '#ef4444',
+  },
+  promoSuccess: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1a3a2e',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  promoSuccessText: {
+    marginLeft: 6,
+    fontSize: 13,
+    color: '#10b981',
+    fontWeight: '500',
+  },
+  pricingContainer: {
+    alignItems: 'flex-start',
+  },
+  planPriceOriginal: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#6b7280',
+    textDecorationLine: 'line-through',
+    marginBottom: 4,
+  },
+  savingsBadge: {
+    backgroundColor: '#10b981',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    marginTop: 6,
+  },
+  savingsText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#fff',
   },
 });

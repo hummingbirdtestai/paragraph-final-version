@@ -67,8 +67,12 @@ export default function Sidebar({
     checkUserAccess();
   }, [user?.id]);
 
-  const handleSubscribe = (plan: '3' | '6' | '12') => {
+  const handleSubscribe = (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => {
     console.log(`User selected ${plan} month plan`);
+    console.log(`Final price: ₹${finalPrice}`);
+    if (promoCode) {
+      console.log(`Applied promo code: ${promoCode}`);
+    }
     setShowSubscribeModal(false);
   };
 
