@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
 import { Link, usePathname } from 'expo-router';
@@ -12,9 +12,11 @@ import {
   Settings,
   X,
   Video,
+  Crown,
 } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
+import SubscribeModal from './SubscribeModal';
 
 
 
@@ -42,23 +44,37 @@ const navItems: NavItem[] = [
 export default function Sidebar({
   isOpen = true,
   onClose,
-  onOpenAuth,   // ⭐ ADD THIS
+  onOpenAuth,
 }: SidebarProps) {
 
   const pathname = usePathname();
-  // AUTH MODAL STATES
-const [showLoginModal, setShowLoginModal] = useState(false);
-const [showOTPModal, setShowOTPModal] = useState(false);
-const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-
-const [phoneNumber, setPhoneNumber] = useState("");
   const { user, logout } = useAuth();
-const isLoggedIn = !!user;
-// Only block sidebar on DESKTOP when not logged in
-if (!onClose && !isLoggedIn) {
-  return null;
-}
+  const isLoggedIn = !!user;
 
+  const [showSubscribeModal, setShowSubscribeModal] = useState(false);
+  const [hasAccess, setHasAccess] = useState(true);
+
+  useEffect(() => {
+    const checkUserAccess = async () => {
+      if (!user?.id) {
+        setHasAccess(true);
+        return;
+      }
+
+      setHasAccess(true);
+    };
+
+    checkUserAccess();
+  }, [user?.id]);
+
+  const handleSubscribe = (plan: '3' | '6' | '12') => {
+    console.log(`User selected ${plan} month plan`);
+    setShowSubscribeModal(false);
+  };
+
+  if (!onClose && !isLoggedIn) {
+    return null;
+  }
 
   const isMobile = !!onClose;
 
@@ -145,6 +161,20 @@ if (!onClose && !isLoggedIn) {
       </ScrollView>
 
       <View style={styles.footer}>
+        {isLoggedIn && (
+          <Pressable
+            style={styles.subscribeButton}
+            onPress={() => setShowSubscribeModal(true)}
+          >
+            <View style={styles.navItemContent}>
+              <View style={styles.iconWrapper}>
+                <Crown size={20} color="#fbbf24" strokeWidth={2} />
+              </View>
+              <Text style={styles.subscribeText}>Upgrade to Pro</Text>
+            </View>
+          </Pressable>
+        )}
+
         <Link href="/settings" asChild>
           <Pressable
             style={isActive('/settings') ? styles.navItemActive : styles.navItem}
@@ -166,26 +196,32 @@ if (!onClose && !isLoggedIn) {
           </Pressable>
         </Link>
 
-       <View style={styles.authButtons}>
-  {!isLoggedIn && (
-    <>
-      <Pressable
-        style={styles.loginButton}
-        onPress={() => onOpenAuth?.("login")}
-      >
-        <Text style={styles.loginText}>Login</Text>
-      </Pressable>
+        <View style={styles.authButtons}>
+          {!isLoggedIn && (
+            <>
+              <Pressable
+                style={styles.loginButton}
+                onPress={() => onOpenAuth?.("login")}
+              >
+                <Text style={styles.loginText}>Login</Text>
+              </Pressable>
 
-      <Pressable
-        style={styles.signupButton}
-        onPress={() => onOpenAuth?.("signup")}
-      >
-        <Text style={styles.signupText}>Sign Up</Text>
-      </Pressable>
-    </>
-  )}
-</View>
+              <Pressable
+                style={styles.signupButton}
+                onPress={() => onOpenAuth?.("signup")}
+              >
+                <Text style={styles.signupText}>Sign Up</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
       </View>
+
+      <SubscribeModal
+        visible={showSubscribeModal}
+        onClose={() => setShowSubscribeModal(false)}
+        onSubscribe={handleSubscribe}
+      />
     </View>
   );
 }
@@ -324,6 +360,23 @@ const styles = StyleSheet.create({
   signupText: {
     fontSize: 14,
     color: '#0D0D0D',
+    fontWeight: '600',
+    lineHeight: 20,
+  },
+  subscribeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: '#1f1f1f',
+    borderWidth: 1,
+    borderColor: '#fbbf24',
+  },
+  subscribeText: {
+    fontSize: 14,
+    color: '#fbbf24',
     fontWeight: '600',
     lineHeight: 20,
   },
