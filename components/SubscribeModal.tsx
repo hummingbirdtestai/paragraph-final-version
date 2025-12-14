@@ -28,6 +28,7 @@ const PROMO_CODES: Record<string, { discount: number; label: string }> = {
 export default function SubscribeModal({ visible, onClose, onSubscribe }: SubscribeModalProps) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const isDesktop = width >= 1024;
 
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
@@ -83,16 +84,19 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
 
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            isDesktop && styles.scrollContentDesktop,
+          ]}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <Text style={styles.headline}>Unlock Your Rank.{'\n'}Not Just Content.</Text>
-            <Text style={styles.subHeadline}>
+          <View style={[styles.header, isDesktop && styles.headerDesktop]}>
+            <Text style={[styles.headline, isDesktop && styles.headlineDesktop]}>Unlock Your Rank.{'\n'}Not Just Content.</Text>
+            <Text style={[styles.subHeadline, isDesktop && styles.subHeadlineDesktop]}>
               Paragraph Pro is not a course.{'\n'}
               It's a 12-month NEET-PG winning system designed for daily progress, not binge watching.
             </Text>
-            <Text style={styles.tagline}>
+            <Text style={[styles.tagline, isDesktop && styles.taglineDesktop]}>
               Everything you need to crack NEET-PG — structured, adaptive, and distraction-free.
             </Text>
           </View>
@@ -160,79 +164,89 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
           <View style={styles.featuresSection}>
             <Text style={styles.sectionTitle}>What You Get</Text>
 
-            <FeatureBlock
-              icon={<FileText size={24} color="#10b981" />}
-              title="10,000 NEET-PG PYQs"
-              time="150 hours of focused revision"
-              description="Every PYQ mapped to concepts, mistakes, and exam patterns."
-            />
+            <View style={[styles.featuresGrid, isDesktop && styles.featuresGridDesktop]}>
+              <FeatureBlock
+                icon={<FileText size={24} color="#10b981" />}
+                title="10,000 NEET-PG PYQs"
+                time="150 hours of focused revision"
+                description="Every PYQ mapped to concepts, mistakes, and exam patterns."
+                isDesktop={isDesktop}
+              />
 
-            <FeatureBlock
-              icon={<Brain size={24} color="#10b981" />}
-              title="10,000 High-Yield Concepts"
-              time="300 hours of structured learning"
-              description="Concepts that matter — no fluff, no duplication."
-            />
+              <FeatureBlock
+                icon={<Brain size={24} color="#10b981" />}
+                title="10,000 High-Yield Concepts"
+                time="300 hours of structured learning"
+                description="Concepts that matter — no fluff, no duplication."
+                isDesktop={isDesktop}
+              />
 
-            <FeatureBlock
-              icon={<BookOpen size={24} color="#10b981" />}
-              title="45,000 Flash Cards"
-              time="200 hours of rapid recall"
-              description="Designed for last-minute revision and long-term memory."
-            />
+              <FeatureBlock
+                icon={<BookOpen size={24} color="#10b981" />}
+                title="45,000 Flash Cards"
+                time="200 hours of rapid recall"
+                description="Designed for last-minute revision and long-term memory."
+                isDesktop={isDesktop}
+              />
 
-            <FeatureBlock
-              icon={<Video size={24} color="#10b981" />}
-              title="Daily Short Videos"
-              subtitle="3-Minute Reels"
-              time="100 hours of visual revision"
-              bullets={[
-                '20 videos every day',
-                '6,000 reels total',
-                '60,000 high-yield facts',
-                '6,000 MCQs for instant testing',
-              ]}
-              description="Learn anywhere. Revise anytime. Zero burnout."
-            />
+              <FeatureBlock
+                icon={<Video size={24} color="#10b981" />}
+                title="Daily Short Videos"
+                subtitle="3-Minute Reels"
+                time="100 hours of visual revision"
+                bullets={[
+                  '20 videos every day',
+                  '6,000 reels total',
+                  '60,000 high-yield facts',
+                  '6,000 MCQs for instant testing',
+                ]}
+                description="Learn anywhere. Revise anytime. Zero burnout."
+                isDesktop={isDesktop}
+              />
 
-            <FeatureBlock
-              icon={<ImageIcon size={24} color="#10b981" />}
-              title="Daily Image-Based Learning"
-              time="100 hours of image-based mastery"
-              bullets={[
-                '4,500 clinical images',
-                '4,500 case-based vignettes',
-                '50 images daily',
-              ]}
-            />
+              <FeatureBlock
+                icon={<ImageIcon size={24} color="#10b981" />}
+                title="Daily Image-Based Learning"
+                time="100 hours of image-based mastery"
+                bullets={[
+                  '4,500 clinical images',
+                  '4,500 case-based vignettes',
+                  '50 images daily',
+                ]}
+                isDesktop={isDesktop}
+              />
 
-            <FeatureBlock
-              icon={<FileText size={24} color="#10b981" />}
-              title="Full-Scale NEET-PG Mock Tests"
-              bullets={[
-                'Bi-weekly (Thursday & Sunday)',
-                '100 Grand Tests in 12 months',
-                'Exam-level difficulty',
-                'Rank prediction & analysis',
-              ]}
-            />
+              <FeatureBlock
+                icon={<FileText size={24} color="#10b981" />}
+                title="Full-Scale NEET-PG Mock Tests"
+                bullets={[
+                  'Bi-weekly (Thursday & Sunday)',
+                  '100 Grand Tests in 12 months',
+                  'Exam-level difficulty',
+                  'Rank prediction & analysis',
+                ]}
+                isDesktop={isDesktop}
+              />
 
-            <FeatureBlock
-              icon={<Zap size={24} color="#10b981" />}
-              title="Hyper-Personalised Adaptive Learning"
-              bullets={[
-                'AI adjusts content based on:',
-                '• Your mistakes',
-                '• Your speed',
-                '• Your weak subjects',
-              ]}
-            />
+              <FeatureBlock
+                icon={<Zap size={24} color="#10b981" />}
+                title="Hyper-Personalised Adaptive Learning"
+                bullets={[
+                  'AI adjusts content based on:',
+                  '• Your mistakes',
+                  '• Your speed',
+                  '• Your weak subjects',
+                ]}
+                isDesktop={isDesktop}
+              />
 
-            <FeatureBlock
-              icon={<MessageSquare size={24} color="#10b981" />}
-              title="24×7 AI Chat"
-              description="Clear doubts instantly. No waiting. No teachers' availability issues."
-            />
+              <FeatureBlock
+                icon={<MessageSquare size={24} color="#10b981" />}
+                title="24×7 AI Chat"
+                description="Clear doubts instantly. No waiting. No teachers' availability issues."
+                isDesktop={isDesktop}
+              />
+            </View>
           </View>
 
           <View style={styles.divider} />
@@ -240,57 +254,62 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
           <View style={styles.plansSection}>
             <Text style={styles.sectionTitle}>Subscription Plans</Text>
 
-            <PlanCard
-              duration="3 Months"
-              basePrice={12000}
-              pricing={calculatePrice(12000)}
-              color="#10b981"
-              features={[
-                'Ideal for focused revision phase',
-                'PYQs + Concepts + Flashcards',
-                'Videos, Images & AI Chat',
-                'Mock tests included',
-              ]}
-              onSubscribe={() => {
-                const pricing = calculatePrice(12000);
-                onSubscribe('3', pricing.final, appliedPromo || undefined);
-              }}
-            />
+            <View style={[styles.plansGrid, isDesktop && styles.plansGridDesktop]}>
+              <PlanCard
+                duration="3 Months"
+                basePrice={12000}
+                pricing={calculatePrice(12000)}
+                color="#10b981"
+                features={[
+                  'Ideal for focused revision phase',
+                  'PYQs + Concepts + Flashcards',
+                  'Videos, Images & AI Chat',
+                  'Mock tests included',
+                ]}
+                onSubscribe={() => {
+                  const pricing = calculatePrice(12000);
+                  onSubscribe('3', pricing.final, appliedPromo || undefined);
+                }}
+                isDesktop={isDesktop}
+              />
 
-            <PlanCard
-              duration="6 Months"
-              basePrice={20000}
-              pricing={calculatePrice(20000)}
-              color="#3b82f6"
-              features={[
-                'Strong foundation + revision',
-                'Full adaptive learning',
-                'All mock tests during period',
-                'Best value for serious aspirants',
-              ]}
-              onSubscribe={() => {
-                const pricing = calculatePrice(20000);
-                onSubscribe('6', pricing.final, appliedPromo || undefined);
-              }}
-            />
+              <PlanCard
+                duration="6 Months"
+                basePrice={20000}
+                pricing={calculatePrice(20000)}
+                color="#3b82f6"
+                features={[
+                  'Strong foundation + revision',
+                  'Full adaptive learning',
+                  'All mock tests during period',
+                  'Best value for serious aspirants',
+                ]}
+                onSubscribe={() => {
+                  const pricing = calculatePrice(20000);
+                  onSubscribe('6', pricing.final, appliedPromo || undefined);
+                }}
+                isDesktop={isDesktop}
+              />
 
-            <PlanCard
-              duration="12 Months"
-              basePrice={36000}
-              pricing={calculatePrice(36000)}
-              color="#8b5cf6"
-              recommended
-              features={[
-                'Complete NEET-PG preparation cycle',
-                '100 Grand Tests included',
-                'Daily videos, images & revisions',
-                'Maximum rank optimisation',
-              ]}
-              onSubscribe={() => {
-                const pricing = calculatePrice(36000);
-                onSubscribe('12', pricing.final, appliedPromo || undefined);
-              }}
-            />
+              <PlanCard
+                duration="12 Months"
+                basePrice={36000}
+                pricing={calculatePrice(36000)}
+                color="#8b5cf6"
+                recommended
+                features={[
+                  'Complete NEET-PG preparation cycle',
+                  '100 Grand Tests included',
+                  'Daily videos, images & revisions',
+                  'Maximum rank optimisation',
+                ]}
+                onSubscribe={() => {
+                  const pricing = calculatePrice(36000);
+                  onSubscribe('12', pricing.final, appliedPromo || undefined);
+                }}
+                isDesktop={isDesktop}
+              />
+            </View>
           </View>
 
           <View style={styles.divider} />
@@ -324,6 +343,7 @@ function FeatureBlock({
   time,
   bullets,
   description,
+  isDesktop,
 }: {
   icon: React.ReactNode;
   title: string;
@@ -331,9 +351,10 @@ function FeatureBlock({
   time?: string;
   bullets?: string[];
   description?: string;
+  isDesktop?: boolean;
 }) {
   return (
-    <View style={styles.featureBlock}>
+    <View style={[styles.featureBlock, isDesktop && styles.featureBlockDesktop]}>
       <View style={styles.featureHeader}>
         <View style={styles.featureIcon}>{icon}</View>
         <View style={styles.featureTitleContainer}>
@@ -368,6 +389,7 @@ function PlanCard({
   recommended,
   features,
   onSubscribe,
+  isDesktop,
 }: {
   duration: string;
   basePrice: number;
@@ -376,11 +398,12 @@ function PlanCard({
   recommended?: boolean;
   features: string[];
   onSubscribe: () => void;
+  isDesktop?: boolean;
 }) {
   const hasDiscount = pricing.discount > 0;
 
   return (
-    <View style={[styles.planCard, recommended && styles.planCardRecommended]}>
+    <View style={[styles.planCard, recommended && styles.planCardRecommended, isDesktop && styles.planCardDesktop]}>
       {recommended && (
         <View style={styles.recommendedBadge}>
           <Text style={styles.recommendedText}>Most students choose this</Text>
@@ -758,5 +781,59 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#fff',
+  },
+  scrollContentDesktop: {
+    maxWidth: 1200,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: 60,
+  },
+  featuresGrid: {
+    width: '100%',
+  },
+  featuresGridDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -12,
+  },
+  featureBlockDesktop: {
+    width: '50%',
+    paddingHorizontal: 12,
+  },
+  plansGrid: {
+    width: '100%',
+  },
+  plansGridDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -8,
+    alignItems: 'stretch',
+  },
+  planCardDesktop: {
+    flexBasis: '32%',
+    marginHorizontal: 8,
+    marginBottom: 16,
+  },
+  headerDesktop: {
+    textAlign: 'center',
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  headlineDesktop: {
+    fontSize: 48,
+    lineHeight: 56,
+    textAlign: 'center',
+  },
+  subHeadlineDesktop: {
+    fontSize: 18,
+    lineHeight: 28,
+    textAlign: 'center',
+    maxWidth: 800,
+  },
+  taglineDesktop: {
+    fontSize: 20,
+    lineHeight: 30,
+    textAlign: 'center',
+    maxWidth: 900,
   },
 });
