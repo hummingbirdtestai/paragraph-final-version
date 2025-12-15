@@ -7,16 +7,13 @@ import MCQChatScreen from "@/components/types/MCQScreen";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
-
+import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 
 export function PracticeCard({ phase }) {
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
-  const [conversation, setConversation] = React.useState([]);
-const [isSending, setIsSending] = React.useState(false);
-const [isTyping, setIsTyping] = React.useState(false);
   const { user } = useAuth();
   // Local bookmark state (like FlashcardCard)
 const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
