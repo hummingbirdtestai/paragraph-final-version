@@ -37,12 +37,6 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
     }
   }, [phase]);
 
-  
-
-const ORCHESTRATOR_URL =
-  "https://paragraph-pg-production.up.railway.app/orchestrate";
-
-
   return (
     <View style={[styles.card, isConcept && styles.cardConcept]}>
       {/* SUBJECT NAME */}
@@ -129,20 +123,7 @@ const ORCHESTRATOR_URL =
           }}
         />
       )}
-      {/* 🗨 Chat Conversation Bubbles */}
-{conversation.map((msg, index) =>
-  msg.role === "student" ? (
-    <StudentBubble key={index} text={msg.content} />
-  ) : (
-    <MentorBubbleReply key={index} markdownText={msg.content} />
-  )
-)}
-
-{isTyping && (
-  <MentorBubbleReply markdownText={"💬 *Dr. Murali Bharadwaj is typing…*"} />
-)}
-
-
+  
       {phase.image_url && (
         <Image source={{ uri: phase.image_url }} style={styles.image} />
       )}
