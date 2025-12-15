@@ -4,9 +4,6 @@ import { View, Text, Image, StyleSheet } from "react-native";
 
 import ConceptChatScreen from "@/components/types/Conceptscreen";
 import MCQChatScreen from "@/components/types/MCQScreen";
-import { StudentBubble } from "@/components/chat/StudentBubble";
-import MentorBubbleReply from "@/components/types/MentorBubbleReply";
-import { MessageInput } from "@/components/chat/MessageInput";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
