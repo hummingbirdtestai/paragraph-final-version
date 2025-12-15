@@ -258,8 +258,8 @@ return null;
 
   initialNumToRender={8}
   maxToRenderPerBatch={6}
-  windowSize={10}
-removeClippedSubviews={false}
+  windowSize={12}
+  removeClippedSubviews={false}
 
 
   onEndReached={() => {
