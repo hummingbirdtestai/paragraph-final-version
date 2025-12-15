@@ -99,57 +99,57 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
         />
       )}
 
-      {isMCQ && (
-        <MCQChatScreen
-          item={phase.phase_json}
+    {isMCQ && (
+  <>
+    <MCQChatScreen
+      item={phase.phase_json}
 
-          // 🔥 REQUIRED FOR RPC mark_mcq_submission_v6
-          conceptId={phase.concept_id_before_this_mcq}   // ⭐ previous concept
-          mcqId={phase.id}                               // ⭐ current MCQ
-          correctAnswer={phase.phase_json?.correct_answer} // ⭐ correct answer from DB
+      conceptId={phase.concept_id_before_this_mcq}
+      mcqId={phase.id}
+      correctAnswer={phase.phase_json?.correct_answer}
 
-          studentId={user?.id}
-          reviewMode={false}
-          hideInternalNext={true}
-          phaseUniqueId={phase.id}
+      studentId={user?.id}
+      reviewMode={false}
+      hideInternalNext={true}
+      phaseUniqueId={phase.id}
 
-          onAnswered={(selected) => {
-            console.log("🧠 [PracticeCard] MCQ answered", {
-              mcq_id: phase.id,
-              concept_before: phase.concept_id_before_this_mcq,
-              selected,
-              correct: phase.phase_json?.correct_answer
-            });
-          }}
-        />
-  {isMCQ && (
-  <TouchableOpacity
-    style={{
-      marginTop: 12,
-      paddingVertical: 10,
-      borderRadius: 8,
-      backgroundColor: "#0d2017",
-      borderWidth: 1,
-      borderColor: "#10b981",
-      alignItems: "center",
-    }}
-    onPress={() =>
-      router.push({
-        pathname: "/ask-paragraph",
-        params: {
-          subject_id: phase.subject_id,
+      onAnswered={(selected) => {
+        console.log("🧠 [PracticeCard] MCQ answered", {
           mcq_id: phase.id,
-          react_order: phase.react_order_final,
-        },
-      })
-    }
-  >
-    <Text style={{ color: "#10b981", fontWeight: "700" }}>
-      Ask Paragraph about this MCQ
-    </Text>
-  </TouchableOpacity>
+          concept_before: phase.concept_id_before_this_mcq,
+          selected,
+          correct: phase.phase_json?.correct_answer
+        });
+      }}
+    />
+
+    <TouchableOpacity
+      style={{
+        marginTop: 12,
+        paddingVertical: 10,
+        borderRadius: 8,
+        backgroundColor: "#0d2017",
+        borderWidth: 1,
+        borderColor: "#10b981",
+        alignItems: "center",
+      }}
+      onPress={() =>
+        router.push({
+          pathname: "/ask-paragraph",
+          params: {
+            subject_id: phase.subject_id,
+            mcq_id: phase.id,
+            react_order: phase.react_order_final,
+          },
+        })
+      }
+    >
+      <Text style={{ color: "#10b981", fontWeight: "700" }}>
+        Ask Paragraph about this MCQ
+      </Text>
+    </TouchableOpacity>
+  </>
 )}
-      )}
   
       {phase.image_url && (
         <Image source={{ uri: phase.image_url }} style={styles.image} />
