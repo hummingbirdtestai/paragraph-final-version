@@ -122,65 +122,39 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
             });
           }}
         />
+  {isMCQ && (
+  <TouchableOpacity
+    style={{
+      marginTop: 12,
+      paddingVertical: 10,
+      borderRadius: 8,
+      backgroundColor: "#0d2017",
+      borderWidth: 1,
+      borderColor: "#10b981",
+      alignItems: "center",
+    }}
+    onPress={() =>
+      router.push({
+        pathname: "/ask-paragraph",
+        params: {
+          subject_id: phase.subject_id,
+          mcq_id: phase.id,
+          react_order: phase.react_order_final,
+        },
+      })
+    }
+  >
+    <Text style={{ color: "#10b981", fontWeight: "700" }}>
+      Ask Paragraph about this MCQ
+    </Text>
+  </TouchableOpacity>
+)}
       )}
   
       {phase.image_url && (
         <Image source={{ uri: phase.image_url }} style={styles.image} />
       )}
-      {/* 💬 Message Input */}
-<MessageInput
-  placeholder={
-    isSending ? "Waiting for mentor..." : "Ask your doubt..."
-  }
-  disabled={isSending}
- onSend={async (text) => {
-  console.log("🟦 [PRACTICE] Sending chat");
-
-  if (!text.trim()) return;
-
-  setConversation(prev => [...prev, { role: "student", content: text }]);
-  setIsSending(true);
-  setIsTyping(true);
-
-  const payload = {
-  action: "chat",
-  student_id: user?.id,
-  subject_id: phase.subject_id,
-  message: text,
-};
-
-
-  console.log("🟦 Payload:", payload);
-
-  try {
-    const res = await fetch(ORCHESTRATOR_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    console.log("🟧 status:", res.status);
-
-    const data = await res.json();
-    console.log("🟩 Received:", data);
-
-    if (data?.mentor_reply) {
-      setConversation(prev => [
-        ...prev,
-        { role: "assistant", content: data.mentor_reply },
-      ]);
-    }
-  } catch (err) {
-    console.log("💥 ERROR:", err);
-  } finally {
-    setIsSending(false);
-    setIsTyping(false);
-  }
-}}
-
-
-/>
-
+   
     </View>
   );
 }
