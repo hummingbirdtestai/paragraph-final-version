@@ -123,6 +123,100 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
       }}
     />
 
+    <AskParagraphButton
+      studentId={user?.id}
+      mcqId={phase.id}
+      subjectName={phase.subject}
+      phaseJson={phase.phase_json}
+      reactOrder={phase.react_order_final}
+    />
+  </>
+)}
+  
+      {phase.image_url && (
+        <Image source={{ uri: phase.image_url }} style={styles.image} />
+      )}
+   
+    </View>
+  );
+}
+
+function AskParagraphButton({
+  studentId,
+  mcqId,
+  subjectName,
+  phaseJson,
+  reactOrder,
+}: {
+  studentId: string | undefined;
+  mcqId: string;
+  subjectName: string;
+  phaseJson: any;
+  reactOrder: number;
+}) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleAskParagraph = async () => {
+    if (!studentId) {
+      console.error('❌ No student ID');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://your-api-endpoint.com';
+
+      console.log('🚀 Calling /ask-paragraph/start', {
+        student_id: studentId,
+        mcq_id: mcqId,
+        subject_name: subjectName,
+        react_order: reactOrder,
+      });
+
+      const response = await fetch(`${API_BASE_URL}/ask-paragraph/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          student_id: studentId,
+          mcq_id: mcqId,
+          subject_name: subjectName,
+          phase_json: phaseJson,
+          react_order: reactOrder,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log('✅ /ask-paragraph/start success', {
+        session_id: data.session_id,
+        dialogs_count: data.dialogs?.length || 0,
+      });
+
+      router.push({
+        pathname: '/ask-paragraph',
+        params: {
+          session_id: data.session_id,
+          phase_json: JSON.stringify(data.phase_json || phaseJson),
+          dialogs: JSON.stringify(data.dialogs || []),
+        },
+      });
+    } catch (error) {
+      console.error('❌ Error calling /ask-paragraph/start:', error);
+      alert('Failed to start discussion. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
     <TouchableOpacity
       style={{
         marginTop: 12,
@@ -132,30 +226,15 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
         borderWidth: 1,
         borderColor: "#10b981",
         alignItems: "center",
+        opacity: isLoading ? 0.6 : 1,
       }}
-      onPress={() =>
-        router.push({
-          pathname: "/ask-paragraph",
-          params: {
-            subject_id: phase.subject_id,
-            mcq_id: phase.id,
-            react_order: phase.react_order_final,
-          },
-        })
-      }
+      onPress={handleAskParagraph}
+      disabled={isLoading}
     >
       <Text style={{ color: "#10b981", fontWeight: "700" }}>
-        Ask Paragraph about this MCQ
+        {isLoading ? 'Starting discussion...' : 'Ask Paragraph about this MCQ'}
       </Text>
     </TouchableOpacity>
-  </>
-)}
-  
-      {phase.image_url && (
-        <Image source={{ uri: phase.image_url }} style={styles.image} />
-      )}
-   
-    </View>
   );
 }
 
