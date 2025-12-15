@@ -83,12 +83,11 @@ export default function VideoScreen() {
 } = practiceData;
   const PAGE_LIMIT = 20;
  // ✅ FIX 2 — scroll to top when subject/category changes
-  useEffect(() => {
-    if (listRef.current) {
-      listRef.current.scrollToOffset({ offset: 0, animated: true });
-    }
-  }, [selectedCategory, selectedSubject, phases.length]);
-
+useEffect(() => {
+  if (listRef.current) {
+    listRef.current.scrollToOffset({ offset: 0, animated: true });
+  }
+}, [selectedCategory, selectedSubject]);
 
   return (
     <MainLayout isHeaderHidden={isMobile && !containersVisible}>
@@ -170,6 +169,7 @@ export default function VideoScreen() {
   data={phases}
   keyExtractor={(item) => item.id}
   contentContainerStyle={styles.cardsWrapper}   // ✅ ADD THIS LINE
+  maintainVisibleContentPosition={{ minIndexForVisible: 1 }}   // ✅ ADD
   renderItem={({ item, index }) => {
     console.log("📦 renderItem", {
       index,
@@ -272,7 +272,7 @@ removeClippedSubviews={false}
       loadMore();
     }
   }}
-  onEndReachedThreshold={hasMoreData ? 0.5 : 0.01}
+onEndReachedThreshold={0.8}
 
   ListFooterComponent={
     isLoadingMore ? (
