@@ -15,6 +15,7 @@ export function PracticeCard({ phase }) {
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const { user } = useAuth();
+  const router = useRouter();
   // Local bookmark state (like FlashcardCard)
 const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
