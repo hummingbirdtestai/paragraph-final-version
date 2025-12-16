@@ -61,11 +61,14 @@ async function handleSubscribe(
   promoCode?: string
 ) {
   try {
+    if (!(window as any).Cashfree) {
+      alert("Payment system still loading. Please try again.");
+      return;
+    }
+
     const res = await fetch(`${API_BASE}/api/payments/initiate`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         plan,
         coupon_code: promoCode || null,
@@ -74,23 +77,19 @@ async function handleSubscribe(
     });
 
     const data = await res.json();
-
     console.log('Payment initiation response:', data);
 
-if (!data.payment_session_id) {
-  alert('Payment initialization failed. Please try again.');
-  return;
-}
+    if (!data.payment_session_id) {
+      alert('Payment initialization failed. Please try again.');
+      return;
+    }
 
-const cashfree = new (window as any).Cashfree();
+    const cashfree = new (window as any).Cashfree();
 
-cashfree.checkout({
-  paymentSessionId: data.payment_session_id,
-  redirectTarget: '_self',
-});
-
-
-    // 🚫 Do NOT add Cashfree here yet
+    cashfree.checkout({
+      paymentSessionId: data.payment_session_id,
+      redirectTarget: '_self',
+    });
 
   } catch (err) {
     console.error(err);
