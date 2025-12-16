@@ -164,10 +164,10 @@ export default function AskParagraphScreen() {
           <View style={styles.conversationContainer}>
             {conversation.map((msg, index) => (
               msg.role === 'student' ? (
-                <StudentBubble key={index} text={msg.content} />
-              ) : (
-                <MentorBubbleReply key={index} markdownText={msg.content} />
-              )
+                  <StudentBubble key={index} text={msg.content} />
+                ) : (
+                  <MentorBubbleReply key={index} markdownText={msg.content} />
+                )
             ))}
 
             {isTyping && (
