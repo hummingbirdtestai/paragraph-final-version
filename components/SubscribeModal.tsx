@@ -91,7 +91,9 @@ async function handleSubscribe(
       return;
     }
 
-    const cashfree = new (window as any).Cashfree();
+    const cashfree = (window as any).Cashfree({
+      mode: "production", // or "sandbox"
+    });
 
     cashfree.checkout({
       paymentSessionId: data.payment_session_id,
