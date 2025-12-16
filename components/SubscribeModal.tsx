@@ -88,7 +88,7 @@ async function handleSubscribe(
 
     cashfree.checkout({
       paymentSessionId: data.payment_session_id,
-      redirectTarget: '_self',
+      redirectTarget: '_modal',
     });
 
   } catch (err) {
