@@ -158,63 +158,49 @@ function AskParagraphButton({
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleAskParagraph = async () => {
-    if (!studentId) {
-      console.error('❌ No student ID');
-      return;
-    }
+  if (!studentId) return;
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    try {
-      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://paragraph-pg-production.up.railway.app.com';
+  try {
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
-      console.log('🚀 Calling /ask-paragraph/start', {
+    const response = await fetch(`${API_BASE_URL}/ask-paragraph/start`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         student_id: studentId,
         mcq_id: mcqId,
-        subject_name: subjectName,
-        react_order: reactOrder,
-      });
-
-      const response = await fetch(`${API_BASE_URL}/ask-paragraph/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+        mcq_payload: {
+          stem: phaseJson.stem,
+          options: phaseJson.options,
+          correct_answer: phaseJson.correct_answer,
         },
-        body: JSON.stringify({
-          student_id: studentId,
-          mcq_id: mcqId,
-          subject_name: subjectName,
-          phase_json: phaseJson,
-          react_order: reactOrder,
-        }),
-      });
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      console.log('✅ /ask-paragraph/start success', {
-        session_id: data.session_id,
-        dialogs_count: data.dialogs?.length || 0,
-      });
-
-      router.push({
-        pathname: '/ask-paragraph',
-        params: {
-          session_id: data.session_id,
-          phase_json: JSON.stringify(data.phase_json || phaseJson),
-          dialogs: JSON.stringify(data.dialogs || []),
-        },
-      });
-    } catch (error) {
-      console.error('❌ Error calling /ask-paragraph/start:', error);
-      alert('Failed to start discussion. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      throw new Error(`API error ${response.status}`);
     }
-  };
+
+    const data = await response.json();
+
+    router.push({
+      pathname: "/ask-paragraph",
+      params: {
+        session_id: data.session_id,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    alert("Failed to start discussion");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <TouchableOpacity
