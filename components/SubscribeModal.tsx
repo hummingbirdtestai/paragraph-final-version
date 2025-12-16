@@ -709,8 +709,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   planCardDesktop: {
-    flexBasis: '32%',
-    marginHorizontal: 8,
+    width: '32%',
     marginBottom: 16,
   },
   headerDesktop: {
