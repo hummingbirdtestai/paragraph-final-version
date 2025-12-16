@@ -70,15 +70,15 @@ export function MCQBlock({ data, onAnswer }: MCQBlockProps) {
         <Text style={styles.question}>{data.question}</Text>
 
         <View style={styles.optionsContainer}>
-          {data.options.map((option) => (
+          {Object.entries(data.options).map(([id, text]) => (
             <TouchableOpacity
-              key={option.id}
-              style={getOptionStyle(option.id)}
-              onPress={() => handleOptionPress(option.id)}
+              key={id}
+              style={getOptionStyle(id)}
+              onPress={() => handleOptionPress(id)}
               disabled={showFeedback}
               activeOpacity={0.7}
             >
-              <Text style={getOptionTextStyle(option.id)}>{option.text}</Text>
+              <Text style={getOptionTextStyle(id)}>{text}</Text>
             </TouchableOpacity>
           ))}
         </View>
