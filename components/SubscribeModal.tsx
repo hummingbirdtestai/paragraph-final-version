@@ -44,6 +44,7 @@ async function handleSubscribe(
       body: JSON.stringify({
         plan,
         coupon_code: promoCode || null,
+        student_id: user.id,   // 👈 REQUIRED
       }),
     });
 
