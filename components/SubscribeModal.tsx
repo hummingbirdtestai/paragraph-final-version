@@ -19,8 +19,6 @@ interface SubscribeModalProps {
   onSubscribe: (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => void;
 }
 
-
-
 const API_BASE = 'https://paragraph-pg-production.up.railway.app';
 
 const PROMO_CODES: Record<string, { discount: number; label: string }> = {
@@ -36,6 +34,8 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
   const isMobile = width < 768;
   const isDesktop = width >= 1024;
 
+  
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   // ✅ Proper React guard
   if (!user?.id) {
@@ -61,8 +61,10 @@ async function handleSubscribe(
   promoCode?: string
 ) {
   try {
+    setPaymentError(null);
+
     if (!(window as any).Cashfree) {
-      alert("Payment system still loading. Please try again.");
+      setPaymentError("Payment system is still loading. Please try again.");
       return;
     }
 
@@ -77,10 +79,15 @@ async function handleSubscribe(
     });
 
     const data = await res.json();
-    console.log('Payment initiation response:', data);
+
+    // 🚨 HANDLE BACKEND ERRORS PROPERLY
+    if (!res.ok) {
+      setPaymentError(data?.detail || "Unable to start payment");
+      return;
+    }
 
     if (!data.payment_session_id) {
-      alert('Payment initialization failed. Please try again.');
+      setPaymentError("Unable to start payment");
       return;
     }
 
@@ -93,7 +100,7 @@ async function handleSubscribe(
 
   } catch (err) {
     console.error(err);
-    alert('Something went wrong. Please try again.');
+    setPaymentError("Something went wrong. Please try again.");
   }
 }
 
@@ -233,6 +240,12 @@ async function handleSubscribe(
           </View>
 
           <View style={styles.divider} />
+      
+          {paymentError && (
+        <View style={styles.paymentErrorBox}>
+          <Text style={styles.paymentErrorText}>{paymentError}</Text>
+        </View>
+      )}
 
           <View style={styles.plansSection}>
             <Text style={styles.sectionTitle}>Subscription Plans</Text>
@@ -862,5 +875,21 @@ const styles = StyleSheet.create({
     color: '#10b981',
     fontSize: 13,
     fontWeight: '500',
+  },
+  paymentErrorBox: {
+    backgroundColor: '#3f1d1d',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ef4444',
+  },
+  
+  paymentErrorText: {
+    color: '#fca5a5',
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });
