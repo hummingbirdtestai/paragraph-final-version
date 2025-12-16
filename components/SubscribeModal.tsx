@@ -547,7 +547,7 @@ function PlanCard({
       </View>
       <TouchableOpacity
         style={[styles.planButton, { backgroundColor: color }]}
-        onPress={() => onSubscribe(basePrice, promoCode || undefined)}
+        onPress={() => onSubscribe(previewPrice, promoCode || undefined)}
         activeOpacity={0.8}
       >
         <Text style={styles.planButtonText}>Subscribe Now</Text>
