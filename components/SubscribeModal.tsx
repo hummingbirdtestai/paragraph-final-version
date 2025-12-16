@@ -51,9 +51,11 @@ async function handleSubscribe(
 
     console.log('Payment initiation response:', data);
 
-    alert(
-      `Backend locked price: ₹${data.amount}\nOrder ID: ${data.order_id}`
-    );
+    if (data.checkout_url) {
+  window.location.href = data.checkout_url;
+} else {
+  alert('Payment initialization failed. Please try again.');
+}
 
     // 🚫 Do NOT add Cashfree here yet
 
@@ -216,7 +218,7 @@ async function handleSubscribe(
                   'Mock tests included',
                 ]}
                 onSubscribe={(finalPrice, promoCode) => {
-                  onSubscribe('3', finalPrice, promoCode);
+                  handleSubscribe('3', finalPrice, promoCode);
                 }}
                 isDesktop={isDesktop}
               />
@@ -232,7 +234,7 @@ async function handleSubscribe(
                   'Best value for serious aspirants',
                 ]}
                 onSubscribe={(finalPrice, promoCode) => {
-                  onSubscribe('6', finalPrice, promoCode);
+                  handleSubscribe('6', finalPrice, promoCode);
                 }}
                 isDesktop={isDesktop}
               />
@@ -249,7 +251,7 @@ async function handleSubscribe(
                   'Maximum rank optimisation',
                 ]}
                 onSubscribe={(finalPrice, promoCode) => {
-                  onSubscribe('12', finalPrice, promoCode);
+                  handleSubscribe('12', finalPrice, promoCode);
                 }}
                 isDesktop={isDesktop}
               />
