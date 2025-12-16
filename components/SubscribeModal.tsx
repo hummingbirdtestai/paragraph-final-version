@@ -19,6 +19,55 @@ interface SubscribeModalProps {
   onSubscribe: (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => void;
 }
 
+const [previewPrice, setPreviewPrice] = useState<number>(basePrice);
+const [discountInfo, setDiscountInfo] = useState<{
+  percent: number;
+  amount: number;
+} | null>(null);
+const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
+const applyPromoCode = async () => {
+  if (!promoCode.trim()) {
+    setPromoError('Please enter a coupon code');
+    return;
+  }
+
+  setIsCheckingCoupon(true);
+  setPromoError('');
+
+  try {
+    const res = await fetch(`${API_BASE}/api/payments/preview`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plan: duration.startsWith('3') ? '3' :
+              duration.startsWith('6') ? '6' : '12',
+        coupon_code: promoCode.trim().toUpperCase(),
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setPromoError(data?.detail || 'Invalid coupon');
+      setDiscountInfo(null);
+      setPreviewPrice(basePrice);
+      return;
+    }
+
+    setPreviewPrice(data.final_amount);
+    setDiscountInfo({
+      percent: data.discount_percent,
+      amount: data.discount_amount,
+    });
+
+  } catch {
+    setPromoError('Unable to validate coupon');
+  } finally {
+    setIsCheckingCoupon(false);
+  }
+};
+
+
 const API_BASE = 'https://paragraph-pg-production.up.railway.app';
 
 
@@ -314,6 +363,29 @@ async function handleSubscribe(
               />
             </View>
           </View>
+        <View style={styles.planHeader}>
+          <Text style={styles.planDuration}>{duration}</Text>
+        
+          {discountInfo ? (
+            <View>
+              <Text style={styles.planPriceOriginal}>
+                ₹{basePrice.toLocaleString('en-IN')}
+              </Text>
+              <Text style={[styles.planPrice, { color }]}>
+                ₹{previewPrice.toLocaleString('en-IN')}
+              </Text>
+              <View style={styles.savingsBadge}>
+                <Text style={styles.savingsText}>
+                  Save ₹{discountInfo.amount.toLocaleString('en-IN')} ({discountInfo.percent}%)
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <Text style={[styles.planPrice, { color }]}>
+              ₹{basePrice.toLocaleString('en-IN')}
+            </Text>
+          )}
+        </View>
 
           <View style={styles.divider} />
 
