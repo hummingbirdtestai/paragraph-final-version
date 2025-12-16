@@ -54,19 +54,33 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
       </Modal>
     );
   }
+
+  function waitForCashfree(timeout = 3000): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if ((window as any).Cashfree) {
+        clearInterval(timer);
+        resolve((window as any).Cashfree);
+      }
+      if (Date.now() - start > timeout) {
+        clearInterval(timer);
+        reject(new Error("Cashfree SDK not loaded"));
+      }
+    }, 100);
+  });
+}
+
   
 async function handleSubscribe(
   plan: '3' | '6' | '12',
-  finalPrice: number,
+  _uiPrice: number,
   promoCode?: string
 ) {
   try {
     setPaymentError(null);
 
-    if (!(window as any).Cashfree) {
-      setPaymentError("Payment system is still loading. Please try again.");
-      return;
-    }
+    const CashfreeSDK = await waitForCashfree();
 
     const res = await fetch(`${API_BASE}/api/payments/initiate`, {
       method: 'POST',
@@ -80,7 +94,6 @@ async function handleSubscribe(
 
     const data = await res.json();
 
-    // 🚨 HANDLE BACKEND ERRORS PROPERLY
     if (!res.ok) {
       setPaymentError(data?.detail || "Unable to start payment");
       return;
@@ -91,8 +104,11 @@ async function handleSubscribe(
       return;
     }
 
-    const cashfree = (window as any).Cashfree({
-      mode: "production", // or "sandbox"
+    console.log("Cashfree SDK:", CashfreeSDK);
+    console.log("Payment Session ID:", data.payment_session_id);
+
+    const cashfree = CashfreeSDK({
+      mode: "production",
     });
 
     cashfree.checkout({
@@ -102,12 +118,10 @@ async function handleSubscribe(
 
   } catch (err) {
     console.error(err);
-    setPaymentError("Something went wrong. Please try again.");
+    setPaymentError("Payment system is loading. Please try again.");
   }
-  console.log("Cashfree SDK:", window.Cashfree);
-console.log("Payment Session ID:", data.payment_session_id);
-
 }
+
 
   return (
     <Modal
