@@ -413,19 +413,13 @@ function PlanCard({
   const hasDiscount = pricing.discount > 0;
 
   const applyPromoCode = () => {
-    const code = promoCode.trim().toUpperCase();
-    if (!code) {
-      setPromoError('Please enter a promo code');
-      return;
-    }
-    if (PROMO_CODES[code]) {
-      setAppliedPromo(code);
-      setPromoError('');
-      setPromoCode('');
-    } else {
-      setPromoError('Invalid promo code');
-    }
-  };
+  if (!promoCode.trim()) {
+    setPromoError('Please enter a coupon code');
+    return;
+  }
+  setAppliedPromo(promoCode.trim().toUpperCase());
+  setPromoError('');
+};
 
   const removePromo = () => {
     setAppliedPromo(null);
