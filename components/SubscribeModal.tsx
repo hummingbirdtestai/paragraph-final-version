@@ -19,10 +19,7 @@ interface SubscribeModalProps {
   onSubscribe: (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => void;
 }
 
-if (!user?.id) {
-  alert('Please login to subscribe');
-  return;
-}
+
 
 const API_BASE = 'https://paragraph-pg-production.up.railway.app';
 
@@ -74,7 +71,10 @@ async function handleSubscribe(
     alert('Something went wrong. Please try again.');
   }
 }
-
+if (!user?.id) {
+  alert('Please login to subscribe');
+  return;
+}
 
   return (
     <Modal
