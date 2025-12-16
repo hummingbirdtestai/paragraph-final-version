@@ -104,6 +104,9 @@ async function handleSubscribe(
     console.error(err);
     setPaymentError("Something went wrong. Please try again.");
   }
+  console.log("Cashfree SDK:", window.Cashfree);
+console.log("Payment Session ID:", data.payment_session_id);
+
 }
 
   return (
