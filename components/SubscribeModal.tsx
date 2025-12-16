@@ -314,29 +314,6 @@ async function handleSubscribe(
               />
             </View>
           </View>
-        <View style={styles.planHeader}>
-          <Text style={styles.planDuration}>{duration}</Text>
-        
-          {discountInfo ? (
-            <View>
-              <Text style={styles.planPriceOriginal}>
-                ₹{basePrice.toLocaleString('en-IN')}
-              </Text>
-              <Text style={[styles.planPrice, { color }]}>
-                ₹{previewPrice.toLocaleString('en-IN')}
-              </Text>
-              <View style={styles.savingsBadge}>
-                <Text style={styles.savingsText}>
-                  Save ₹{discountInfo.amount.toLocaleString('en-IN')} ({discountInfo.percent}%)
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <Text style={[styles.planPrice, { color }]}>
-              ₹{basePrice.toLocaleString('en-IN')}
-            </Text>
-          )}
-        </View>
 
           <View style={styles.divider} />
 
@@ -486,6 +463,31 @@ function PlanCard({
         </View>
       )}
 
+<View style={styles.planHeader}>
+  <Text style={styles.planDuration}>{duration}</Text>
+
+  {discountInfo ? (
+    <View>
+      <Text style={styles.planPriceOriginal}>
+        ₹{basePrice.toLocaleString('en-IN')}
+      </Text>
+      <Text style={[styles.planPrice, { color }]}>
+        ₹{previewPrice.toLocaleString('en-IN')}
+      </Text>
+      <View style={styles.savingsBadge}>
+        <Text style={styles.savingsText}>
+          Save ₹{discountInfo.amount.toLocaleString('en-IN')} ({discountInfo.percent}%)
+        </Text>
+      </View>
+    </View>
+  ) : (
+    <Text style={[styles.planPrice, { color }]}>
+      ₹{basePrice.toLocaleString('en-IN')}
+    </Text>
+  )}
+</View>
+
+      
       <View style={styles.planPromoSection}>
         <View style={styles.planPromoInputContainer}>
           <TextInput
