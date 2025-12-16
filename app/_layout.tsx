@@ -11,11 +11,13 @@ export default function RootLayout() {
 
   return (
     <>
-      {/* ✅ Load Cashfree SDK in HEAD (MANDATORY for Expo Web) */}
+      {/* ✅ Cashfree SDK — MUST be loaded once, before any checkout call */}
       <Helmet>
         <script
+          id="cashfree-sdk"
           src="https://sdk.cashfree.com/js/v3/cashfree.js"
           type="text/javascript"
+          defer
         />
       </Helmet>
 
