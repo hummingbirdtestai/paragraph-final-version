@@ -71,6 +71,7 @@ export default function AskParagraphScreen() {
 }, [params.session_id]);
 
 
+
   useEffect(() => {
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -109,7 +110,7 @@ export default function AskParagraphScreen() {
 };
 
 
-  if (isLoading) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.accent} />
