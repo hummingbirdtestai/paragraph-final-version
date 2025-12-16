@@ -9,17 +9,24 @@ import { AuthProvider } from "@/contexts/AuthContext";
 export default function RootLayout() {
   useFrameworkReady();
 
-  // 🔥 THIS IS THE ONLY ADDITION — LOAD BUNNY PLAYER (WEB ONLY)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // prevent double-load
-    if ((window as any).BunnyPlayer) return;
+    // 🐰 Bunny Player (already correct)
+    if (!(window as any).BunnyPlayer) {
+      const bunnyScript = document.createElement("script");
+      bunnyScript.src = "https://player.bunny.net/js/bunny-player.min.js";
+      bunnyScript.async = true;
+      document.body.appendChild(bunnyScript);
+    }
 
-    const script = document.createElement("script");
-    script.src = "https://player.bunny.net/js/bunny-player.min.js";
-    script.async = true;
-    document.body.appendChild(script);
+    // 💳 Cashfree SDK (THIS IS MISSING)
+    if (!(window as any).Cashfree) {
+      const cashfreeScript = document.createElement("script");
+      cashfreeScript.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+      cashfreeScript.async = true;
+      document.body.appendChild(cashfreeScript);
+    }
   }, []);
 
   return (
