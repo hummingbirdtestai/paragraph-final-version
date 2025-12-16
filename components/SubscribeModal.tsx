@@ -11,11 +11,17 @@ import {
   TextInput,
 } from 'react-native';
 import { X, Check, Zap, BookOpen, Brain, Image as ImageIcon, Video, FileText, MessageSquare, Users } from 'lucide-react-native';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SubscribeModalProps {
   visible: boolean;
   onClose: () => void;
   onSubscribe: (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => void;
+}
+
+if (!user?.id) {
+  alert('Please login to subscribe');
+  return;
 }
 
 const API_BASE = 'https://paragraph-pg-production.up.railway.app';
@@ -29,6 +35,7 @@ const PROMO_CODES: Record<string, { discount: number; label: string }> = {
 
 export default function SubscribeModal({ visible, onClose, onSubscribe }: SubscribeModalProps) {
   const { width } = useWindowDimensions();
+  const { user } = useAuth();
   const isMobile = width < 768;
   const isDesktop = width >= 1024;
 
