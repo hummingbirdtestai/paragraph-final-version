@@ -30,6 +30,40 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
   const isMobile = width < 768;
   const isDesktop = width >= 1024;
 
+async function handleSubscribe(
+  plan: '3' | '6' | '12',
+  finalPrice: number,
+  promoCode?: string
+) {
+  try {
+    const res = await fetch('/api/payments/initiate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        plan,
+        coupon_code: promoCode || null,
+      }),
+    });
+
+    const data = await res.json();
+
+    console.log('Payment initiation response:', data);
+
+    alert(
+      `Backend locked price: ₹${data.amount}\nOrder ID: ${data.order_id}`
+    );
+
+    // 🚫 Do NOT add Cashfree here yet
+
+  } catch (err) {
+    console.error(err);
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+
   return (
     <Modal
       visible={visible}
