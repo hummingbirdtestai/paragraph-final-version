@@ -19,55 +19,6 @@ interface SubscribeModalProps {
   onSubscribe: (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => void;
 }
 
-const [previewPrice, setPreviewPrice] = useState<number>(basePrice);
-const [discountInfo, setDiscountInfo] = useState<{
-  percent: number;
-  amount: number;
-} | null>(null);
-const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
-const applyPromoCode = async () => {
-  if (!promoCode.trim()) {
-    setPromoError('Please enter a coupon code');
-    return;
-  }
-
-  setIsCheckingCoupon(true);
-  setPromoError('');
-
-  try {
-    const res = await fetch(`${API_BASE}/api/payments/preview`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        plan: duration.startsWith('3') ? '3' :
-              duration.startsWith('6') ? '6' : '12',
-        coupon_code: promoCode.trim().toUpperCase(),
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setPromoError(data?.detail || 'Invalid coupon');
-      setDiscountInfo(null);
-      setPreviewPrice(basePrice);
-      return;
-    }
-
-    setPreviewPrice(data.final_amount);
-    setDiscountInfo({
-      percent: data.discount_percent,
-      amount: data.discount_amount,
-    });
-
-  } catch {
-    setPromoError('Unable to validate coupon');
-  } finally {
-    setIsCheckingCoupon(false);
-  }
-};
-
-
 const API_BASE = 'https://paragraph-pg-production.up.railway.app';
 
 
@@ -475,10 +426,57 @@ function PlanCard({
 }) {
   const [promoCode, setPromoCode] = useState('');
   const [promoError, setPromoError] = useState('');
+  const [previewPrice, setPreviewPrice] = useState(basePrice);
+  const [discountInfo, setDiscountInfo] = useState<{
+    percent: number;
+    amount: number;
+  } | null>(null);
+  const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
 
-  <Text style={styles.planPrice}>
-  ₹{basePrice.toLocaleString('en-IN')}
-</Text>
+  const plan =
+    duration.startsWith('3') ? '3' :
+    duration.startsWith('6') ? '6' : '12';
+
+  const applyPromoCode = async () => {
+    if (!promoCode.trim()) {
+      setPromoError('Please enter a coupon code');
+      return;
+    }
+
+    setIsCheckingCoupon(true);
+    setPromoError('');
+
+    try {
+      const res = await fetch(`${API_BASE}/api/payments/preview`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan,
+          coupon_code: promoCode.trim().toUpperCase(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPromoError(data?.detail || 'Invalid coupon');
+        setPreviewPrice(basePrice);
+        setDiscountInfo(null);
+        return;
+      }
+
+      setPreviewPrice(data.final_amount);
+      setDiscountInfo({
+        percent: data.discount_percent,
+        amount: data.discount_amount,
+      });
+
+    } catch {
+      setPromoError('Unable to validate coupon');
+    } finally {
+      setIsCheckingCoupon(false);
+    }
+  };
 
   return (
     <View style={[styles.planCard, recommended && styles.planCardRecommended, isDesktop && styles.planCardDesktop]}>
@@ -487,12 +485,6 @@ function PlanCard({
           <Text style={styles.recommendedText}>Most students choose this</Text>
         </View>
       )}
-      <View style={styles.planHeader}>
-        <Text style={styles.planDuration}>{duration}</Text>
-        <Text style={[styles.planPrice, { color }]}>
-          ₹{basePrice.toLocaleString('en-IN')}
-        </Text>
-      </View>
 
       <View style={styles.planPromoSection}>
         <View style={styles.planPromoInputContainer}>
@@ -504,36 +496,19 @@ function PlanCard({
             onChangeText={setPromoCode}
             autoCapitalize="characters"
           />
-          {!appliedPromo ? (
-            <TouchableOpacity
-              style={styles.planPromoApplyButton}
-              onPress={applyPromoCode}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.planPromoApplyText}>Apply</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.planPromoRemoveButton}
-              onPress={removePromo}
-              activeOpacity={0.8}
-            >
-              <X size={14} color="#ef4444" />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            style={styles.planPromoApplyButton}
+            onPress={applyPromoCode}
+            disabled={isCheckingCoupon}
+          >
+            <Text style={styles.planPromoApplyText}>
+              {isCheckingCoupon ? 'Checking...' : 'Apply'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {promoError ? (
           <Text style={styles.planPromoError}>{promoError}</Text>
-        ) : null}
-
-        {appliedPromo ? (
-          <View style={styles.planPromoSuccess}>
-            <Check size={14} color="#10b981" />
-            <Text style={styles.planPromoSuccessText}>
-              {PROMO_CODES[appliedPromo].label} applied!
-            </Text>
-          </View>
         ) : null}
       </View>
 
@@ -545,10 +520,10 @@ function PlanCard({
           </View>
         ))}
       </View>
+
       <TouchableOpacity
         style={[styles.planButton, { backgroundColor: color }]}
         onPress={() => onSubscribe(previewPrice, promoCode || undefined)}
-        activeOpacity={0.8}
       >
         <Text style={styles.planButtonText}>Subscribe Now</Text>
       </TouchableOpacity>
