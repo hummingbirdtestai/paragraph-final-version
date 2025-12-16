@@ -435,14 +435,14 @@ function PlanCard({
         <Text style={styles.planDuration}>{duration}</Text>
         {hasDiscount ? (
           <View style={styles.pricingContainer}>
-            <Text style={styles.planPriceOriginal}>₹{pricing.original.toLocaleString('en-IN')}</Text>
-            <Text style={[styles.planPrice, { color }]}>₹{pricing.final.toLocaleString('en-IN')}</Text>
+            <Text style={styles.planPriceOriginal}>₹{pricing.original}</Text>
+            <Text style={[styles.planPrice, { color }]}>₹{pricing.final}</Text>
             <View style={styles.savingsBadge}>
-              <Text style={styles.savingsText}>Save ₹{pricing.discount.toLocaleString('en-IN')}</Text>
+              <Text style={styles.savingsText}>Save ₹{pricing.discount}</Text>
             </View>
           </View>
         ) : (
-          <Text style={styles.planPrice}>₹{pricing.final.toLocaleString('en-IN')}</Text>
+          <Text style={styles.planPrice}>₹{pricing.final}</Text>
         )}
       </View>
 
