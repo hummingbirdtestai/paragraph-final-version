@@ -35,37 +35,67 @@ export default function AskParagraphScreen() {
   const params = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [conversation, setConversation] = useState<Dialog[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [mcqData, setMcqData] = useState<MCQData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
+  const [conversation, setConversation] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
-    if (params.session_id && params.phase_json && params.dialogs) {
-      try {
-        setSessionId(params.session_id as string);
+  if (params.session_id && params.phase_json && params.dialogs) {
+    try {
+      setSessionId(params.session_id as string);
 
-        const phaseJson = typeof params.phase_json === 'string'
-          ? JSON.parse(params.phase_json)
-          : params.phase_json;
-        setMcqData(phaseJson);
+      const phaseJson = typeof params.phase_json === 'string'
+        ? JSON.parse(params.phase_json)
+        : params.phase_json;
+      setMcqData(phaseJson);
 
-        const dialogs = typeof params.dialogs === 'string'
-          ? JSON.parse(params.dialogs)
-          : params.dialogs;
-        setConversation(dialogs || []);
+      const dialogs = typeof params.dialogs === 'string'
+        ? JSON.parse(params.dialogs)
+        : params.dialogs;
+      setConversation(dialogs || []);
 
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error parsing params:', error);
-        setIsLoading(false);
-      }
-    } else {
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error parsing params:', error);
       setIsLoading(false);
     }
-  }, [params]);
+  } else {
+    setIsLoading(false);
+  }
+}, [params]);
+
+  useEffect(() => {
+  if (!params.session_id) return;
+
+  const sessionId = params.session_id as string;
+  setSessionId(sessionId);
+
+  const fetchSession = async () => {
+    try {
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
+      const res = await fetch(`${API_BASE_URL}/ask-paragraph/session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+
+      if (!res.ok) throw new Error("Failed to load session");
+
+      const data = await res.json();
+      setConversation(data.dialogs || []);
+    } catch (e) {
+      console.error("Failed to load session", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSession();
+}, [params.session_id]);
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -74,56 +104,36 @@ export default function AskParagraphScreen() {
   }, [conversation, isTyping]);
 
   const handleSendMessage = async (message: string) => {
-    if (!message.trim() || !sessionId) return;
+  if (!message.trim() || !sessionId) return;
 
-    const studentMessage: Dialog = {
-      role: 'student',
-      content: message,
-    };
+  setIsTyping(true);
 
-    setConversation(prev => [...prev, studentMessage]);
-    setIsSending(true);
-    setIsTyping(true);
+  try {
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
-    try {
-      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://your-api-endpoint.com';
+    const res = await fetch(`${API_BASE_URL}/ask-paragraph/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        student_id: params.student_id,
+        mcq_id: params.mcq_id,
+        message,
+      }),
+    });
 
-      const response = await fetch(`${API_BASE_URL}/ask-paragraph/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          session_id: sessionId,
-          student_message: message,
-        }),
-      });
+    if (!res.ok) throw new Error("Chat failed");
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
+    const data = await res.json();
 
-      const data = await response.json();
+    // ✅ SERVER IS SOURCE OF TRUTH
+    setConversation(data.session.dialogs);
+  } catch (e) {
+    console.error("Chat error", e);
+  } finally {
+    setIsTyping(false);
+  }
+};
 
-      const mentorMessage: Dialog = {
-        role: 'mentor',
-        content: data.mentor_reply || data.content || 'I apologize, I could not process that.',
-      };
-
-      setConversation(prev => [...prev, mentorMessage]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-
-      const errorMessage: Dialog = {
-        role: 'mentor',
-        content: 'I apologize, but I encountered an error. Please try again.',
-      };
-      setConversation(prev => [...prev, errorMessage]);
-    } finally {
-      setIsSending(false);
-      setIsTyping(false);
-    }
-  };
 
   if (isLoading) {
     return (
