@@ -34,8 +34,6 @@ export default function AskParagraphScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
-
-  const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [mcqData, setMcqData] = useState<MCQData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
