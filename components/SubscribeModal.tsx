@@ -405,18 +405,6 @@ function PlanCard({
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   const [promoError, setPromoError] = useState('');
 
-  const calculatePricing = () => {
-    const original = basePrice;
-    let discount = 0;
-
-    if (appliedPromo && PROMO_CODES[appliedPromo]) {
-      discount = Math.round(original * PROMO_CODES[appliedPromo].discount);
-    }
-
-    const final = original - discount;
-    return { original, final, discount };
-  };
-
   const pricing = calculatePricing();
   const hasDiscount = pricing.discount > 0;
 
