@@ -86,7 +86,7 @@ export default function AskParagraphScreen() {
   }, [conversation, isTyping]);
 
   const handleSendMessage = async (message: string) => {
-  if (!message.trim() || !sessionId) return;
+  if (!message.trim() || !sessionId || isTyping) return;
 
   setIsTyping(true);
 
