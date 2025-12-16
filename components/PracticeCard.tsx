@@ -166,7 +166,7 @@ function AskParagraphButton({
     setIsLoading(true);
 
     try {
-      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://your-api-endpoint.com';
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://paragraph-pg-production.up.railway.app.com';
 
       console.log('🚀 Calling /ask-paragraph/start', {
         student_id: studentId,
