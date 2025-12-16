@@ -38,7 +38,7 @@ async function handleSubscribe(
   promoCode?: string
 ) {
   try {
-    const res = await fetch('/api/payments/initiate', {
+    const res = await fetch(`${API_BASE}/api/payments/initiate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ async function handleSubscribe(
       body: JSON.stringify({
         plan,
         coupon_code: promoCode || null,
-        student_id: user.id,   // 👈 REQUIRED
+        student_id: user.id,
       }),
     });
 
