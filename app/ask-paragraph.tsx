@@ -40,30 +40,6 @@ export default function AskParagraphScreen() {
   const [conversation, setConversation] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  useEffect(() => {
-  if (params.session_id && params.phase_json && params.dialogs) {
-    try {
-      setSessionId(params.session_id as string);
-
-      const phaseJson = typeof params.phase_json === 'string'
-        ? JSON.parse(params.phase_json)
-        : params.phase_json;
-      setMcqData(phaseJson);
-
-      const dialogs = typeof params.dialogs === 'string'
-        ? JSON.parse(params.dialogs)
-        : params.dialogs;
-      setConversation(dialogs || []);
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error parsing params:', error);
-      setIsLoading(false);
-    }
-  } else {
-    setIsLoading(false);
-  }
-}, [params]);
 
   useEffect(() => {
   if (!params.session_id) return;
