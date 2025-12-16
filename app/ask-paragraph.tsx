@@ -71,7 +71,6 @@ export default function AskParagraphScreen() {
 }, [params.session_id]);
 
 
-
   useEffect(() => {
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
