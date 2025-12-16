@@ -18,6 +18,8 @@ interface SubscribeModalProps {
   onSubscribe: (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => void;
 }
 
+const API_BASE = 'https://paragraph-pg-production.up.railway.app';
+
 const PROMO_CODES: Record<string, { discount: number; label: string }> = {
   'NEET25': { discount: 0.25, label: '25% off' },
   'SAVE500': { discount: 500, label: '₹500 off' },
