@@ -77,11 +77,18 @@ async function handleSubscribe(
 
     console.log('Payment initiation response:', data);
 
-    if (data.checkout_url) {
-  window.location.href = data.checkout_url;
-} else {
+if (!data.payment_session_id) {
   alert('Payment initialization failed. Please try again.');
+  return;
 }
+
+const cashfree = new (window as any).Cashfree();
+
+cashfree.checkout({
+  paymentSessionId: data.payment_session_id,
+  redirectTarget: '_self',
+});
+
 
     // 🚫 Do NOT add Cashfree here yet
 
