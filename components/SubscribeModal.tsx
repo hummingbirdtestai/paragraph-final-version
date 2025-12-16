@@ -681,7 +681,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   scrollContentDesktop: {
-    maxWidth: 1200,
+    maxWidth: 1280,
     width: '100%',
     alignSelf: 'center',
     paddingHorizontal: 60,
