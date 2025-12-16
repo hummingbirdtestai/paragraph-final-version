@@ -191,6 +191,8 @@ function AskParagraphButton({
       pathname: "/ask-paragraph",
       params: {
         session_id: data.session_id,
+        student_id: studentId,
+        mcq_id: mcqId,
       },
     });
   } catch (err) {
