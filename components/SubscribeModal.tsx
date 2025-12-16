@@ -402,27 +402,11 @@ function PlanCard({
   isDesktop?: boolean;
 }) {
   const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   const [promoError, setPromoError] = useState('');
 
   <Text style={styles.planPrice}>
   ₹{basePrice.toLocaleString('en-IN')}
 </Text>
-
-  const applyPromoCode = () => {
-  if (!promoCode.trim()) {
-    setPromoError('Please enter a coupon code');
-    return;
-  }
-  setAppliedPromo(promoCode.trim().toUpperCase());
-  setPromoError('');
-};
-
-  const removePromo = () => {
-    setAppliedPromo(null);
-    setPromoCode('');
-    setPromoError('');
-  };
 
   return (
     <View style={[styles.planCard, recommended && styles.planCardRecommended, isDesktop && styles.planCardDesktop]}>
