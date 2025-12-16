@@ -59,7 +59,15 @@ export default function AskParagraphScreen() {
       if (!res.ok) throw new Error("Failed to load session");
 
       const data = await res.json();
-      setConversation(data.dialogs || []);
+      const dialogs = data.dialogs || [];
+      
+      setConversation(dialogs);
+      
+      // ✅ extract MCQ payload from system message
+      const systemMsg = dialogs.find((d: any) => d.role === "system");
+      if (systemMsg?.content) {
+        setMcqData(systemMsg.content);
+      }
     } catch (e) {
       console.error("Failed to load session", e);
     } finally {
