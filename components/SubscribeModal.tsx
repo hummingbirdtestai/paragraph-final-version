@@ -36,6 +36,25 @@ export default function SubscribeModal({ visible, onClose, onSubscribe }: Subscr
   const isMobile = width < 768;
   const isDesktop = width >= 1024;
 
+
+  // ✅ Proper React guard
+  if (!user?.id) {
+    return (
+      <Modal visible={visible} animationType="slide">
+        <View style={styles.container}>
+          <Text style={{ color: 'white', textAlign: 'center', marginTop: 100 }}>
+            Please login to subscribe
+          </Text>
+          <TouchableOpacity onPress={onClose}>
+            <Text style={{ color: '#10b981', textAlign: 'center', marginTop: 20 }}>
+              Close
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  }
+  
 async function handleSubscribe(
   plan: '3' | '6' | '12',
   finalPrice: number,
@@ -70,10 +89,6 @@ async function handleSubscribe(
     console.error(err);
     alert('Something went wrong. Please try again.');
   }
-}
-if (!user?.id) {
-  alert('Please login to subscribe');
-  return;
 }
 
   return (
