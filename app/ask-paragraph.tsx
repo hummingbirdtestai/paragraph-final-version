@@ -181,7 +181,6 @@ export default function AskParagraphScreen() {
         <View style={styles.inputContainer}>
           <MessageInput
             onSend={handleSendMessage}
-            disabled={isSending}
             placeholder="Ask your doubt about this MCQ..."
           />
         </View>
