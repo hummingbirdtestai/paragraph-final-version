@@ -426,13 +426,10 @@ function PlanCard({
         <View style={styles.planPromoInputContainer}>
           <TextInput
             style={styles.planPromoInput}
-            placeholder="Promo code"
+            placeholder="Promo code (optional)"
             placeholderTextColor="#6b7280"
             value={promoCode}
-            onChangeText={(text) => {
-              setPromoCode(text);
-              setPromoError('');
-            }}
+            onChangeText={setPromoCode}
             autoCapitalize="characters"
           />
           {!appliedPromo ? (
