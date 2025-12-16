@@ -21,10 +21,10 @@ export default function RootLayout() {
       document.body.appendChild(bunnyScript);
     }
 
-    // 💳 Cashfree SDK (THIS IS MISSING)
+    // 💳 Cashfree Checkout SDK (CORRECT)
     if (!(window as any).Cashfree) {
       const cashfreeScript = document.createElement("script");
-      cashfreeScript.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+      cashfreeScript.src = "https://sdk.cashfree.com/js/ui/2.0.0/cashfree.js";
       cashfreeScript.async = true;
       document.body.appendChild(cashfreeScript);
     }
