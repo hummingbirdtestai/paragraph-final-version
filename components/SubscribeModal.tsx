@@ -433,17 +433,9 @@ function PlanCard({
       )}
       <View style={styles.planHeader}>
         <Text style={styles.planDuration}>{duration}</Text>
-        {hasDiscount ? (
-          <View style={styles.pricingContainer}>
-            <Text style={styles.planPriceOriginal}>₹{pricing.original}</Text>
-            <Text style={[styles.planPrice, { color }]}>₹{pricing.final}</Text>
-            <View style={styles.savingsBadge}>
-              <Text style={styles.savingsText}>Save ₹{pricing.discount}</Text>
-            </View>
-          </View>
-        ) : (
-          <Text style={styles.planPrice}>₹{pricing.final}</Text>
-        )}
+        <Text style={[styles.planPrice, { color }]}>
+          ₹{basePrice.toLocaleString('en-IN')}
+        </Text>
       </View>
 
       <View style={styles.planPromoSection}>
