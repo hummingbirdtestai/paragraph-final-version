@@ -624,6 +624,8 @@ const styles = StyleSheet.create({
   },
   trustSection: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     flexWrap: 'wrap',
     gap: 12,
     marginBottom: 32,
