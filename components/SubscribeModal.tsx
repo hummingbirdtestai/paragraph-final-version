@@ -703,9 +703,10 @@ const styles = StyleSheet.create({
   },
   plansGridDesktop: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -8,
+    justifyContent: 'space-between',
     alignItems: 'stretch',
+    width: '100%',
+    gap: 16,
   },
   planCardDesktop: {
     flexBasis: '32%',
