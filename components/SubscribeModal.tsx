@@ -408,9 +408,6 @@ function PlanCard({
   <Text style={styles.planPrice}>
   ₹{basePrice.toLocaleString('en-IN')}
 </Text>
-  
-  const pricing = calculatePricing();
-  const hasDiscount = pricing.discount > 0;
 
   const applyPromoCode = () => {
   if (!promoCode.trim()) {
