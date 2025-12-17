@@ -71,7 +71,7 @@ React.useEffect(() => {
  {/* ✅ NEW */}
 <Text style={styles.subject}>{phase.subject}</Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
-          {(isConcept || isMCQ) && (
+          {(isImage || isMCQ) && (
   <View style={[styles.topBar, isConcept && styles.topBarConcept]}>
 
             {/* Progress */}
