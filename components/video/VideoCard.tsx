@@ -122,8 +122,9 @@ React.useEffect(() => {
     }
 
     if (data?.is_bookmark !== undefined) {
-      setIsBookmarked(data.is_bookmark);
-    }
+  setIsBookmarked(data.is_bookmark);
+  refresh?.();   // 🔥 ADD THIS LINE
+}
   }}
 >
   <Bookmark
@@ -273,6 +274,7 @@ React.useEffect(() => {
             
                 if (data?.is_bookmark !== undefined) {
                   setIsBookmarked(data.is_bookmark);
+                  refresh?.();   // 🔥 ADD THIS LINE
                 }
               }}
             >
