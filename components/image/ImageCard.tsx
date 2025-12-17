@@ -16,8 +16,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
 
 export function ImageCard({ phase, refresh }) {
-  const isConcept = phase.phase_type === "concept";
+  const isFlashcard = phase.phase_type === "flashcard";
   const isMCQ = phase.phase_type === "mcq";
+  const isImage = phase.phase_type === "image";
 
   const { user } = useAuth();
 
