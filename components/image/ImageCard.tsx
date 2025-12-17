@@ -13,6 +13,7 @@ import { TouchableOpacity } from "react-native";
 import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "expo-router";
 
 export function ImageCard({ phase, refresh }) {
   const isConcept = phase.phase_type === "concept";
