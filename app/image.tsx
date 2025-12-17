@@ -12,9 +12,8 @@ import {
 } from "react-native";
 import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
-import VimeoPlayer from "@/components/video/VimeoPlayer";
-import { VideoCard } from "@/components/video/VideoCard";
-import { useVideoData } from "@/hooks/useVideoData";
+import { ImageCard } from "@/components/image/ImageCard";
+import { useImageData } from "@/hooks/useImageData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
