@@ -125,8 +125,7 @@ function VideoScreen({
     await supabase.rpc("toggle_video_bookmark_v2", {
       p_student_id: user.id,
       p_videocard_id: phase.id,
-        p_subject: phase.subject,
-      }
+      p_subject: phase.subject,
     });
   }
 
