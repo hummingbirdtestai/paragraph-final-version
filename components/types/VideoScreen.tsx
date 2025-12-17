@@ -122,9 +122,11 @@ function VideoScreen({
     if (!user?.id) return;
     setBookmark(!bookmark);
 
-    await supabase.rpc("toggle_video_bookmark_v1", {
+    await supabase.rpc("toggle_video_bookmark_v2", {
       p_student_id: user.id,
-      p_phase_id: phaseUniqueId,
+      p_videocard_id: phase.id,
+        p_subject: phase.subject,
+      }
     });
   }
 
