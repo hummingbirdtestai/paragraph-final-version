@@ -14,6 +14,8 @@ import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
+import FlashcardScreenDB from "@/components/types/flashcardscreen";
+
 
 export function ImageCard({ phase, refresh }) {
   const isFlashcard = phase.phase_type === "flashcard";
