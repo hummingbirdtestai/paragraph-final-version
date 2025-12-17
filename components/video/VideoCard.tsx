@@ -283,46 +283,6 @@ React.useEffect(() => {
               <Text style={styles.likeCount}>{videoState.like_count}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={async () => {
-                if (!user?.id) return;
-            console.log("🚀 VIDEO ACTION BOOKMARK CLICK", {
-  source: "video_actions",
-  student_id: user?.id,
-  phase_id: phase.id,
-  phase_type: phase.phase_type,
-  subject: phase.subject,
-  local_before: isBookmarked,
-}); 
-                const { data, error } = await supabase.rpc(
-                  "toggle_video_bookmark_v2",
-                  {
-                    p_student_id: user.id,
-                    p_videocard_id: phase.id,
-                    p_subject: phase.subject,
-                  }
-                );
-     console.log("✅ VIDEO ACTION BOOKMARK RPC RESULT", { data, error });
-
-                if (error) {
-                  console.error("toggle_video_bookmark_v2 failed", error);
-                  return;
-                }
-            
-                if (data?.is_bookmark !== undefined) {
-                  setIsBookmarked(data.is_bookmark);
-                  refresh?.();   // 🔥 ADD THIS LINE
-                }
-              }}
-            >
-              <Bookmark
-                size={22}
-                color="#10b981"
-                strokeWidth={2}
-                fill={isBookmarked ? "#10b981" : "transparent"}
-              />
-            </TouchableOpacity>
-
           </View>
         </View>
       ) : null}
@@ -518,4 +478,14 @@ videoWrapper: {
     marginLeft: 6,
     fontSize: 13,
   },
+  videoBookmarkBtn: {
+  position: "absolute",
+  top: 12,
+  right: 12,
+  backgroundColor: "rgba(0,0,0,0.6)",
+  padding: 8,
+  borderRadius: 20,
+  zIndex: 10,
+},
+
 });
