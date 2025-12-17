@@ -60,6 +60,7 @@ React.useEffect(() => {
   return (
       {/* SUBJECT */}
  {/* ✅ NEW */}
+ <View style={styles.card}>
 <Text style={styles.subject}>{phase.subject}</Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
           {(isImage || isMCQ) && (
