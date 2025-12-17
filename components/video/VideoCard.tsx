@@ -33,7 +33,6 @@ export function VideoCard({ phase, refresh }) {
   const [videoState, setVideoState] = React.useState({
     is_liked: phase.is_liked ?? false,
     like_count: phase.like_count ?? 0,
-    is_bookmarked: phase.is_video_bookmarked ?? false,
   });
   const hasMarkedCompleted = React.useRef(false);
   const lastSentPercent = React.useRef(0);   // ✅ ADD HERE
