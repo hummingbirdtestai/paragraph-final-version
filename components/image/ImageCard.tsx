@@ -118,6 +118,29 @@ React.useEffect(() => {
  </View>
         )}
 
+
+
+{isImage && phase.image_url && (
+  <TouchableOpacity
+    activeOpacity={0.9}
+    onPress={() =>
+      router.push({
+        pathname: "/media-viewer",
+        params: {
+          url: phase.image_url_supabase || phase.image_url,
+        },
+      })
+    }
+  >
+    <Image
+      source={{ uri: phase.image_url_supabase || phase.image_url }}
+      style={styles.image}
+      resizeMode="contain"
+    />
+  </TouchableOpacity>
+)}
+
+>
           {/* 🎥 VIDEO HEADER OVERLAY */}
 <View style={styles.videoHeaderContainer}>
   {/* Subject Line */}
