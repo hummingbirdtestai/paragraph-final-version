@@ -58,7 +58,6 @@ React.useEffect(() => {
     "https://paragraph-pg-production.up.railway.app/orchestrate";
 
   return (
-    <View style={[styles.card, isConcept && styles.cardConcept]}>
       {/* SUBJECT */}
  {/* ✅ NEW */}
 <Text style={styles.subject}>{phase.subject}</Text>
@@ -142,19 +141,7 @@ React.useEffect(() => {
     isBookmarked={phase.is_bookmarked}
   />
 )}
-     
-      {/* CONCEPT — UNTOUCHED */}
-      {isConcept && (
-        <ConceptChatScreen
-          item={phase.phase_json}
-          studentId={"practice-view"}
-          isBookmarked={false}
-          reviewMode={true}
-          hideInternalNext={true}
-          phaseUniqueId={phase.id}
-        />
-      )}
-      
+
       {/* MCQ — UNTOUCHED */}
       {isMCQ && (
       <VideoMCQScreen
