@@ -140,11 +140,15 @@ const HighYieldFactsScreen: React.FC<HighYieldFactsScreenProps> = ({
       {/* 🔝 TOP BAR — CONCEPT ONLY */}
 {reactOrder !== undefined && totalCount !== undefined && (
   <View style={styles.topBar}>
-    <View style={styles.progressRow}>
-      <Text style={styles.progressText}>
-        🧠 Concept {reactOrder} / {totalCount}
-      </Text>
+    <View>
+  <Text style={styles.subjectText}>{subject}</Text>
+  <View style={styles.progressRow}>
+    <Text style={styles.progressText}>
+          🧠 Concept {reactOrder} / {totalCount}
+        </Text>
+      </View>
     </View>
+
 
     {onToggleBookmark && (
       <TouchableOpacity onPress={onToggleBookmark}>
@@ -274,6 +278,12 @@ progressText: {
   color: "#25D366",
   fontSize: 13,
   fontWeight: "700",
+},
+  subjectText: {
+  color: "#25D366",
+  fontSize: 15,
+  fontWeight: "700",
+  marginBottom: 4,
 },
 });
 
