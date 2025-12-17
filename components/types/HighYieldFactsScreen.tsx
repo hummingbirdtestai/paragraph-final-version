@@ -24,6 +24,12 @@ const HighYieldFactsScreen: React.FC<HighYieldFactsScreenProps> = ({
   isBookmarked,
   onToggleBookmark,
 }) => {
+    const [localBookmarked, setLocalBookmarked] = React.useState(isBookmarked);
+
+  React.useEffect(() => {
+    setLocalBookmarked(isBookmarked);
+  }, [isBookmarked]);
+
 
   const extractFacts = (markdown: string): string[] => {
     const lines = markdown.split('\n');
@@ -150,16 +156,21 @@ const HighYieldFactsScreen: React.FC<HighYieldFactsScreenProps> = ({
     </View>
 
 
-    {onToggleBookmark && (
-      <TouchableOpacity onPress={onToggleBookmark}>
-        <Bookmark
-          size={22}
-          color="#10b981"
-          strokeWidth={2}
-          fill={isBookmarked ? "#10b981" : "transparent"}
-        />
-      </TouchableOpacity>
-    )}
+  {onToggleBookmark && (
+    <TouchableOpacity
+      onPress={() => {
+        setLocalBookmarked((prev) => !prev);
+        onToggleBookmark();
+      }}
+    >
+      <Bookmark
+        size={22}
+        color="#10b981"
+        strokeWidth={2}
+        fill={localBookmarked ? "#10b981" : "transparent"}
+      />
+    </TouchableOpacity>
+  )}
   </View>
 )}
       <ScrollView
