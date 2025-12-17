@@ -332,10 +332,6 @@ const router = useRouter();
         <MentorBubbleReply markdownText={"💬 *Dr. Murali Bharadwaj is typing…*"} />
       )}
 
-      {phase.image_url && (
-        <Image source={{ uri: phase.image_url }} style={styles.image} />
-      )}
-
       <MessageInput
         placeholder={isSending ? "Waiting for mentor..." : "Ask your doubt..."}
         disabled={isSending}
