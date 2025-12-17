@@ -33,7 +33,7 @@ export function ImageCard({ phase, refresh }) {
 React.useEffect(() => {
   setIsBookmarked(!!phase.is_bookmarked);
 
-  console.log("🔁 VideoCard bookmark SYNC", {
+  console.log("🔁 ImageCard bookmark SYNC", {
     phase_id: phase.id,
     phase_type: phase.phase_type,
     phase_is_bookmarked_prop: phase.is_bookmarked,
