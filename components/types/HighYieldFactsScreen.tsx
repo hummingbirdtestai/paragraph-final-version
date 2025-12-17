@@ -159,6 +159,7 @@ React.useEffect(() => {
 
   {onToggleBookmark && (
     <TouchableOpacity
+      style={{ marginRight: 12 }}   // 👈 ADD THIS LINE
       onPress={() => {
         setLocalBookmarked((prev) => !prev);
         onToggleBookmark();
