@@ -32,27 +32,27 @@ export default function VideoScreen() {
   const [containersVisible, setContainersVisible] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
 
-  const subjects = [
-    "Anatomy",
-    "Anesthesia",
-    "Biochemistry",
-    "Community Medicine",
-    "Dermatology",
-    "ENT",
-    "Forensic Medicine",
-    "General Medicine",
-    "General Surgery",
-    "Microbiology",
-    "Obstetrics and Gynaecology",
-    "Ophthalmology",
-    "Orthopedics",
-    "Pathology",
-    "Pediatrics",
-    "Pharmacology",
-    "Physiology",
-    "Psychiatry",
-    "Radiology",
-  ];
+ const subjects = [
+  "General Medicine",
+  "General Surgery",
+  "Obstetrics and Gynaecology",
+  "Pediatrics",
+  "Orthopedics",
+  "Community Medicine",
+  "Ophthalmology",
+  "ENT",
+  "Dermatology",
+  "Psychiatry",
+  "Anesthesia",
+  "Radiology",
+  "Pathology",
+  "Anatomy",
+  "Physiology",
+  "Biochemistry",
+  "Microbiology",
+  "Pharmacology",
+  "Forensic Medicine",
+];
 
   const [selectedSubject, setSelectedSubject] = useState("General Medicine");
   const [selectedCategory, setSelectedCategory] =
