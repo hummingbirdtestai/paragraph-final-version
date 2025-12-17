@@ -218,13 +218,22 @@ useEffect(() => {
           isBookmarked={item.is_bookmarked}
         
           onToggleBookmark={async () => {
-            if (!userId) return;
+          if (!userId) return;
         
-            await supabase.rpc("toggle_video_bookmark_v2", {
-            p_student_id: userId,
-            p_videocard_id: item.id,   // 🔑 phase id
-            p_subject: item.subject,
-          });
+          const { data, error } = await supabase.rpc(
+            "toggle_video_bookmark_v2",
+            {
+              p_student_id: userId,
+              p_videocard_id: item.id,   // ✅ phase id
+              p_subject: item.subject,
+            }
+          );
+        
+          if (!error && data) {
+            refresh();   // 🔄 keeps bookmarked filter correct
+          }
+        }}
+
 
         
              if (!error && data) {
