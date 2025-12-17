@@ -293,10 +293,4 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 
-  watchedText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#000",
-  },
-
 });
