@@ -10,7 +10,7 @@ import MentorBubbleReply from "@/components/types/MentorBubbleReply";
 import { MessageInput } from "@/components/chat/MessageInput";
 
 import { TouchableOpacity } from "react-native";
-import { Bookmark, Heart } from "lucide-react-native";
+import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
