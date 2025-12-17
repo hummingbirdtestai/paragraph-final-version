@@ -89,8 +89,14 @@ React.useEffect(() => {
         {phase.subject}
       </Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
-        {(isConcept || isMCQ) && (
-          <View style={[styles.topBar, isConcept && styles.topBarConcept]}>
+        {(isConcept || isMCQ || isVideo) && (
+          <View
+  style={[
+    styles.topBar,
+    isConcept && styles.topBarConcept,
+    isVideo && styles.videoTopBar,   // 👈 ADD
+  ]}
+>
             {/* Progress */}
             <View style={styles.progressRow}>
               <Text style={styles.progressText}>
@@ -487,5 +493,14 @@ videoWrapper: {
   borderRadius: 20,
   zIndex: 10,
 },
-
+videoTopBar: {
+  position: "absolute",
+  top: 12,
+  left: 12,
+  right: 12,
+  zIndex: 20,
+  backgroundColor: "rgba(0,0,0,0.55)",
+  padding: 8,
+  borderRadius: 12,
+},
 });
