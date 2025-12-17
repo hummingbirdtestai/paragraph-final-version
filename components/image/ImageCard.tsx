@@ -17,7 +17,6 @@ import { useAuth } from "@/contexts/AuthContext";
 export function ImageCard({ phase, refresh }) {
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
-  const isVideo = phase.phase_type === "video";
 
   const { user } = useAuth();
 
