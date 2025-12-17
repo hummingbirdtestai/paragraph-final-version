@@ -79,6 +79,46 @@ React.useEffect(() => {
       <Text style={[styles.subject, isConcept && styles.subjectConcept]}>
         {phase.subject}
       </Text>
+        {/* 🔝 TOP BAR — SAME AS PRACTICE */}
+        {(isConcept || isMCQ) && (
+          <View style={[styles.topBar, isConcept && styles.topBarConcept]}>
+            {/* Progress */}
+            <View style={styles.progressRow}>
+              <Text style={styles.progressText}>
+                {isMCQ ? "🧩 MCQ" : "🧠 Concept"} {phase.react_order_final} / {phase.total_count}
+              </Text>
+            </View>
+        
+            {/* Bookmark */}
+<TouchableOpacity
+  onPress={async () => {
+    if (!user?.id) return;
+
+    const { data, error } = await supabase.rpc(
+      "toggle_practice_bookmark_v1",
+      {
+        p_student_id: user.id,
+        p_practicecard_id: phase.id,
+        p_subject: phase.subject,
+      }
+    );
+
+    if (!error) {
+      setIsBookmarked(data?.is_bookmark ?? !isBookmarked);
+    }
+  }}
+>
+  <Bookmark
+    size={22}
+    color="#10b981"
+    strokeWidth={2}
+    fill={isBookmarked ? "#10b981" : "transparent"}
+  />
+</TouchableOpacity>
+ </View>
+        )}
+
+
 
       {/* ⭐⭐⭐ VIDEO BLOCK — SURGICAL & SAFE ⭐⭐⭐ */}
       {isVideo && phase.phase_json?.vimeo_video_id ? (
@@ -218,17 +258,7 @@ React.useEffect(() => {
           </View>
         </View>
       ) : null}
-        {/* 🔖 CONCEPT BOOKMARK — UX ONLY */}
-        {isConcept && (
-          <View style={styles.bookmarkRow}>
-            <Bookmark
-              size={22}
-              color="#10b981"
-              strokeWidth={2}
-              fill={isBookmarked ? "#10b981" : "transparent"}
-            />
-          </View>
-        )}
+     
       {/* CONCEPT — UNTOUCHED */}
       {isConcept && (
         <ConceptChatScreen
@@ -240,18 +270,7 @@ React.useEffect(() => {
           phaseUniqueId={phase.id}
         />
       )}
-        {/* 🔖 MCQ BOOKMARK — UX ONLY */}
-        {isMCQ && (
-          <View style={styles.bookmarkRow}>
-            <Bookmark
-              size={22}
-              color="#10b981"
-              strokeWidth={2}
-              fill={isBookmarked ? "#10b981" : "transparent"}
-            />
-          </View>
-        )}
-
+      
       {/* MCQ — UNTOUCHED */}
       {isMCQ && (
       <VideoMCQScreen
@@ -353,12 +372,30 @@ const styles = StyleSheet.create({
   subjectConcept: {
     paddingHorizontal: 16,
   },
-  bookmarkRow: {
-  position: "absolute",
-  top: 12,
-  right: 52, // ⬅️ leaves room for Watched badge / video UI
-  zIndex: 999,
-},
+    topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+
+  topBarConcept: {
+    paddingHorizontal: 16, // aligns with PracticeCard concept layout
+  },    
+        progressRow: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: "#0d2017",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#25D36655",
+  },
+
+  progressText: {
+    color: "#25D366",
+    fontSize: 13,
+    fontWeight: "700",
+  },
   image: {
     width: "100%",
     height: 220,
