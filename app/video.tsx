@@ -1,426 +1,361 @@
-// video.tsx
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  RefreshControl,
-  StyleSheet,
-  Platform,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
-import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
-import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
-import VimeoPlayer from "@/components/video/VimeoPlayer";
-import { VideoCard } from "@/components/video/VideoCard";
-import { useVideoData } from "@/hooks/useVideoData";
-import MainLayout from "@/components/MainLayout";
+// Videocard.tsx — FINAL (SURGICAL, PROD-READY)
+
+import React from "react";
+import { View, Text, Image, StyleSheet } from "react-native";
+
+import ConceptChatScreen from "@/components/types/Conceptscreen";
+import VideoMCQScreen from "@/components/types/VideoMCQScreen";
+import { StudentBubble } from "@/components/chat/StudentBubble";
+import MentorBubbleReply from "@/components/types/MentorBubbleReply";
+import { MessageInput } from "@/components/chat/MessageInput";
+
+import { TouchableOpacity } from "react-native";
+import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
-import { FlatList } from "react-native";
-import HighYieldFactsScreen from "@/components/types/HighYieldFactsScreen";
+import { useAuth } from "@/contexts/AuthContext";
+import VimeoPlayer from "@/components/video/VimeoPlayer";
 
-export default function VideoScreen() {
-  const { width, height } = useWindowDimensions();
+export function VideoCard({ phase }) {
+  const isConcept = phase.phase_type === "concept";
+  const isMCQ = phase.phase_type === "mcq";
+  const isVideo = phase.phase_type === "video";
 
-  const isMobile =
-    Platform.OS === "ios" ||
-    Platform.OS === "android" ||
-    (Platform.OS === "web" && width < 1024);
-  const isLandscape = width > height;
+  const { user } = useAuth();
 
-  const [containersVisible, setContainersVisible] = useState(true);
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const [conversation, setConversation] = React.useState([]);
+  const [isSending, setIsSending] = React.useState(false);
+  const [isTyping, setIsTyping] = React.useState(false);
 
-  const subjects = [
-    "Anatomy",
-    "Anesthesia",
-    "Biochemistry",
-    "Community Medicine",
-    "Dermatology",
-    "ENT",
-    "Forensic Medicine",
-    "General Medicine",
-    "General Surgery",
-    "Microbiology",
-    "Obstetrics and Gynaecology",
-    "Ophthalmology",
-    "Orthopedics",
-    "Pathology",
-    "Pediatrics",
-    "Pharmacology",
-    "Physiology",
-    "Psychiatry",
-    "Radiology",
-  ];
+  // ORIGINAL bookmark for concept/mcq
+  const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
-  const [selectedSubject, setSelectedSubject] = useState("General Medicine");
-  const [selectedCategory, setSelectedCategory] =
-    useState<"unviewed" | "viewed" | "bookmarked" | "wrong">("unviewed");
-  const [userId, setUserId] = useState<string | null>(null);
-  const [showScrollControls, setShowScrollControls] = useState(false);
-   // ✅ FIX 1 — declare ref BEFORE scroll effect
-  const listRef = React.useRef<FlatList>(null);
-  const isWeb = Platform.OS === "web" && !isMobile;
+  // ⭐ VIDEO STATE ONLY
+  const [videoState, setVideoState] = React.useState({
+    is_liked: phase.is_liked ?? false,
+    like_count: phase.like_count ?? 0,
+    is_bookmarked: phase.is_video_bookmarked ?? false,
+  });
+
+React.useEffect(() => {
+  console.log("🟢 VideoCard MOUNT", phase.id);
+
+  return () => {
+    console.log("🔴 VideoCard UNMOUNT", phase.id);
+  };
+}, []);
   
-  useEffect(() => {
-    const loadUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUserId(session?.user?.id ?? null);
-    };
-    loadUser();
-  }, []);
+  // DEBUG LOGS — UNTOUCHED
+  React.useEffect(() => {
+    if (isConcept) {
+      console.log("📗 Concept Loaded", { concept_id: phase.id });
+    }
+    if (isMCQ) {
+      console.log("📘 MCQ Loaded", {
+        mcq_id: phase.id,
+        concept_before: phase.concept_id_before_this_mcq,
+        correct_answer: phase.phase_json?.correct_answer,
+      });
+    }
+    if (isVideo) {
+      console.log("🎬 Video Loaded", {
+        video_id: phase.id,
+        vimeo_id: phase.phase_json?.vimeo_video_id,
+      });
+    }
+  }, [phase]);
 
-  const practiceData = useVideoData(selectedSubject, userId, selectedCategory);
- const {
-  phases,
-  loading,
-  refreshing,
-  refresh,
-  loadMore,
-  isLoadingMore,
-  hasMoreData
-} = practiceData;
-  const PAGE_LIMIT = 20;
- // ✅ FIX 2 — scroll to top when subject/category changes
-useEffect(() => {
-  if (listRef.current) {
-    listRef.current.scrollToOffset({ offset: 0, animated: true });
-  }
-}, [selectedCategory, selectedSubject]);
+  const ORCHESTRATOR_URL =
+    "https://paragraph-pg-production.up.railway.app/orchestrate";
 
   return (
-    <MainLayout isHeaderHidden={isMobile && !containersVisible}>
-      <View style={styles.container}>
+    <View style={[styles.card, isConcept && styles.cardConcept]}>
+      {/* SUBJECT */}
+      <Text style={[styles.subject, isConcept && styles.subjectConcept]}>
+        {phase.subject}
+      </Text>
 
-        {(containersVisible || !isMobile) && (
-          <View style={styles.headerBlock}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.subjectsContainer}
-              style={styles.subjectsScroll}
-            >
-              {subjects.map((subj) => (
-                <SubjectFilterBubble
-                  key={subj}
-                  subject={subj}
-                  selected={selectedSubject === subj}
-                  onPress={() => setSelectedSubject(subj)}
-                />
-              ))}
-            </ScrollView>
-
-            <View style={styles.categoryContainer}>
-              <TouchableOpacity
-                style={[styles.categoryIcon, selectedCategory === "unviewed" && styles.categoryIconSelected]}
-                onPress={() => setSelectedCategory("unviewed")}
-              >
-                <EyeOff
-                  size={20}
-                  color={selectedCategory === "unviewed" ? "#fff" : "#10b981"}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.categoryIcon, selectedCategory === "viewed" && styles.categoryIconSelected]}
-                onPress={() => setSelectedCategory("viewed")}
-              >
-                <Eye
-                  size={20}
-                  color={selectedCategory === "viewed" ? "#fff" : "#10b981"}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.categoryIcon, selectedCategory === "bookmarked" && styles.categoryIconSelected]}
-                onPress={() => setSelectedCategory("bookmarked")}
-              >
-                <Bookmark
-                  size={20}
-                  color={selectedCategory === "bookmarked" ? "#fff" : "#10b981"}
-                  fill={selectedCategory === "bookmarked" ? "#fff" : "transparent"}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.categoryIcon, selectedCategory === "wrong" && styles.categoryIconSelected]}
-                onPress={() => setSelectedCategory("wrong")}
-              >
-                <XCircle
-                  size={20}
-                  color={selectedCategory === "wrong" ? "#fff" : "#10b981"}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
-        {/* CONTENT */}
-        {!userId ? (
-          <View style={{ padding: 40 }}>
-            <Text style={{ color: "#bbb", fontSize: 16, textAlign: "center" }}>
-              Please sign in to view concepts.
-            </Text>
-          </View>
-        ) : (
-   <FlatList
-  ref={listRef}
-  data={phases}
-  keyExtractor={(item) => item.id}
-  contentContainerStyle={styles.cardsWrapper}   // ✅ ADD THIS LINE
-  maintainVisibleContentPosition={{ minIndexForVisible: 1 }}   // ✅ ADD
-  renderItem={({ item, index }) => {
-    console.log("📦 renderItem", {
-      index,
-      id: item.id,
-      type: item.phase_type,
-    });
-  
-    if (item.phase_type === "video") {
-      const vimeoId = item.phase_json?.vimeo_video_id;
-      if (!vimeoId) return null;
-    
-      const content = (
+      {/* ⭐⭐⭐ VIDEO BLOCK — SURGICAL & SAFE ⭐⭐⭐ */}
+      {isVideo && phase.phase_json?.vimeo_video_id ? (
         <View
-          style={[
-            styles.videoFeedItem,
-            {
-              aspectRatio:
-                item.phase_json?.aspect_ratio === "portrait" ? 9 / 16 : 16 / 9,
-            },
-          ]}
-        >
-          <VimeoPlayer vimeoId={vimeoId} />
-        </View>
-      );
-    
-      return isWeb ? (
-        <View style={styles.webFeedShell}>
-          <View style={styles.webFeedColumn}>
-            {content}
+  style={[
+    styles.videoWrapper,
+    {
+      aspectRatio:
+        phase.phase_json?.aspect_ratio === "portrait" ? 9 / 16 : 16 / 9,
+    },
+  ]}
+>
+          <VimeoPlayer
+            vimeoId={phase.phase_json.vimeo_video_id}
+            onProgress={(current, duration) => {
+              if (!user?.id) return;
+              if (!duration || duration === 0) return;
+
+              const percent = Math.floor((current / duration) * 100);
+
+              supabase.rpc("update_video_progress_v1", {
+                p_student_id: user.id,
+                p_phase_id: phase.id,
+                p_progress_percent: percent,
+              });
+
+              if (percent >= 90 && !phase.is_viewed) {
+                supabase.rpc("mark_video_completed_v1", {
+                  p_student_id: user.id,
+                  p_phase_id: phase.id,
+                });
+              }
+            }}
+            onEnded={() => {
+              if (!user?.id) return;
+              supabase.rpc("mark_video_completed_v1", {
+                p_student_id: user.id,
+                p_phase_id: phase.id,
+              });
+            }}
+          />
+
+          {/* WATCHED BADGE */}
+          {phase.is_viewed && (
+            <View style={styles.watchedBadge}>
+              <Text style={styles.watchedText}>Watched</Text>
+            </View>
+          )}
+
+          {/* PROGRESS BAR */}
+          {phase.progress_percent > 0 && phase.progress_percent < 1 && (
+            <View style={styles.progressBarOuter}>
+              <View
+                style={[
+                  styles.progressBarInner,
+                  { width: `${phase.progress_percent * 100}%` },
+                ]}
+              />
+            </View>
+          )}
+
+          {/* LIKE + BOOKMARK */}
+          <View style={styles.videoActions}>
+            <TouchableOpacity
+              style={styles.likeRow}
+              onPress={async () => {
+                if (!user?.id) return;
+
+                const { data } = await supabase.rpc("toggle_video_like_v1", {
+                  p_student_id: user.id,
+                  p_video_id: phase.id,
+                });
+
+                if (data) {
+                  setVideoState((prev) => ({
+                    ...prev,
+                    is_liked: data.is_liked,
+                    like_count: data.like_count,
+                  }));
+                }
+              }}
+            >
+              <Heart
+                size={22}
+                color={videoState.is_liked ? "#ff4d4d" : "#888"}
+                fill={videoState.is_liked ? "#ff4d4d" : "transparent"}
+              />
+              <Text style={styles.likeCount}>{videoState.like_count}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={async () => {
+                if (!user?.id) return;
+
+                const { data } = await supabase.rpc(
+                  "toggle_video_bookmark_v1",
+                  {
+                    p_student_id: user.id,
+                    p_video_id: phase.id,
+                  }
+                );
+
+                if (data) {
+                  setVideoState((prev) => ({
+                    ...prev,
+                    is_bookmarked: data.is_bookmarked,
+                  }));
+                }
+              }}
+            >
+              <Bookmark
+                size={22}
+                color={videoState.is_bookmarked ? "#25D366" : "#888"}
+                fill={
+                  videoState.is_bookmarked ? "#25D366" : "transparent"
+                }
+              />
+            </TouchableOpacity>
           </View>
         </View>
-      ) : (
-        content
-      );
-    }
-  
-    if (item.phase_type === "concept") {
-      const content = (
-        <HighYieldFactsScreen
-          topic={item.phase_json?.topic ?? "Concept"}
-          conceptMarkdown={item.phase_json?.concept ?? ""}
+      ) : null}
+
+      {/* CONCEPT — UNTOUCHED */}
+      {isConcept && (
+        <ConceptChatScreen
+          item={phase.phase_json}
+          studentId={"practice-view"}
+          isBookmarked={false}
+          reviewMode={true}
+          hideInternalNext={true}
+          phaseUniqueId={phase.id}
         />
-      );
+      )}
 
-      return isWeb ? (
-        <View style={styles.webFeedShell}>
-          <View style={styles.webFeedColumn}>{content}</View>
-        </View>
-      ) : (
-        content
-      );
-    }
-  
-if (item.phase_type === "mcq") {
-  const content = <VideoCard phase={item} />;
+      {/* MCQ — UNTOUCHED */}
+      {isMCQ && (
+        <VideoMCQScreen
+          item={phase.phase_json}
+          conceptId={phase.concept_id_before_this_mcq}
+          mcqId={phase.id}
+          correctAnswer={phase.phase_json?.correct_answer}
+          studentId={user?.id}
+          reviewMode={false}
+          hideInternalNext={true}
+          phaseUniqueId={phase.id}
+        />
+      )}
 
-  return isWeb ? (
-    <View style={styles.webFeedShell}>
-      <View style={styles.webFeedColumn}>{content}</View>
+      {/* CHAT — UNTOUCHED */}
+      {conversation.map((msg, index) =>
+        msg.role === "student" ? (
+          <StudentBubble key={index} text={msg.content} />
+        ) : (
+          <MentorBubbleReply key={index} markdownText={msg.content} />
+        )
+      )}
+
+      {isTyping && (
+        <MentorBubbleReply markdownText={"💬 *Dr. Murali Bharadwaj is typing…*"} />
+      )}
+
+      {phase.image_url && (
+        <Image source={{ uri: phase.image_url }} style={styles.image} />
+      )}
+
+      <MessageInput
+        placeholder={isSending ? "Waiting for mentor..." : "Ask your doubt..."}
+        disabled={isSending}
+        onSend={async (text) => {
+          if (!text.trim()) return;
+
+          setConversation((prev) => [
+            ...prev,
+            { role: "student", content: text },
+          ]);
+          setIsSending(true);
+          setIsTyping(true);
+
+          try {
+            const res = await fetch(ORCHESTRATOR_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action: "chat",
+                student_id: user?.id,
+                subject_id: phase.subject_id,
+                message: text,
+              }),
+            });
+
+            const data = await res.json();
+
+            if (data?.mentor_reply) {
+              setConversation((prev) => [
+                ...prev,
+                { role: "assistant", content: data.mentor_reply },
+              ]);
+            }
+          } finally {
+            setIsSending(false);
+            setIsTyping(false);
+          }
+        }}
+      />
     </View>
-  ) : (
-    content
   );
 }
 
-// 🚨 Defensive fallback — should NEVER happen in video feed
-console.error("❌ Unknown phase_type in VideoScreen", item.phase_type);
-return null;
-}}
-     
-  onScroll={(event) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-
-    if (isMobile && offsetY > 10) {
-      if (!hasScrolled) {
-        setHasScrolled(true);
-      }
-      if (containersVisible) {
-        setContainersVisible(false);
-      }
-    }
-
-    setShowScrollControls(offsetY > 100);
-  }}
-  scrollEventThrottle={16}
-
-  initialNumToRender={8}
-  maxToRenderPerBatch={6}
-  windowSize={12}
-  removeClippedSubviews={false}
-
-
-  onEndReached={() => {
-    if (
-      hasMoreData &&
-      !isLoadingMore &&
-      !loading &&
-      phases.length >= PAGE_LIMIT       // ⭐ REQUIRED FIX FOR WEB FLICKER
-    ) {
-      loadMore();
-    }
-  }}
-onEndReachedThreshold={0.8}
-
-  ListFooterComponent={
-    isLoadingMore ? (
-      <View style={{ padding: 20 }}>
-        <Text style={{ textAlign: "center", color: "#999" }}>Loading more…</Text>
-      </View>
-    ) : null
-  }
-/>
-        )}
-
-        {isMobile && !containersVisible && (
-          <TouchableOpacity
-            style={styles.fab}
-            onPress={() => setContainersVisible(true)}
-          >
-            <Filter size={24} color="#fff" />
-          </TouchableOpacity>
-        )}
-
-        {showScrollControls && (
-          <View style={styles.scrollControlsWrapper}>
-            <TouchableOpacity
-              style={styles.scrollBtn}
-              onPress={() =>
-                listRef?.current?.scrollToOffset({
-                  offset: 0,
-                  animated: true
-                })
-              }
-            >
-              <ArrowUp size={24} color="#fff" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.scrollBtn}
-              onPress={() =>
-                listRef?.current?.scrollToEnd({
-                  animated: true
-                })
-              }
-            >
-              <ArrowDown size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    </MainLayout>
-  );
-}
+// ============================================================================
+// STYLES — ONLY videoWrapper ADDED (SURGICAL)
+// ============================================================================
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0b141a" },
-
-  headerBlock: {
-    paddingTop: 60,
-    backgroundColor: "#0b141a",
-    zIndex: 10,
-  },
-
-  subjectsScroll: { marginBottom: 16 },
-
-  subjectsContainer: {
-    paddingHorizontal: 16,
-    gap: 8,
-    flexWrap: "wrap",
-  },
-
-  cardsWrapper: {
-    paddingHorizontal: 16,
-    paddingBottom: 100,
-  },
-// 🎬 VIDEO FEED ITEM (ADD THIS)
-videoFeedItem: {
-  width: "100%",
-  backgroundColor: "#000",
-  marginBottom: 16,
-},
-  categoryContainer: {
-    flexDirection: "row",
-    gap: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "#0d0d0d",
-  },
-
-  categoryIcon: {
-    width: 48,
-    height: 48,
+  card: {
+    backgroundColor: "#111b21",
+    padding: 16,
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#10b981",
-    alignItems: "center",
-    justifyContent: "center",
+    marginBottom: 16,
   },
-
-  categoryIconSelected: {
-    backgroundColor: "#10b981",
-    borderColor: "#10b981",
+  cardConcept: {
+    paddingHorizontal: 0,
   },
-
-  scrollControlsWrapper: {
-    position: "absolute",
-    bottom: 30,
-    right: 20,
-    alignItems: "center",
-    zIndex: 999,
-  },
-
-  scrollBtn: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#10b981",
-    justifyContent: "center",
-    alignItems: "center",
+  subject: {
+    color: "#25D366",
+    fontSize: 16,
+    fontWeight: "700",
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6,
+  },
+  subjectConcept: {
+    paddingHorizontal: 16,
+  },
+  image: {
+    width: "100%",
+    height: 220,
+    borderRadius: 12,
+    marginTop: 12,
   },
 
-  fab: {
+  /* ⭐ SURGICAL ADDITION */
+videoWrapper: {
+  width: "100%",
+  marginHorizontal: -16, // cancels card padding
+  backgroundColor: "black",
+},
+
+  watchedBadge: {
     position: "absolute",
-    top: 20,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#10b981",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    zIndex: 1000,
+    top: 10,
+    right: 16,
+    backgroundColor: "#25D366",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
-
-  webFeedColumn: {
-    width: "100%",
-    maxWidth: 720,
+  watchedText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#000",
   },
-
-  webFeedShell: {
-    width: "100%",
-    paddingHorizontal: 24,
+  progressBarOuter: {
+    marginTop: 10,
+    height: 4,
+    backgroundColor: "#333",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+  progressBarInner: {
+    height: 4,
+    backgroundColor: "#25D366",
+  },
+  videoActions: {
+    flexDirection: "row",
     alignItems: "center",
+    marginTop: 12,
+  },
+  likeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 16,
+  },
+  likeCount: {
+    color: "#aaa",
+    marginLeft: 6,
+    fontSize: 13,
   },
 });
