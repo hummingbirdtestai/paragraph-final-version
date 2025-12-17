@@ -39,17 +39,6 @@ React.useEffect(() => {
 }, [phase.id, phase.is_bookmarked]);
 
 
-  React.useEffect(() => {
-  hasMarkedCompleted.current = false;
-  lastSentPercent.current = 0;   // ✅ ADD
-}, [phase.id]);
-React.useEffect(() => {
-  console.log("🟢 VideoCard MOUNT", phase.id);
-
-  return () => {
-    console.log("🔴 VideoCard UNMOUNT", phase.id);
-  };
-}, []);
   
   // DEBUG LOGS — UNTOUCHED
   React.useEffect(() => {
