@@ -393,6 +393,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    position: "relative", // ✅ ADD THIS
   },
   cardConcept: {
     paddingHorizontal: 0,
