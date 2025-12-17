@@ -44,9 +44,6 @@ React.useEffect(() => {
   
   // DEBUG LOGS — UNTOUCHED
   React.useEffect(() => {
-    if (isConcept) {
-      console.log("📗 Concept Loaded", { concept_id: phase.id });
-    }
     if (isMCQ) {
       console.log("📘 MCQ Loaded", {
         mcq_id: phase.id,
