@@ -90,12 +90,15 @@ React.useEffect(() => {
 >
           <VimeoPlayer
             vimeoId={phase.phase_json.vimeo_video_id}
+            const lastSentPercent = React.useRef(0);
             onProgress={async (current, duration) => {
               if (!user?.id) return;
               if (!duration || duration === 0) return;
 
-              const percent = Math.floor((current / duration) * 100);
-
+        const percent = Math.floor((current / duration) * 100);
+            if (percent - lastSentPercent.current >= 5) {
+            lastSentPercent.current = percent;
+  
               supabase.rpc("update_video_progress_v1", {
                 p_student_id: user.id,
                 p_phase_id: phase.id,
@@ -113,7 +116,7 @@ React.useEffect(() => {
                   refresh?.();
                 }
             }}
-              onEnded={() => {
+             onEnded={() => {
                 if (!user?.id) return;
                 if (hasMarkedCompleted.current) return;
               
@@ -126,6 +129,8 @@ React.useEffect(() => {
               
                 refresh?.();
               }}
+              />
+
 
 
           {/* WATCHED BADGE */}
