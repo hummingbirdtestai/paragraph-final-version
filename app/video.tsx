@@ -170,12 +170,13 @@ useEffect(() => {
   keyExtractor={(item) => `${item.phase_type}-${item.id}`}
   contentContainerStyle={styles.cardsWrapper}   // ✅ ADD THIS LINE
   maintainVisibleContentPosition={{ minIndexForVisible: 1 }}   // ✅ ADD
-  renderItem={({ item, index }) => {
-    console.log("📦 renderItem", {
-      index,
-      id: item.id,
-      type: item.phase_type,
-    });
+  console.log("📦 FEED ITEM", {
+    index,
+    phase_id: item.id,
+    phase_type: item.phase_type,
+    is_bookmarked: item.is_bookmarked,
+    subject: item.subject,
+  });
   
     if (item.phase_type === "video") {
       const vimeoId = item.phase_json?.vimeo_video_id;
@@ -217,7 +218,12 @@ useEffect(() => {
       isBookmarked={item.is_bookmarked}
       onToggleBookmark={async () => {
         if (!userId) return;
-
+          console.log("🚀 CONCEPT BOOKMARK CLICK", {
+            student_id: userId,
+            phase_id: item.id,
+            phase_type: item.phase_type,
+            subject: item.subject,
+          });
         const { data, error } = await supabase.rpc(
           "toggle_video_bookmark_v2",
           {
@@ -226,7 +232,10 @@ useEffect(() => {
             p_subject: item.subject,
           }
         );
-
+console.log("✅ CONCEPT BOOKMARK RPC RESULT", {
+  data,
+  error,
+});
         if (!error && data) {
           refresh(); // 🔄 keeps bookmarked filter correct
         }
