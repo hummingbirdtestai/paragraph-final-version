@@ -64,7 +64,7 @@ React.useEffect(() => {
 <Text style={styles.subject}>{phase.subject}</Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
           {(isImage || isMCQ) && (
-  <View style={[styles.topBar, isConcept && styles.topBarConcept]}>
+  <View style={styles.topBar}>
 
             {/* Progress */}
             <View style={styles.progressRow}>
