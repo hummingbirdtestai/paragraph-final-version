@@ -54,12 +54,6 @@ React.useEffect(() => {
         correct_answer: phase.phase_json?.correct_answer,
       });
     }
-    if (isVideo) {
-      console.log("🎬 Video Loaded", {
-        video_id: phase.id,
-        vimeo_id: phase.phase_json?.vimeo_video_id,
-      });
-    }
   }, [phase]);
 
   const router = useRouter();
