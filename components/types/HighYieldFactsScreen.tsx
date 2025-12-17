@@ -1,13 +1,30 @@
 //HighYieldFactsScreen.tsx
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Bookmark } from 'lucide-react-native';
+
 
 interface HighYieldFactsScreenProps {
   topic: string;
   conceptMarkdown: string;
-}
 
-const HighYieldFactsScreen: React.FC<HighYieldFactsScreenProps> = ({ topic, conceptMarkdown }) => {
+  // 🔝 Top bar metadata (OPTIONAL)
+  subject?: string;
+  reactOrder?: number;
+  totalCount?: number;
+  isBookmarked?: boolean;
+  onToggleBookmark?: () => void;
+}
+const HighYieldFactsScreen: React.FC<HighYieldFactsScreenProps> = ({
+  topic,
+  conceptMarkdown,
+  subject,
+  reactOrder,
+  totalCount,
+  isBookmarked,
+  onToggleBookmark,
+}) => {
+
   const extractFacts = (markdown: string): string[] => {
     const lines = markdown.split('\n');
     const facts: string[] = [];
@@ -120,6 +137,27 @@ const HighYieldFactsScreen: React.FC<HighYieldFactsScreenProps> = ({ topic, conc
 
   return (
     <View style={styles.container}>
+      {/* 🔝 TOP BAR — CONCEPT ONLY */}
+{reactOrder !== undefined && totalCount !== undefined && (
+  <View style={styles.topBar}>
+    <View style={styles.progressRow}>
+      <Text style={styles.progressText}>
+        🧠 Concept {reactOrder} / {totalCount}
+      </Text>
+    </View>
+
+    {onToggleBookmark && (
+      <TouchableOpacity onPress={onToggleBookmark}>
+        <Bookmark
+          size={22}
+          color="#10b981"
+          strokeWidth={2}
+          fill={isBookmarked ? "#10b981" : "transparent"}
+        />
+      </TouchableOpacity>
+    )}
+  </View>
+)}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -219,6 +257,28 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: '#d4d4d4',
   },
+  topBar: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 12,
+},
+
+progressRow: {
+  paddingVertical: 4,
+  paddingHorizontal: 10,
+  backgroundColor: "#0d2017",
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: "#25D36655",
+},
+
+progressText: {
+  color: "#25D366",
+  fontSize: 13,
+  fontWeight: "700",
+},
 });
+
 
 export default HighYieldFactsScreen;
