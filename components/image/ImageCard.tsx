@@ -140,8 +140,15 @@ const router = useRouter();
     />
   </TouchableOpacity>
 )}
-
->
+{isFlashcard && (
+  <FlashcardScreenDB
+    item={phase.phase_json}
+    studentId={user?.id}
+    subjectName={phase.subject}
+    elementId={phase.id}
+    isBookmarked={phase.is_bookmarked}
+  />
+)}
           {/* 🎥 VIDEO HEADER OVERLAY */}
 <View style={styles.videoHeaderContainer}>
   {/* Subject Line */}
