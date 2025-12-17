@@ -218,7 +218,17 @@ React.useEffect(() => {
           </View>
         </View>
       ) : null}
-
+        {/* 🔖 CONCEPT BOOKMARK — UX ONLY */}
+        {isConcept && (
+          <View style={styles.bookmarkRow}>
+            <Bookmark
+              size={22}
+              color="#10b981"
+              strokeWidth={2}
+              fill={isBookmarked ? "#10b981" : "transparent"}
+            />
+          </View>
+        )}
       {/* CONCEPT — UNTOUCHED */}
       {isConcept && (
         <ConceptChatScreen
@@ -230,6 +240,17 @@ React.useEffect(() => {
           phaseUniqueId={phase.id}
         />
       )}
+        {/* 🔖 MCQ BOOKMARK — UX ONLY */}
+        {isMCQ && (
+          <View style={styles.bookmarkRow}>
+            <Bookmark
+              size={22}
+              color="#10b981"
+              strokeWidth={2}
+              fill={isBookmarked ? "#10b981" : "transparent"}
+            />
+          </View>
+        )}
 
       {/* MCQ — UNTOUCHED */}
       {isMCQ && (
@@ -332,6 +353,12 @@ const styles = StyleSheet.create({
   subjectConcept: {
     paddingHorizontal: 16,
   },
+  bookmarkRow: {
+  position: "absolute",
+  top: 12,
+  right: 52, // ⬅️ leaves room for Watched badge / video UI
+  zIndex: 999,
+},
   image: {
     width: "100%",
     height: 220,
