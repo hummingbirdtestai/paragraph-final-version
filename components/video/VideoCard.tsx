@@ -35,7 +35,10 @@ export function VideoCard({ phase, refresh }) {
     like_count: phase.like_count ?? 0,
     is_bookmarked: phase.is_video_bookmarked ?? false,
   });
-
+const hasMarkedCompleted = React.useRef(false);
+  React.useEffect(() => {
+  hasMarkedCompleted.current = false;
+}, [phase.id]);
 React.useEffect(() => {
   console.log("🟢 VideoCard MOUNT", phase.id);
 
@@ -87,7 +90,7 @@ React.useEffect(() => {
 >
           <VimeoPlayer
             vimeoId={phase.phase_json.vimeo_video_id}
-            onProgress={(current, duration) => {
+            onProgress={async (current, duration) => {
               if (!user?.id) return;
               if (!duration || duration === 0) return;
 
@@ -99,23 +102,31 @@ React.useEffect(() => {
                 p_progress_percent: percent,
               });
 
-              if (percent >= 90 && !phase.is_viewed) {
+             if (percent >= 90 && !phase.is_viewed && !hasMarkedCompleted.current) {
+                  hasMarkedCompleted.current = true;
+            
+                  await supabase.rpc("mark_video_completed_v1", {
+                    p_student_id: user.id,
+                    p_phase_id: phase.id,
+                  });
+                
+                  refresh?.();
+                }
+            }}
+              onEnded={() => {
+                if (!user?.id) return;
+                if (hasMarkedCompleted.current) return;
+              
+                hasMarkedCompleted.current = true;
+              
                 supabase.rpc("mark_video_completed_v1", {
                   p_student_id: user.id,
                   p_phase_id: phase.id,
                 });
-                refresh?.(); // ✅ ADD THIS LINE
-              }
-            }}
-            onEnded={() => {
-              if (!user?.id) return;
-              supabase.rpc("mark_video_completed_v1", {
-                p_student_id: user.id,
-                p_phase_id: phase.id,
-              });
-              refresh?.(); // ✅ ADD THIS LINE
-            }}
-          />
+              
+                refresh?.();
+              }}
+
 
           {/* WATCHED BADGE */}
           {phase.is_viewed && (
