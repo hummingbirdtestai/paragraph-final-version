@@ -94,19 +94,23 @@ React.useEffect(() => {
   onPress={async () => {
     if (!user?.id) return;
 
-    const { data, error } = await supabase.rpc(
-      "toggle_practice_bookmark_v1",
-      {
-        p_student_id: user.id,
-        p_practicecard_id: phase.id,
-        p_subject: phase.subject,
-      }
-    );
+   const { data, error } = await supabase.rpc(
+  "toggle_video_bookmark_v2",
+  {
+    p_student_id: user.id,
+    p_videocard_id: phase.id, // 🔑 phase id (correct)
+    p_subject: phase.subject,
+  }
+);
 
-    if (!error) {
-      setIsBookmarked(data?.is_bookmark ?? !isBookmarked);
-    }
-  }}
+if (error) {
+  console.error("toggle_video_bookmark_v2 failed", error);
+  return;
+}
+
+if (data?.is_bookmark !== undefined) {
+  setIsBookmarked(data.is_bookmark);
+}
 >
   <Bookmark
     size={22}
@@ -228,33 +232,35 @@ React.useEffect(() => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={async () => {
-                if (!user?.id) return;
+  onPress={async () => {
+    if (!user?.id) return;
 
-                const { data } = await supabase.rpc(
-                  "toggle_video_bookmark_v1",
-                  {
-                    p_student_id: user.id,
-                    p_video_id: phase.id,
-                  }
-                );
+    const { data, error } = await supabase.rpc(
+      "toggle_video_bookmark_v2",
+      {
+        p_student_id: user.id,
+        p_videocard_id: phase.id,
+        p_subject: phase.subject,
+      }
+    );
 
-                if (data) {
-                  setVideoState((prev) => ({
-                    ...prev,
-                    is_bookmarked: data.is_bookmarked,
-                  }));
-                }
-              }}
-            >
-              <Bookmark
-                size={22}
-                color={videoState.is_bookmarked ? "#25D366" : "#888"}
-                fill={
-                  videoState.is_bookmarked ? "#25D366" : "transparent"
-                }
-              />
-            </TouchableOpacity>
+    if (error) {
+      console.error("toggle_video_bookmark_v2 failed", error);
+      return;
+    }
+
+    if (data?.is_bookmark !== undefined) {
+      setIsBookmarked(data.is_bookmark);
+    }
+  }}
+>
+  <Bookmark
+    size={22}
+    color="#10b981"
+    strokeWidth={2}
+    fill={isBookmarked ? "#10b981" : "transparent"}
+  />
+</TouchableOpacity>
           </View>
         </View>
       ) : null}
