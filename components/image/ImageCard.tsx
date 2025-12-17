@@ -83,6 +83,7 @@ React.useEffect(() => {
 <TouchableOpacity
   onPress={async () => {
     if (!user?.id) return;
+const router = useRouter();
 
     const { data, error } = await supabase.rpc(
       "toggle_video_bookmark_v2",
