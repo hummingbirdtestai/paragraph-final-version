@@ -248,7 +248,14 @@ React.useEffect(() => {
             <TouchableOpacity
               onPress={async () => {
                 if (!user?.id) return;
-            
+            console.log("🚀 VIDEO ACTION BOOKMARK CLICK", {
+  source: "video_actions",
+  student_id: user?.id,
+  phase_id: phase.id,
+  phase_type: phase.phase_type,
+  subject: phase.subject,
+  local_before: isBookmarked,
+}); 
                 const { data, error } = await supabase.rpc(
                   "toggle_video_bookmark_v2",
                   {
@@ -257,14 +264,8 @@ React.useEffect(() => {
                     p_subject: phase.subject,
                   }
                 );
-console.log("🚀 VIDEO ACTION BOOKMARK CLICK", {
-  source: "video_actions",
-  student_id: user?.id,
-  phase_id: phase.id,
-  phase_type: phase.phase_type,
-  subject: phase.subject,
-  local_before: isBookmarked,
-});      
+     console.log("✅ VIDEO ACTION BOOKMARK RPC RESULT", { data, error });
+
                 if (error) {
                   console.error("toggle_video_bookmark_v2 failed", error);
                   return;
