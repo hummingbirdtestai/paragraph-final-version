@@ -194,6 +194,44 @@ useEffect(() => {
           ]}
         >
           <VimeoPlayer vimeoId={vimeoId} />
+          {/* 🔖 VIDEO BOOKMARK BUTTON */}
+<TouchableOpacity
+  style={styles.videoBookmarkBtn}
+  onPress={async () => {
+    if (!user?.id) return;
+
+    console.log("🎥 VIDEO BOOKMARK CLICK", {
+      student_id: user.id,
+      phase_id: phase.id,
+      subject: phase.subject,
+      before: isBookmarked,
+    });
+
+    const { data, error } = await supabase.rpc(
+      "toggle_video_bookmark_v2",
+      {
+        p_student_id: user.id,
+        p_videocard_id: phase.id,
+        p_subject: phase.subject,
+      }
+    );
+
+    console.log("🎥 VIDEO BOOKMARK RPC RESULT", { data, error });
+
+    if (!error && data?.is_bookmark !== undefined) {
+      setIsBookmarked(data.is_bookmark);
+      refresh?.();
+    }
+  }}
+>
+  <Bookmark
+    size={26}
+    color="#10b981"
+    strokeWidth={2}
+    fill={isBookmarked ? "#10b981" : "transparent"}
+  />
+</TouchableOpacity>
+
         </View>
       );
     
@@ -452,4 +490,13 @@ videoFeedItem: {
     paddingHorizontal: 24,
     alignItems: "center",
   },
+  videoBookmarkBtn: {
+  position: "absolute",
+  top: 12,
+  right: 12,
+  backgroundColor: "rgba(0,0,0,0.6)",
+  padding: 8,
+  borderRadius: 20,
+  zIndex: 10,
+},
 });
