@@ -206,43 +206,43 @@ useEffect(() => {
       );
     }
   
-    if (item.phase_type === "concept") {
-      const content = (
-       <HighYieldFactsScreen
-          topic={item.phase_json?.topic ?? "Concept"}
-          conceptMarkdown={item.phase_json?.concept ?? ""}
-        
-          subject={item.subject}
-          reactOrder={item.react_order_final}
-          totalCount={item.total_count}
-          isBookmarked={item.is_bookmarked}
-        
-          onToggleBookmark={async () => {
-          if (!userId) return;
-        
-          const { data, error } = await supabase.rpc(
-            "toggle_video_bookmark_v2",
-            {
-              p_student_id: userId,
-              p_videocard_id: item.id,   // ✅ phase id
-              p_subject: item.subject,
-            }
-          );
-        
-          if (!error && data) {
-            refresh();   // 🔄 keeps bookmarked filter correct
+   if (item.phase_type === "concept") {
+  const content = (
+    <HighYieldFactsScreen
+      topic={item.phase_json?.topic ?? "Concept"}
+      conceptMarkdown={item.phase_json?.concept ?? ""}
+      subject={item.subject}
+      reactOrder={item.react_order_final}
+      totalCount={item.total_count}
+      isBookmarked={item.is_bookmarked}
+      onToggleBookmark={async () => {
+        if (!userId) return;
+
+        const { data, error } = await supabase.rpc(
+          "toggle_video_bookmark_v2",
+          {
+            p_student_id: userId,
+            p_videocard_id: item.id, // ✅ phase id
+            p_subject: item.subject,
           }
-        }}
+        );
 
+        if (!error && data) {
+          refresh(); // 🔄 keeps bookmarked filter correct
+        }
+      }}
+    />
+  );
 
-        
-             if (!error && data) {
-                refresh();   // 🔄 refetch list so category filter stays correct
-              }
-            }}
-        />
+  return isWeb ? (
+    <View style={styles.webFeedShell}>
+      <View style={styles.webFeedColumn}>{content}</View>
+    </View>
+  ) : (
+    content
+  );
+}
 
-      );
 
       return isWeb ? (
         <View style={styles.webFeedShell}>
