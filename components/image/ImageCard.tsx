@@ -39,14 +39,6 @@ React.useEffect(() => {
 }, [phase.id, phase.is_bookmarked]);
 
 
-  // ⭐ VIDEO STATE ONLY
-  const [videoState, setVideoState] = React.useState({
-    is_liked: phase.is_liked ?? false,
-    like_count: phase.like_count ?? 0,
-  });
-  const hasMarkedCompleted = React.useRef(false);
-  const lastSentPercent = React.useRef(0);   // ✅ ADD HERE
-
   React.useEffect(() => {
   hasMarkedCompleted.current = false;
   lastSentPercent.current = 0;   // ✅ ADD
