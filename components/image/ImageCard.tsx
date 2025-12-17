@@ -229,17 +229,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     position: "relative", // ✅ ADD THIS
   },
-  cardConcept: {
-    paddingHorizontal: 0,
-  },
   subject: {
     color: "#25D366",
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 12,
-  },
-  subjectConcept: {
-    paddingHorizontal: 16,
   },
     topBar: {
     flexDirection: "row",
@@ -248,9 +242,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  topBarConcept: {
-    paddingHorizontal: 16, // aligns with PracticeCard concept layout
-  },    
         progressRow: {
     paddingVertical: 4,
     paddingHorizontal: 10,
