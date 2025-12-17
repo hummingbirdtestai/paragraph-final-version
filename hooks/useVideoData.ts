@@ -60,12 +60,15 @@ export function useVideoData(
   };
 
   // ⭐ RUN WHEN subject / userId / category changes
-  useEffect(() => {
-    setOffset(0);
-    setHasMoreData(true);
-    setLoading(true);
-    fetchPhases(0);
-  }, [subject, userId, category]);
+      useEffect(() => {
+        setPhases([]);          // 🔥 CLEAR OLD SUBJECT / CATEGORY DATA
+        setOffset(0);
+        setHasMoreData(true);
+        setIsLoadingMore(false);
+        setLoading(true);
+        fetchPhases(0);
+      }, [subject, userId, category]);
+
 
   // ⭐ Pull-to-refresh
   const refresh = async () => {
