@@ -1,4 +1,4 @@
-// Imagecard.tsx — FINAL (SURGICAL, PROD-READY)
+// Imagecard.tsx — FINAL (SURGICAL, PROD-READY)ok
 
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
