@@ -70,7 +70,7 @@ export default function VideoScreen() {
     loadUser();
   }, []);
 
-  const practiceData = useVideoData(selectedSubject, userId, selectedCategory);
+  const practiceData = useImageData(selectedSubject, userId, selectedCategory);
  const {
   phases,
   loading,
