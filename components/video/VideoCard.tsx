@@ -29,13 +29,15 @@ export function VideoCard({ phase, refresh }) {
   // ORIGINAL bookmark for concept/mcq
   const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 React.useEffect(() => {
-  console.log("🔁 VideoCard bookmark state INIT / UPDATE", {
+  setIsBookmarked(!!phase.is_bookmarked);
+
+  console.log("🔁 VideoCard bookmark SYNC", {
     phase_id: phase.id,
     phase_type: phase.phase_type,
     phase_is_bookmarked_prop: phase.is_bookmarked,
-    local_isBookmarked_state: isBookmarked,
   });
-}, [phase.is_bookmarked]);
+}, [phase.id, phase.is_bookmarked]);
+
 
   // ⭐ VIDEO STATE ONLY
   const [videoState, setVideoState] = React.useState({
