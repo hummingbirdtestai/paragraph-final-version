@@ -192,13 +192,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
-  outerBox: {
-    backgroundColor: '#1a1a1a',
-    borderLeftWidth: 4,
-    borderLeftColor: '#3b82f6',
-    borderRadius: 8,
-    padding: 16,
-  },
+ outerBox: {
+  backgroundColor: '#1a1a1a',
+  padding: 16,
+},
   topicCard: {
     backgroundColor: '#2a2a2a',
     borderRadius: 12,
