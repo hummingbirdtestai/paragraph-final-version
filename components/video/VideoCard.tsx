@@ -147,7 +147,7 @@ React.useEffect(() => {
           )}
 
           {/* PROGRESS BAR */}
-          {phase.progress_percent > 0 && phase.progress_percent < 1 && (
+          {phase.progress_percent > 0 && phase.progress_percent < 100 && (
             <View style={styles.progressBarOuter}>
               <View
                 style={[
