@@ -90,13 +90,6 @@ React.useEffect(() => {
       </Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
         {(isConcept || isMCQ || isVideo) && (
-          <View
-  style={[
-    styles.topBar,
-    isConcept && styles.topBarConcept,
-    isVideo && styles.videoTopBar,   // 👈 ADD
-  ]}
->
             {/* Progress */}
             <View style={styles.progressRow}>
               <Text style={styles.progressText}>
