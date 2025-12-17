@@ -15,7 +15,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import VimeoPlayer from "@/components/video/VimeoPlayer";
 
-export function VideoCard({ phase }) {
+export function VideoCard({ phase, refresh }) {
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const isVideo = phase.phase_type === "video";
@@ -104,6 +104,7 @@ React.useEffect(() => {
                   p_student_id: user.id,
                   p_phase_id: phase.id,
                 });
+                refresh?.(); // ✅ ADD THIS LINE
               }
             }}
             onEnded={() => {
@@ -112,6 +113,7 @@ React.useEffect(() => {
                 p_student_id: user.id,
                 p_phase_id: phase.id,
               });
+              refresh?.(); // ✅ ADD THIS LINE
             }}
           />
 
@@ -209,17 +211,21 @@ React.useEffect(() => {
 
       {/* MCQ — UNTOUCHED */}
       {isMCQ && (
-        <VideoMCQScreen
-          item={phase.phase_json}
-          conceptId={phase.concept_id_before_this_mcq}
-          mcqId={phase.id}
-          correctAnswer={phase.phase_json?.correct_answer}
-          studentId={user?.id}
-          reviewMode={false}
-          hideInternalNext={true}
-          phaseUniqueId={phase.id}
-        />
-      )}
+      <VideoMCQScreen
+        item={phase.phase_json}
+        conceptId={phase.concept_id_before_this_mcq}
+        mcqId={phase.id}
+        correctAnswer={phase.phase_json?.correct_answer}
+        studentId={user?.id}
+        reviewMode={false}
+        hideInternalNext={true}
+        phaseUniqueId={phase.id}
+        onAnswered={() => {
+          refresh?.();   // ✅ ADD THIS LINE
+        }}
+      />
+    )}
+
 
       {/* CHAT — UNTOUCHED */}
       {conversation.map((msg, index) =>
