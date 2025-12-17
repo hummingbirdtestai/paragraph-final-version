@@ -146,7 +146,7 @@ if (data?.is_bookmark !== undefined) {
     if (percent - lastSentPercent.current >= 5) {
       lastSentPercent.current = percent;
 
-      supabase.rpc("update_video_progress_v1", {
+      supabase.rpc("update_video_progress_v2", {
         p_student_id: user.id,
         p_phase_id: phase.id,
         p_progress_percent: percent,
