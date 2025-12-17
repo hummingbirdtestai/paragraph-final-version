@@ -24,11 +24,12 @@ const HighYieldFactsScreen: React.FC<HighYieldFactsScreenProps> = ({
   isBookmarked,
   onToggleBookmark,
 }) => {
-    const [localBookmarked, setLocalBookmarked] = React.useState(isBookmarked);
+const [localBookmarked, setLocalBookmarked] = React.useState(!!isBookmarked);
 
-  React.useEffect(() => {
-    setLocalBookmarked(isBookmarked);
-  }, [isBookmarked]);
+React.useEffect(() => {
+  setLocalBookmarked(!!isBookmarked);
+}, [isBookmarked]);
+
 
 
   const extractFacts = (markdown: string): string[] => {
