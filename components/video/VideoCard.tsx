@@ -93,23 +93,24 @@ React.useEffect(() => {
   onPress={async () => {
     if (!user?.id) return;
 
-   const { data, error } = await supabase.rpc(
-  "toggle_video_bookmark_v2",
-  {
-    p_student_id: user.id,
-    p_videocard_id: phase.id, // 🔑 phase id (correct)
-    p_subject: phase.subject,
-  }
-);
+    const { data, error } = await supabase.rpc(
+      "toggle_video_bookmark_v2",
+      {
+        p_student_id: user.id,
+        p_videocard_id: phase.id,
+        p_subject: phase.subject,
+      }
+    );
 
-if (error) {
-  console.error("toggle_video_bookmark_v2 failed", error);
-  return;
-}
+    if (error) {
+      console.error("toggle_video_bookmark_v2 failed", error);
+      return;
+    }
 
-if (data?.is_bookmark !== undefined) {
-  setIsBookmarked(data.is_bookmark);
-}
+    if (data?.is_bookmark !== undefined) {
+      setIsBookmarked(data.is_bookmark);
+    }
+  }}
 >
   <Bookmark
     size={22}
