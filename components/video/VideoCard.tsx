@@ -146,7 +146,7 @@ if (data?.is_bookmark !== undefined) {
     if (percent - lastSentPercent.current >= 5) {
       lastSentPercent.current = percent;
 
-      supabase.rpc("update_video_progress_v2", {
+      supabase.rpc("update_video_progress_v1", {
         p_student_id: user.id,
         p_phase_id: phase.id,
         p_progress_percent: percent,
@@ -232,35 +232,36 @@ if (data?.is_bookmark !== undefined) {
             </TouchableOpacity>
 
             <TouchableOpacity
-  onPress={async () => {
-    if (!user?.id) return;
+              onPress={async () => {
+                if (!user?.id) return;
+            
+                const { data, error } = await supabase.rpc(
+                  "toggle_video_bookmark_v2",
+                  {
+                    p_student_id: user.id,
+                    p_videocard_id: phase.id,
+                    p_subject: phase.subject,
+                  }
+                );
+            
+                if (error) {
+                  console.error("toggle_video_bookmark_v2 failed", error);
+                  return;
+                }
+            
+                if (data?.is_bookmark !== undefined) {
+                  setIsBookmarked(data.is_bookmark);
+                }
+              }}
+            >
+              <Bookmark
+                size={22}
+                color="#10b981"
+                strokeWidth={2}
+                fill={isBookmarked ? "#10b981" : "transparent"}
+              />
+            </TouchableOpacity>
 
-    const { data, error } = await supabase.rpc(
-      "toggle_video_bookmark_v2",
-      {
-        p_student_id: user.id,
-        p_videocard_id: phase.id,
-        p_subject: phase.subject,
-      }
-    );
-
-    if (error) {
-      console.error("toggle_video_bookmark_v2 failed", error);
-      return;
-    }
-
-    if (data?.is_bookmark !== undefined) {
-      setIsBookmarked(data.is_bookmark);
-    }
-  }}
->
-  <Bookmark
-    size={22}
-    color="#10b981"
-    strokeWidth={2}
-    fill={isBookmarked ? "#10b981" : "transparent"}
-  />
-</TouchableOpacity>
           </View>
         </View>
       ) : null}
