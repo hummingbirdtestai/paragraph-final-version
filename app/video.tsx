@@ -227,10 +227,10 @@ useEffect(() => {
           });
 
         
-            if (data) {
-              refresh();
-            }
-          }}
+             if (!error && data) {
+                refresh();   // 🔄 refetch list so category filter stays correct
+              }
+            }}
         />
 
       );
