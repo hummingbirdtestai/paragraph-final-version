@@ -1,3 +1,4 @@
+//flashcardscreen.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform, StatusBar, ScrollView } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
