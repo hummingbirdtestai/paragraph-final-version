@@ -208,10 +208,33 @@ useEffect(() => {
   
     if (item.phase_type === "concept") {
       const content = (
-        <HighYieldFactsScreen
+       <HighYieldFactsScreen
           topic={item.phase_json?.topic ?? "Concept"}
           conceptMarkdown={item.phase_json?.concept ?? ""}
+        
+          subject={item.subject}
+          reactOrder={item.react_order_final}
+          totalCount={item.total_count}
+          isBookmarked={item.is_bookmarked}
+        
+          onToggleBookmark={async () => {
+            if (!userId) return;
+        
+            const { data } = await supabase.rpc(
+              "toggle_practice_bookmark_v1",
+              {
+                p_student_id: userId,
+                p_practicecard_id: item.id,
+                p_subject: item.subject,
+              }
+            );
+        
+            if (data) {
+              refresh();
+            }
+          }}
         />
+
       );
 
       return isWeb ? (
