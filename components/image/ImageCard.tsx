@@ -3,7 +3,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
-import ConceptChatScreen from "@/components/types/Conceptscreen";
 import VideoMCQScreen from "@/components/types/VideoMCQScreen";
 import { StudentBubble } from "@/components/chat/StudentBubble";
 import MentorBubbleReply from "@/components/types/MentorBubbleReply";
