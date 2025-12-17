@@ -35,9 +35,12 @@ export function VideoCard({ phase, refresh }) {
     like_count: phase.like_count ?? 0,
     is_bookmarked: phase.is_video_bookmarked ?? false,
   });
-const hasMarkedCompleted = React.useRef(false);
+  const hasMarkedCompleted = React.useRef(false);
+  const lastSentPercent = React.useRef(0);   // ✅ ADD HERE
+
   React.useEffect(() => {
   hasMarkedCompleted.current = false;
+  lastSentPercent.current = 0;   // ✅ ADD
 }, [phase.id]);
 React.useEffect(() => {
   console.log("🟢 VideoCard MOUNT", phase.id);
@@ -89,8 +92,7 @@ React.useEffect(() => {
   ]}
 >
           <VimeoPlayer
-            vimeoId={phase.phase_json.vimeo_video_id}
-            const lastSentPercent = React.useRef(0);
+            vimeoId={phase.phase_json.vimeo_video_id} 
             onProgress={async (current, duration) => {
               if (!user?.id) return;
               if (!duration || duration === 0) return;
