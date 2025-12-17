@@ -57,8 +57,6 @@ React.useEffect(() => {
     "https://paragraph-pg-production.up.railway.app/orchestrate";
 
   return (
-      {/* SUBJECT */}
- {/* ✅ NEW */}
  <View style={styles.card}>
 <Text style={styles.subject}>{phase.subject}</Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
