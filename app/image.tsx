@@ -178,6 +178,29 @@ useEffect(() => {
       subject: item.subject,
     });
     
+    if (item.phase_type === "image") {
+      const content = <ImageCard phase={item} refresh={refresh} />;
+      return isWeb ? webWrap(content) : content;
+    }
+    
+    if (item.phase_type === "flashcard") {
+      const content = (
+        <FlashcardScreenDB
+          item={item.phase_json}
+          studentId={userId}
+          subjectName={item.subject}
+          elementId={item.id}
+          isBookmarked={item.is_bookmarked}
+        />
+      );
+      return isWeb ? webWrap(content) : content;
+    }
+    
+    if (item.phase_type === "mcq") {
+      const content = <ImageCard phase={item} refresh={refresh} />;
+      return isWeb ? webWrap(content) : content;
+    }
+
     if (item.phase_type === "video") {
       const vimeoId = item.phase_json?.vimeo_video_id;
       if (!vimeoId) return null;
