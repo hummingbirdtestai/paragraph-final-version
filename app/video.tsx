@@ -242,16 +242,6 @@ useEffect(() => {
     content
   );
 }
-
-
-      return isWeb ? (
-        <View style={styles.webFeedShell}>
-          <View style={styles.webFeedColumn}>{content}</View>
-        </View>
-      ) : (
-        content
-      );
-    }
   
 if (item.phase_type === "mcq") {
   const content = <VideoCard phase={item} refresh={refresh} />;
