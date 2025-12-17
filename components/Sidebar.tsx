@@ -1,3 +1,4 @@
+//sidebar.tsx
 import React, { useState, useEffect } from 'react';
 
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
