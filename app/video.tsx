@@ -170,13 +170,6 @@ useEffect(() => {
   keyExtractor={(item) => `${item.phase_type}-${item.id}`}
   contentContainerStyle={styles.cardsWrapper}   // ✅ ADD THIS LINE
   maintainVisibleContentPosition={{ minIndexForVisible: 1 }}   // ✅ ADD
-  console.log("📦 FEED ITEM", {
-    index,
-    phase_id: item.id,
-    phase_type: item.phase_type,
-    is_bookmarked: item.is_bookmarked,
-    subject: item.subject,
-  });
   
     if (item.phase_type === "video") {
       const vimeoId = item.phase_json?.vimeo_video_id;
