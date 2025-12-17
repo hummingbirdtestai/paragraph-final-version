@@ -85,9 +85,11 @@ React.useEffect(() => {
   return (
     <View style={[styles.card, isConcept && styles.cardConcept]}>
       {/* SUBJECT */}
-      <Text style={[styles.subject, isConcept && styles.subjectConcept]}>
-        {phase.subject}
-      </Text>
+      {!isVideo && (
+        <Text style={[styles.subject, isConcept && styles.subjectConcept]}>
+          {phase.subject}
+        </Text>
+      )}
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
           {(isConcept || isMCQ) && (
   <View style={[styles.topBar, isConcept && styles.topBarConcept]}>
@@ -152,36 +154,42 @@ React.useEffect(() => {
   ]}
 >
           {/* 🎥 VIDEO HEADER OVERLAY */}
-<View style={styles.videoTopBar}>
-  <View style={styles.progressRow}>
-    <Text style={styles.progressText}>
-      🧠 Concept {phase.react_order_final} / {phase.total_count}
-    </Text>
+<View style={styles.videoHeaderContainer}>
+  {/* Subject Line */}
+  <Text style={styles.videoSubject}>{phase.subject}</Text>
+
+  {/* Progress and Bookmark Bar */}
+  <View style={styles.videoTopBar}>
+    <View style={styles.progressRow}>
+      <Text style={styles.progressText}>
+        🎬 Video {phase.react_order_final} / {phase.total_count}
+      </Text>
+    </View>
+
+    <TouchableOpacity
+      onPress={async () => {
+        if (!user?.id) return;
+
+        const { data } = await supabase.rpc("toggle_video_bookmark_v2", {
+          p_student_id: user.id,
+          p_videocard_id: phase.id,
+          p_subject: phase.subject,
+        });
+
+        if (data?.is_bookmark !== undefined) {
+          setIsBookmarked(data.is_bookmark);
+          refresh?.();
+        }
+      }}
+    >
+      <Bookmark
+        size={22}
+        color="#10b981"
+        strokeWidth={2}
+        fill={isBookmarked ? "#10b981" : "transparent"}
+      />
+    </TouchableOpacity>
   </View>
-
-  <TouchableOpacity
-    onPress={async () => {
-      if (!user?.id) return;
-
-      const { data } = await supabase.rpc("toggle_video_bookmark_v2", {
-        p_student_id: user.id,
-        p_videocard_id: phase.id,
-        p_subject: phase.subject,
-      });
-
-      if (data?.is_bookmark !== undefined) {
-        setIsBookmarked(data.is_bookmark);
-        refresh?.();
-      }
-    }}
-  >
-    <Bookmark
-      size={22}
-      color="#10b981"
-      strokeWidth={2}
-      fill={isBookmarked ? "#10b981" : "transparent"}
-    />
-  </TouchableOpacity>
 </View>
 
           <VimeoPlayer
@@ -231,44 +239,6 @@ React.useEffect(() => {
     refresh?.();
   }}
 />
-{/* 🔖 VIDEO BOOKMARK BUTTON */}
-<TouchableOpacity
-  style={styles.videoBookmarkBtn}
-  onPress={async () => {
-    if (!user?.id) return;
-
-    console.log("🎥 VIDEO BOOKMARK CLICK", {
-      student_id: user.id,
-      phase_id: phase.id,
-      subject: phase.subject,
-      before: isBookmarked,
-    });
-
-    const { data, error } = await supabase.rpc(
-      "toggle_video_bookmark_v2",
-      {
-        p_student_id: user.id,
-        p_videocard_id: phase.id,
-        p_subject: phase.subject,
-      }
-    );
-
-    console.log("🎥 VIDEO BOOKMARK RPC RESULT", { data, error });
-
-    if (!error && data?.is_bookmark !== undefined) {
-      setIsBookmarked(data.is_bookmark);
-      refresh?.();
-    }
-  }}
->
-  <Bookmark
-    size={26}
-    color="#10b981"
-    strokeWidth={2}
-    fill={isBookmarked ? "#10b981" : "transparent"}
-  />
-</TouchableOpacity>
-
           {/* WATCHED BADGE */}
           {phase.is_viewed && (
             <View style={styles.watchedBadge}>
@@ -512,23 +482,28 @@ videoWrapper: {
     marginLeft: 6,
     fontSize: 13,
   },
-  videoBookmarkBtn: {
-  position: "absolute",
-  top: 12,
-  right: 12,
-  backgroundColor: "rgba(0,0,0,0.6)",
-  padding: 8,
-  borderRadius: 20,
-  zIndex: 10,
-},
-videoTopBar: {
-  position: "absolute",
-  top: 12,
-  left: 12,
-  right: 12,
-  zIndex: 20,
-  backgroundColor: "rgba(0,0,0,0.55)",
-  padding: 8,
-  borderRadius: 12,
-},
+  videoHeaderContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
+    backgroundColor: "rgba(0,0,0,0.75)",
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  videoSubject: {
+    color: "#25D366",
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 8,
+  },
+  videoTopBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
 });
