@@ -66,11 +66,8 @@ React.useEffect(() => {
   return (
     <View style={[styles.card, isConcept && styles.cardConcept]}>
       {/* SUBJECT */}
-      {!isVideo && (
-        <Text style={[styles.subject, isConcept && styles.subjectConcept]}>
-          {phase.subject}
-        </Text>
-      )}
+ {/* ✅ NEW */}
+<Text style={styles.subject}>{phase.subject}</Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
           {(isConcept || isMCQ) && (
   <View style={[styles.topBar, isConcept && styles.topBarConcept]}>
@@ -78,7 +75,7 @@ React.useEffect(() => {
             {/* Progress */}
             <View style={styles.progressRow}>
               <Text style={styles.progressText}>
-                {isMCQ ? "🧩 MCQ" : "🧠 Concept"} {phase.react_order_final} / {phase.total_count}
+                {isMCQ ? "🧩 MCQ" : "🖼 Image"} {phase.react_order_final} / {phase.total_count}
               </Text>
             </View>
         
