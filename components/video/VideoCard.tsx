@@ -92,48 +92,52 @@ React.useEffect(() => {
   ]}
 >
           <VimeoPlayer
-            vimeoId={phase.phase_json.vimeo_video_id} 
-            onProgress={async (current, duration) => {
-              if (!user?.id) return;
-              if (!duration || duration === 0) return;
+  vimeoId={phase.phase_json.vimeo_video_id}
+  onProgress={async (current, duration) => {
+    if (!user?.id) return;
+    if (!duration || duration === 0) return;
 
-        const percent = Math.floor((current / duration) * 100);
-            if (percent - lastSentPercent.current >= 5) {
-            lastSentPercent.current = percent;
-  
-              supabase.rpc("update_video_progress_v1", {
-                p_student_id: user.id,
-                p_phase_id: phase.id,
-                p_progress_percent: percent,
-              });
+    const percent = Math.floor((current / duration) * 100);
 
-             if (percent >= 90 && !phase.is_viewed && !hasMarkedCompleted.current) {
-                  hasMarkedCompleted.current = true;
-            
-                  await supabase.rpc("mark_video_completed_v1", {
-                    p_student_id: user.id,
-                    p_phase_id: phase.id,
-                  });
-                
-                  refresh?.();
-                }
-            }}
-             onEnded={() => {
-                if (!user?.id) return;
-                if (hasMarkedCompleted.current) return;
-              
-                hasMarkedCompleted.current = true;
-              
-                supabase.rpc("mark_video_completed_v1", {
-                  p_student_id: user.id,
-                  p_phase_id: phase.id,
-                });
-              
-                refresh?.();
-              }}
-              />
+    if (percent - lastSentPercent.current >= 5) {
+      lastSentPercent.current = percent;
 
+      supabase.rpc("update_video_progress_v1", {
+        p_student_id: user.id,
+        p_phase_id: phase.id,
+        p_progress_percent: percent,
+      });
 
+      if (
+        percent >= 90 &&
+        !phase.is_viewed &&
+        !hasMarkedCompleted.current
+      ) {
+        hasMarkedCompleted.current = true;
+
+        await supabase.rpc("mark_video_completed_v1", {
+          p_student_id: user.id,
+          p_phase_id: phase.id,
+        });
+
+        refresh?.();
+      }
+    }
+  }}
+  onEnded={() => {
+    if (!user?.id) return;
+    if (hasMarkedCompleted.current) return;
+
+    hasMarkedCompleted.current = true;
+
+    supabase.rpc("mark_video_completed_v1", {
+      p_student_id: user.id,
+      p_phase_id: phase.id,
+    });
+
+    refresh?.();
+  }}
+/>
 
           {/* WATCHED BADGE */}
           {phase.is_viewed && (
