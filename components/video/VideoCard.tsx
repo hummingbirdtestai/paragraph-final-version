@@ -89,7 +89,9 @@ React.useEffect(() => {
         {phase.subject}
       </Text>
         {/* 🔝 TOP BAR — SAME AS PRACTICE */}
-        {(isConcept || isMCQ || isVideo) && (
+          {(isConcept || isMCQ) && (
+  <View style={[styles.topBar, isConcept && styles.topBarConcept]}>
+
             {/* Progress */}
             <View style={styles.progressRow}>
               <Text style={styles.progressText}>
@@ -149,6 +151,39 @@ React.useEffect(() => {
     },
   ]}
 >
+          {/* 🎥 VIDEO HEADER OVERLAY */}
+<View style={styles.videoTopBar}>
+  <View style={styles.progressRow}>
+    <Text style={styles.progressText}>
+      🧠 Concept {phase.react_order_final} / {phase.total_count}
+    </Text>
+  </View>
+
+  <TouchableOpacity
+    onPress={async () => {
+      if (!user?.id) return;
+
+      const { data } = await supabase.rpc("toggle_video_bookmark_v2", {
+        p_student_id: user.id,
+        p_videocard_id: phase.id,
+        p_subject: phase.subject,
+      });
+
+      if (data?.is_bookmark !== undefined) {
+        setIsBookmarked(data.is_bookmark);
+        refresh?.();
+      }
+    }}
+  >
+    <Bookmark
+      size={22}
+      color="#10b981"
+      strokeWidth={2}
+      fill={isBookmarked ? "#10b981" : "transparent"}
+    />
+  </TouchableOpacity>
+</View>
+
           <VimeoPlayer
   vimeoId={phase.phase_json.vimeo_video_id}
   onProgress={async (current, duration) => {
@@ -434,7 +469,6 @@ const styles = StyleSheet.create({
   /* ⭐ SURGICAL ADDITION */
 videoWrapper: {
   width: "100%",
-  marginHorizontal: -16, // cancels card padding
   backgroundColor: "black",
 },
 
