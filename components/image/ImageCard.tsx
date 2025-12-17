@@ -118,19 +118,6 @@ React.useEffect(() => {
  </View>
         )}
 
-
-
-      {/* ⭐⭐⭐ VIDEO BLOCK — SURGICAL & SAFE ⭐⭐⭐ */}
-      {isVideo && phase.phase_json?.vimeo_video_id ? (
-        <View
-  style={[
-    styles.videoWrapper,
-    {
-      aspectRatio:
-        phase.phase_json?.aspect_ratio === "portrait" ? 9 / 16 : 16 / 9,
-    },
-  ]}
->
           {/* 🎥 VIDEO HEADER OVERLAY */}
 <View style={styles.videoHeaderContainer}>
   {/* Subject Line */}
