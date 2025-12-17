@@ -220,14 +220,12 @@ useEffect(() => {
           onToggleBookmark={async () => {
             if (!userId) return;
         
-            const { data } = await supabase.rpc(
-              "toggle_practice_bookmark_v1",
-              {
-                p_student_id: userId,
-                p_practicecard_id: item.id,
-                p_subject: item.subject,
-              }
-            );
+            await supabase.rpc("toggle_video_bookmark_v2", {
+            p_student_id: userId,
+            p_videocard_id: item.id,   // 🔑 phase id
+            p_subject: item.subject,
+          });
+
         
             if (data) {
               refresh();
