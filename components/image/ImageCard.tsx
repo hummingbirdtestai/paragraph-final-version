@@ -15,7 +15,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import VimeoPlayer from "@/components/video/VimeoPlayer";
 
-export function VideoCard({ phase, refresh }) {
+export function ImageCard({ phase, refresh }) {
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const isVideo = phase.phase_type === "video";
