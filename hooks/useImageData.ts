@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-export function useVideoData(
+export function useImageData(
   subject = null,
   userId = null,
   category = "unviewed"
