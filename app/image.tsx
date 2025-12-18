@@ -18,6 +18,7 @@ import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
 import FlashcardCard from "@/components/FlashcardCard";
+import FullScreenMediaViewer from "@/components/media/FullScreenMediaViewer";
 
 
 export default function VideoScreen() {
@@ -31,6 +32,11 @@ export default function VideoScreen() {
 
   const [containersVisible, setContainersVisible] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
+    const [viewerVisible, setViewerVisible] = useState(false);
+    const [viewerMedia, setViewerMedia] = useState<{
+      id: string;
+      uri: string;
+    } | null>(null);
 
 
  const subjects = [
@@ -212,34 +218,42 @@ if (item.phase_type === "concept") {
       return isWeb ? webWrap(content) : content;
     }
 
-    if (item.phase_type === "video") {
-      const vimeoId = item.phase_json?.vimeo_video_id;
-      if (!vimeoId) return null;
+if (item.phase_type === "video") {
+  const imageUrl = item.phase_json?.image_url;
+  if (!imageUrl) return null;
+
+  const content = (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() => {
+        setViewerMedia({
+          id: item.id,
+          uri: imageUrl,
+        });
+        setViewerVisible(true);
+      }}
+    >
+      <View style={styles.imageFeedItem}>
+        <Image
+          source={{ uri: imageUrl }}
+          style={styles.feedImage}
+          resizeMode="contain"
+        />
+      </View>
+    </TouchableOpacity>
+  );
+
+  return isWeb ? (
+    <View style={styles.webFeedShell}>
+      <View style={styles.webFeedColumn}>
+        {content}
+      </View>
+    </View>
+  ) : (
+    content
+  );
+}
     
-      const content = (
-        <View
-          style={[
-            styles.videoFeedItem,
-            {
-              aspectRatio:
-                item.phase_json?.aspect_ratio === "portrait" ? 9 / 16 : 16 / 9,
-            },
-          ]}
-        >
-          <VimeoPlayer vimeoId={vimeoId} />
-        </View>
-      );
-    
-      return isWeb ? (
-        <View style={styles.webFeedShell}>
-          <View style={styles.webFeedColumn}>
-            {content}
-          </View>
-        </View>
-      ) : (
-        content
-      );
-    }
     // 🛡️ DEFENSIVE GUARD — concept must have phase_json
 if (item.phase_type === "concept" && !item.phase_json) {
   console.warn("⚠️ Concept without phase_json", {
@@ -338,6 +352,20 @@ onEndReachedThreshold={0.8}
           </View>
         )}
       </View>
+      {viewerMedia && (
+  <FullScreenMediaViewer
+    visible={viewerVisible}
+    media={{
+      id: viewerMedia.id,
+      type: "image",
+      uri: viewerMedia.uri,
+    }}
+    onClose={() => {
+      setViewerVisible(false);
+      setViewerMedia(null);
+    }}
+  />
+)}
     </MainLayout>
   );
 }
@@ -364,11 +392,19 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 // 🎬 VIDEO FEED ITEM (ADD THIS)
-videoFeedItem: {
+imageFeedItem: {
   width: "100%",
   backgroundColor: "#000",
+  borderRadius: 12,
+  overflow: "hidden",
   marginBottom: 16,
 },
+
+feedImage: {
+  width: "100%",
+  height: 260,
+},
+
   categoryContainer: {
     flexDirection: "row",
     gap: 16,
