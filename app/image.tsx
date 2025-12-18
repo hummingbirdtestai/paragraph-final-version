@@ -17,7 +17,6 @@ import { useImageData } from "@/hooks/useImageData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
-import HighYieldFactsScreen from "@/components/types/HighYieldFactsScreen";
 import FlashcardScreenDB from "@/components/types/flashcardscreen";
 
 export default function VideoScreen() {
