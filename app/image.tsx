@@ -18,6 +18,7 @@ import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
 import HighYieldFactsScreen from "@/components/types/HighYieldFactsScreen";
+import FlashcardScreenDB from "@/components/types/flashcardscreen";
 
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
@@ -189,7 +190,7 @@ useEffect(() => {
           item={item.phase_json}
           studentId={userId}
           subjectName={item.subject}
-          elementId={item.id}
+          elementId={item.id}              // ✅ FIXED
           isBookmarked={item.is_bookmarked}
         />
       );
@@ -229,6 +230,15 @@ useEffect(() => {
         content
       );
     }
+    // 🛡️ DEFENSIVE GUARD — concept must have phase_json
+if (item.phase_type === "concept" && !item.phase_json) {
+  console.warn("⚠️ Concept without phase_json", {
+    phase_id: item.id,
+    subject: item.subject,
+  });
+  return null;
+}
+
   
   if (item.phase_type === "concept") {
   const content = (
@@ -257,16 +267,6 @@ useEffect(() => {
   );
 }
 
-if (item.phase_type === "mcq") {
-  const content = <VideoCard phase={item} refresh={refresh} />;
-  return isWeb ? (
-    <View style={styles.webFeedShell}>
-      <View style={styles.webFeedColumn}>{content}</View>
-    </View>
-  ) : (
-    content
-  );
-}
 
 // 🚨 Defensive fallback — should NEVER happen in video feed
 console.error("❌ Unknown phase_type in VideoScreen", item.phase_type);
