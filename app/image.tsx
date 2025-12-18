@@ -39,17 +39,14 @@ export default function VideoScreen() {
     } | null>(null);
 
 
- const subjects = [
+const subjects = [
   "General Medicine",
   "General Surgery",
   "Obstetrics and Gynaecology",
   "Pediatrics",
-  "Orthopedics",
-  "Community Medicine",
   "Ophthalmology",
   "ENT",
   "Dermatology",
-  "Psychiatry",
   "Anesthesia",
   "Radiology",
   "Pathology",
@@ -60,6 +57,7 @@ export default function VideoScreen() {
   "Pharmacology",
   "Forensic Medicine",
 ];
+
 
   const [selectedSubject, setSelectedSubject] = useState("General Medicine");
   const [selectedCategory, setSelectedCategory] =
