@@ -22,9 +22,7 @@ interface FlashcardCardProps {
   };
   index: number;
   subject: string;
-  isBookmarked: boolean;
   onView: (flashcardId: string, subject: string) => void;
-  onBookmark: (flashcardId: string, subject: string) => void;
 }
 
 const FlashcardCard: React.FC<FlashcardCardProps> = ({
@@ -153,13 +151,7 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
               >
                 <View style={styles.cardHeader}>
                   <Text style={styles.badgeLabel}>QUESTION</Text>
-                  <TouchableOpacity onPress={() => onBookmark(item.id, subject)}>
-                    <Bookmark
-                      size={20}
-                      color="#3b82f6"
-                      fill={isBookmarked ? "#3b82f6" : "transparent"}
-                    />
-                  </TouchableOpacity>
+            
                 </View>
 
                 <Markdown style={{ text: styles.questionText }}>
