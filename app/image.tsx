@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
+  Image,          // ✅ ADD THIS
   ScrollView,
   RefreshControl,
   StyleSheet,
@@ -223,7 +224,7 @@ if (item.phase_type === "video") {
   const imageUrl = item.phase_json?.image_url;
   if (!imageUrl) return null;
 
-  const content = (
+  return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => {
@@ -234,20 +235,42 @@ if (item.phase_type === "video") {
         setViewerVisible(true);
       }}
     >
-      <ImageCard phase={item} refresh={refresh} />
+      <View
+        style={{
+          backgroundColor: "#111b21",
+          borderRadius: 12,
+          padding: 12,
+          marginBottom: 16,
+        }}
+      >
+        {/* SUBJECT */}
+        <Text
+          style={{
+            color: "#25D366",
+            fontSize: 16,
+            fontWeight: "700",
+            marginBottom: 8,
+          }}
+        >
+          {item.subject}
+        </Text>
+
+        {/* IMAGE */}
+        <Image
+          source={{ uri: imageUrl }}
+          style={{
+            width: "100%",
+            height: 260,
+            borderRadius: 12,
+            backgroundColor: "#000",
+          }}
+          resizeMode="contain"
+        />
+      </View>
     </TouchableOpacity>
   );
-
-  return isWeb ? (
-    <View style={styles.webFeedShell}>
-      <View style={styles.webFeedColumn}>
-        {content}
-      </View>
-    </View>
-  ) : (
-    content
-  );
 }
+
 
     
     // 🛡️ DEFENSIVE GUARD — concept must have phase_json

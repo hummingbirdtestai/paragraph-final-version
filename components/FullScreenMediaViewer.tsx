@@ -1,3 +1,4 @@
+//FullScreenMediaViewer.tsx
 import { View, Modal, StyleSheet, Pressable, Image, Dimensions, Platform } from 'react-native';
 import { useState, useRef } from 'react';
 import { X, Share2, Download, Forward, Info, Smile } from 'lucide-react-native';
