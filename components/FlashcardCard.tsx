@@ -194,3 +194,78 @@ const FlashcardCard: React.FC<FlashcardCardProps> = ({
 };
 
 export default React.memo(FlashcardCard);
+const styles = StyleSheet.create({
+  cardContainer: {
+    marginBottom: 16,
+  },
+
+  cardWrapper: {
+    position: "relative",
+  },
+
+  leftBorder: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 6,
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+
+  leftBorderGradient: {
+    flex: 1,
+  },
+
+  cardTouchable: {
+    marginLeft: 8,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+
+  cardFace: {
+    backfaceVisibility: "hidden",
+    position: "absolute",
+    width: "100%",
+  },
+
+  cardFront: {
+    zIndex: 2,
+  },
+
+  cardBack: {
+    transform: [{ rotateY: "180deg" }],
+  },
+
+  cardGradient: {
+    padding: 16,
+    borderRadius: 16,
+    minHeight: 180,
+  },
+
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  badgeLabel: {
+    color: "#9ca3af",
+    fontSize: 12,
+    fontWeight: "600",
+    letterSpacing: 1,
+  },
+
+  questionText: {
+    color: "#e5e7eb",
+    fontSize: 16,
+    lineHeight: 24,
+  },
+
+  answerText: {
+    color: "#d1fae5",
+    fontSize: 16,
+    lineHeight: 24,
+  },
+});
