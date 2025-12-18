@@ -17,7 +17,7 @@ import { useImageData } from "@/hooks/useImageData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
-import FlashcardScreen from "@/components/types/flashcardscreen";
+import FlashcardScreen from "@/components/types/FlashcardScreen";
 
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
