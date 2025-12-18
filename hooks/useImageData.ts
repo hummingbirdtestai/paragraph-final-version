@@ -27,7 +27,7 @@ export function useImageData(
     }
 
     // ⭐ Replace with your RPC name
-    const { data, error } = await supabase.rpc("get_video_feed_v1", {
+    const { data, error } = await supabase.rpc("get_image_feed_v1", {
       p_subject: subject,
       p_student_id: userId,
       p_filter: category,
