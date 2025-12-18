@@ -233,13 +233,7 @@ if (item.phase_type === "video") {
         setViewerVisible(true);
       }}
     >
-      <View style={styles.imageFeedItem}>
-        <Image
-          source={{ uri: imageUrl }}
-          style={styles.feedImage}
-          resizeMode="contain"
-        />
-      </View>
+      <ImageCard phase={item} refresh={refresh} />
     </TouchableOpacity>
   );
 
@@ -253,6 +247,7 @@ if (item.phase_type === "video") {
     content
   );
 }
+
     
     // 🛡️ DEFENSIVE GUARD — concept must have phase_json
 if (item.phase_type === "concept" && !item.phase_json) {
@@ -391,19 +386,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 100,
   },
-// 🎬 VIDEO FEED ITEM (ADD THIS)
-imageFeedItem: {
-  width: "100%",
-  backgroundColor: "#000",
-  borderRadius: 12,
-  overflow: "hidden",
-  marginBottom: 16,
-},
-
-feedImage: {
-  width: "100%",
-  height: 260,
-},
 
   categoryContainer: {
     flexDirection: "row",
