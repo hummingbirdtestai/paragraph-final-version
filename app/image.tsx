@@ -202,9 +202,7 @@ if (item.phase_type === "concept") {
       }}
       index={index}
       subject={item.subject}
-      isBookmarked={item.is_bookmarked}
       onView={() => {}}
-      onBookmark={() => {}}
     />
   );
 }
