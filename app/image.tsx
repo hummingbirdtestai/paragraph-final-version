@@ -21,8 +21,6 @@ import { FlatList } from "react-native";
 import FlashcardCard from "@/components/FlashcardCard";
 import FullScreenMediaViewer from "@/components/FullScreenMediaViewer";
 
-
-
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
 
@@ -189,8 +187,7 @@ useEffect(() => {
     });
     
     if (item.phase_type === "image") {
-      const content = <ImageCard phase={item} refresh={refresh} />;
-      return isWeb ? webWrap(content) : content;
+      return <ImageCard phase={item} refresh={refresh} />;
     }
     
 if (item.phase_type === "concept") {
@@ -211,13 +208,9 @@ if (item.phase_type === "concept") {
     />
   );
 }
-
-
-
     
     if (item.phase_type === "mcq") {
-      const content = <ImageCard phase={item} refresh={refresh} />;
-      return isWeb ? webWrap(content) : content;
+      return <ImageCard phase={item} refresh={refresh} />;
     }
 
 if (item.phase_type === "video") {
@@ -271,8 +264,6 @@ if (item.phase_type === "video") {
   );
 }
 
-
-    
     // 🛡️ DEFENSIVE GUARD — concept must have phase_json
 if (item.phase_type === "concept" && !item.phase_json) {
   console.warn("⚠️ Concept without phase_json", {
@@ -281,10 +272,6 @@ if (item.phase_type === "concept" && !item.phase_json) {
   });
   return null;
 }
-
-  
- 
-
 
 // 🚨 Defensive fallback — should NEVER happen in video feed
 console.error("❌ Unknown phase_type in VideoScreen", item.phase_type);

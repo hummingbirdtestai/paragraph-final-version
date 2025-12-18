@@ -3,7 +3,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
-import VideoMCQScreen from "@/components/types/VideoMCQScreen";
+import ImageMCQScreen from "@/components/types/ImageMCQScreen";
 import { StudentBubble } from "@/components/chat/StudentBubble";
 import MentorBubbleReply from "@/components/types/MentorBubbleReply";
 import { MessageInput } from "@/components/chat/MessageInput";
@@ -13,11 +13,11 @@ import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
-import FlashcardScreen from "@/components/types/flashcardscreen";
+import FlashcardScreen from "@/components/types/FlashcardScreen";
 
 
 export function ImageCard({ phase, refresh }) {
-  const isFlashcard = phase.phase_type === "flashcard";
+  const isFlashcard = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const isImage = phase.phase_type === "image";
 
@@ -76,10 +76,10 @@ React.useEffect(() => {
     if (!user?.id) return;
 
     const { data, error } = await supabase.rpc(
-      "toggle_video_bookmark_v2",
+      "toggle_image_bookmark_v1",
       {
         p_student_id: user.id,
-        p_videocard_id: phase.id,
+        p_image_phase_id: phase.id,
         p_subject: phase.subject,
       }
     );
@@ -89,7 +89,7 @@ React.useEffect(() => {
 });
 
     if (error) {
-      console.error("toggle_video_bookmark_v2 failed", error);
+      console.error("toggle_image_bookmark_v1 failed", error);
       return;
     }
 
@@ -131,7 +131,7 @@ React.useEffect(() => {
   </TouchableOpacity>
 )}
 {isFlashcard && (
-  <FlashcardScreenDB
+  <FlashcardScreen
     item={phase.phase_json}
     studentId={user?.id}
     subjectName={phase.subject}
@@ -140,22 +140,16 @@ React.useEffect(() => {
   />
 )}
 
-      {/* MCQ — UNTOUCHED */}
-      {isMCQ && (
-      <VideoMCQScreen
-        item={phase.phase_json}
-        conceptId={phase.concept_id_before_this_mcq}
-        mcqId={phase.id}
-        correctAnswer={phase.phase_json?.correct_answer}
-        studentId={user?.id}
-        reviewMode={false}
-        hideInternalNext={true}
-        phaseUniqueId={phase.id}
-        onAnswered={() => {
-          refresh?.();   // ✅ ADD THIS LINE
-        }}
-      />
-    )}
+{isMCQ && (
+  <ImageMCQScreen
+    item={phase.phase_json}
+    mcqId={phase.id}
+    phaseUniqueId={phase.id}
+    studentId={user?.id}
+    correctAnswer={phase.phase_json?.correct_answer}
+    reviewMode={false}
+  />
+)}
 
 
       {/* CHAT — UNTOUCHED */}
