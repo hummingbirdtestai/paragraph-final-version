@@ -237,32 +237,7 @@ if (item.phase_type === "concept" && !item.phase_json) {
 }
 
   
-  if (item.phase_type === "concept") {
-  const content = (
-    <FlashcardScreen
-      item={[
-        {
-          id: item.id,
-          Question: item.phase_json?.Question ?? "",
-          Answer: item.phase_json?.Answer ?? "",
-          mentor_reply: item.phase_json?.mentor_reply ?? "",
-        },
-      ]}
-      studentId={userId}
-      subjectName={item.subject}
-      elementId={item.id}
-      isBookmarked={item.is_bookmarked}
-    />
-  );
-
-  return isWeb ? (
-    <View style={styles.webFeedShell}>
-      <View style={styles.webFeedColumn}>{content}</View>
-    </View>
-  ) : (
-    content
-  );
-}
+ 
 
 
 // 🚨 Defensive fallback — should NEVER happen in video feed
