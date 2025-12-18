@@ -185,28 +185,25 @@ useEffect(() => {
       return isWeb ? webWrap(content) : content;
     }
     
-if (item.phase_type === "flashcard") {
+if (item.phase_type === "concept") {
   return (
     <FlashcardCard
       item={{
         id: item.id,
         Question: item.phase_json?.Question ?? "",
         Answer: item.phase_json?.Answer ?? "",
-        react_order_final: item.phase_json?.react_order_final,
-        maximum_value: item.phase_json?.maximum_value,
+        react_order_final: item.react_order_final,
+        maximum_value: item.total_count,
       }}
       index={index}
       subject={item.subject}
       isBookmarked={item.is_bookmarked}
-      onView={() => {
-        // optional: wire later if needed
-      }}
-      onBookmark={() => {
-        // optional: wire later if needed
-      }}
+      onView={() => {}}
+      onBookmark={() => {}}
     />
   );
 }
+
 
 
     
