@@ -3,6 +3,7 @@ import {
   View,
   Text,
   TouchableWithoutFeedback,
+  TouchableOpacity,   // ✅ ADD THIS LINE
   Animated,
   StyleSheet,
   Platform,
