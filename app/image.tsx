@@ -17,7 +17,7 @@ import { useImageData } from "@/hooks/useImageData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
-import FlashcardFeedDemo from "@/components/FlashcardFeedDemo";
+import FlashcardCard from "@/components/FlashcardCard";
 
 
 export default function VideoScreen() {
@@ -185,13 +185,29 @@ useEffect(() => {
       return isWeb ? webWrap(content) : content;
     }
     
-    if (item.phase_type === "flashcard") {
+if (item.phase_type === "flashcard") {
   return (
-    <View style={{ marginBottom: 24 }}>
-      <FlashcardFeedDemo />
-    </View>
+    <FlashcardCard
+      item={{
+        id: item.id,
+        Question: item.phase_json?.Question ?? "",
+        Answer: item.phase_json?.Answer ?? "",
+        react_order_final: item.phase_json?.react_order_final,
+        maximum_value: item.phase_json?.maximum_value,
+      }}
+      index={index}
+      subject={item.subject}
+      isBookmarked={item.is_bookmarked}
+      onView={() => {
+        // optional: wire later if needed
+      }}
+      onBookmark={() => {
+        // optional: wire later if needed
+      }}
+    />
   );
 }
+
 
     
     if (item.phase_type === "mcq") {
