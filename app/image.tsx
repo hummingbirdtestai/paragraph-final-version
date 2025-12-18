@@ -17,7 +17,7 @@ import { useImageData } from "@/hooks/useImageData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
-import FlashcardScreenDB from "@/components/types/flashcardscreen";
+import FlashcardScreen from "@/components/types/flashcardscreen";
 
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
@@ -185,7 +185,7 @@ useEffect(() => {
     
     if (item.phase_type === "flashcard") {
       const content = (
-        <FlashcardScreenDB
+        <FlashcardScreen
           item={item.phase_json}
           studentId={userId}
           subjectName={item.subject}
@@ -241,7 +241,7 @@ if (item.phase_type === "concept" && !item.phase_json) {
   
   if (item.phase_type === "concept") {
   const content = (
-    <FlashcardScreenDB
+    <FlashcardScreen
       item={[
         {
           id: item.id,
