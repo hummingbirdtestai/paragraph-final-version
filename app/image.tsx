@@ -230,39 +230,21 @@ useEffect(() => {
       );
     }
   
-   if (item.phase_type === "concept") {
+  if (item.phase_type === "concept") {
   const content = (
-    <HighYieldFactsScreen
-      topic={item.phase_json?.topic ?? "Concept"}
-      conceptMarkdown={item.phase_json?.concept ?? ""}
-      subject={item.subject}
-      reactOrder={item.react_order_final}
-      totalCount={item.total_count}
+    <FlashcardScreenDB
+      item={[
+        {
+          id: item.id,
+          Question: item.phase_json?.Question ?? "",
+          Answer: item.phase_json?.Answer ?? "",
+          mentor_reply: item.phase_json?.mentor_reply ?? "",
+        },
+      ]}
+      studentId={userId}
+      subjectName={item.subject}
+      elementId={item.id}
       isBookmarked={item.is_bookmarked}
-      onToggleBookmark={async () => {
-        if (!userId) return;
-          console.log("🚀 CONCEPT BOOKMARK CLICK", {
-            student_id: userId,
-            phase_id: item.id,
-            phase_type: item.phase_type,
-            subject: item.subject,
-          });
-        const { data, error } = await supabase.rpc(
-          "toggle_video_bookmark_v2",
-          {
-            p_student_id: userId,
-            p_videocard_id: item.id, // ✅ phase id
-            p_subject: item.subject,
-          }
-        );
-console.log("✅ CONCEPT BOOKMARK RPC RESULT", {
-  data,
-  error,
-});
-        if (!error && data) {
-          refresh(); // 🔄 keeps bookmarked filter correct
-        }
-      }}
     />
   );
 
@@ -274,7 +256,7 @@ console.log("✅ CONCEPT BOOKMARK RPC RESULT", {
     content
   );
 }
-  
+
 if (item.phase_type === "mcq") {
   const content = <VideoCard phase={item} refresh={refresh} />;
   return isWeb ? (
