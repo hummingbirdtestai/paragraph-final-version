@@ -31,7 +31,7 @@ export default function VideoScreen() {
 
   const [containersVisible, setContainersVisible] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
-  const listRef = React.useRef<FlatList>(null);
+
 
  const subjects = [
   "General Medicine",
