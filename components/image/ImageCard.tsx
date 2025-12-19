@@ -14,7 +14,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
 import FlashcardScreen from "@/components/types/FlashcardScreen";
-import ZoomableImage from "@/components/ZoomableImage";
+import ZoomableImage from "@/components/common/ZoomableImage";
 
 
 export function ImageCard({ phase, refresh }) {
