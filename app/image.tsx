@@ -208,16 +208,6 @@ if (item.phase_type === "video") {
   if (!imageUrl) return null;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={() => {
-        setViewerMedia({
-          id: item.id,
-          uri: imageUrl,
-        });
-        setViewerVisible(true);
-      }}
-    >
       <View
         style={{
           backgroundColor: "#111b21",
@@ -237,20 +227,7 @@ if (item.phase_type === "video") {
         >
           {item.subject}
         </Text>
-
-        {/* IMAGE */}
-        <Image
-          source={{ uri: imageUrl }}
-          style={{
-            width: "100%",
-            height: 260,
-            borderRadius: 12,
-            backgroundColor: "#000",
-          }}
-          resizeMode="contain"
-        />
       </View>
-    </TouchableOpacity>
   );
 }
 
