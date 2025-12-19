@@ -19,7 +19,6 @@ import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
 import FlashcardCard from "@/components/FlashcardCard";
-import FullScreenMediaViewer from "@/components/FullScreenMediaViewer";
 
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
