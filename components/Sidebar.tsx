@@ -3,19 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
 import { Link, usePathname } from 'expo-router';
-import {
-  Home,
-  BookOpen,
-  CreditCard,
-  FileText,
-  Swords,
-  BarChart3,
-  Settings,
-  X,
-  Video,
-  Crown,
-  Image as ImageIcon,
-} from 'lucide-react-native';
+import { Hop as Home, BookOpen, CreditCard, FileText, Swords, ChartBar as BarChart3, Settings, X, Video, Crown, Image as ImageIcon } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
 import SubscribeModal from './SubscribeModal';
