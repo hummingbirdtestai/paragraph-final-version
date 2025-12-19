@@ -1,7 +1,7 @@
 //practicecard.tsx
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-
+import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
 import MCQChatScreen from "@/components/types/MCQScreen";
 import { TouchableOpacity } from "react-native";
@@ -12,6 +12,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 
 export function PracticeCard({ phase }) {
+   const { width } = useWindowDimensions();   // ✅ ADD
+  const isWeb = width >= 1024;               // ✅ ADD
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const { user } = useAuth();
@@ -99,28 +101,17 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
         />
       )}
 
-    {isMCQ && (
-  <>
+{isMCQ && (
+  <View style={isWeb ? styles.webConstrained : undefined}>
     <MCQChatScreen
       item={phase.phase_json}
-
       conceptId={phase.concept_id_before_this_mcq}
       mcqId={phase.id}
       correctAnswer={phase.phase_json?.correct_answer}
-
       studentId={user?.id}
       reviewMode={false}
       hideInternalNext={true}
       phaseUniqueId={phase.id}
-
-      onAnswered={(selected) => {
-        console.log("🧠 [PracticeCard] MCQ answered", {
-          mcq_id: phase.id,
-          concept_before: phase.concept_id_before_this_mcq,
-          selected,
-          correct: phase.phase_json?.correct_answer
-        });
-      }}
     />
 
     <AskParagraphButton
@@ -130,8 +121,9 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
       phaseJson={phase.phase_json}
       reactOrder={phase.react_order_final}
     />
-  </>
+  </View>
 )}
+
   
       {phase.image_url && (
         <Image source={{ uri: phase.image_url }} style={styles.image} />
@@ -278,4 +270,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
   },
+  webConstrained: {          // 👈 ADD HERE
+  maxWidth: 860,
+  alignSelf: "center",
+  width: "100%",
+},
+
 });
