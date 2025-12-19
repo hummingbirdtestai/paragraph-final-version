@@ -45,9 +45,7 @@ export default function PaymentSuccessScreen() {
 
   const fetchUserSubscription = async (): Promise<UserSubscription | null> => {
     try {
-      if (!user?.id) {
-        throw new Error('User not authenticated');
-      }
+
 
       const { data, error } = await supabase
         .from('users')
