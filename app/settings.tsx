@@ -1,3 +1,4 @@
+//settings.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { CreditCard, Key, LogOut, LogIn } from 'lucide-react-native';
