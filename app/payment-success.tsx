@@ -1,4 +1,4 @@
-//payment-success.tsx
+//payment-success.tsxS
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
