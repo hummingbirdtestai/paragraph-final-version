@@ -19,7 +19,7 @@ import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
 import FlashcardCard from "@/components/FlashcardCard";
-import ZoomableImage from "@/components/ZoomableImage";
+import ZoomableImage from "@/components/common/ZoomableImage";
 
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
