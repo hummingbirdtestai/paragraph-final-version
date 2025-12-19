@@ -185,6 +185,7 @@ function AskParagraphButton({
         session_id: data.session_id,
         student_id: studentId,
         mcq_id: mcqId,
+         mcq_json: JSON.stringify(phaseJson),   // ✅ ADD THIS
       },
     });
   } catch (err) {
