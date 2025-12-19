@@ -18,6 +18,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 const { width, height } = Dimensions.get('window');
 
 type SubscriptionStatus = 'loading' | 'success' | 'pending' | 'error';
+type PaymentOrderStatus = 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'PENDING' | null;
 
 interface UserSubscription {
   is_active: boolean;
@@ -39,6 +40,7 @@ export default function PaymentSuccessScreen() {
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [orderStatus, setOrderStatus] = useState<PaymentOrderStatus>(null);
 
   const MAX_RETRIES = 2;
   const RETRY_DELAY = 2000;
@@ -58,7 +60,23 @@ const fetchUserSubscription = async (): Promise<UserSubscription | null> => {
   return data;
 };
 
+const verifyOrderStatus = async () => {
+  const orderId = params?.order_id as string;
+  if (!orderId) return null;
 
+  try {
+    const res = await fetch(
+      `https://paragraph-pg-production.up.railway.app/api/payments/status?order_id=${orderId}`
+    );
+
+    const data = await res.json();
+    setOrderStatus(data.order_status);
+    return data.order_status;
+  } catch {
+    return null;
+  }
+};
+  
   const checkSubscription = async (isRetry = false) => {
     const data = await fetchUserSubscription();
 
