@@ -185,13 +185,14 @@ useEffect(() => {
 
 
           <View style={styles.conversationContainer}>
-            {conversation.map((msg, index) => (
-              msg.role === 'student' ? (
-                  <StudentBubble key={index} text={msg.content} />
-                ) : (useEffect(() => {
-                  <MentorBubbleReply key={index} markdownText={msg.content} />
-                )
-            ))}
+{conversation.map((msg, index) =>
+  msg.role === 'student' ? (
+    <StudentBubble key={index} text={msg.content} />
+  ) : (
+    <MentorBubbleReply key={index} markdownText={msg.content} />
+  )
+)}
+
             {/* ✅ ADD THIS BLOCK — EXACT LOCATION */}
   {loading && (
     <View style={{ paddingVertical: 20, alignItems: "center" }}>
