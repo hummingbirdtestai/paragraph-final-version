@@ -165,11 +165,7 @@ function AskParagraphButton({
       body: JSON.stringify({
         student_id: studentId,
         mcq_id: mcqId,
-        mcq_payload: {
-          stem: phaseJson.stem,
-          options: phaseJson.options,
-          correct_answer: phaseJson.correct_answer,
-        },
+       mcq_payload: phaseJson,
       }),
     });
 
