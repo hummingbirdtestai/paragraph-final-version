@@ -19,6 +19,7 @@ import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
 import FlashcardCard from "@/components/FlashcardCard";
+import ZoomableImage from "@/components/ZoomableImage";
 
 export default function VideoScreen() {
   const { width, height } = useWindowDimensions();
@@ -227,6 +228,7 @@ if (item.phase_type === "video") {
         >
           {item.subject}
         </Text>
+        <ZoomableImage uri={imageUrl} height={260} />
       </View>
   );
 }
