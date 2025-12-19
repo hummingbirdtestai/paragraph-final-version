@@ -31,11 +31,6 @@ export default function VideoScreen() {
 
   const [containersVisible, setContainersVisible] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
-    const [viewerVisible, setViewerVisible] = useState(false);
-    const [viewerMedia, setViewerMedia] = useState<{
-      id: string;
-      uri: string;
-    } | null>(null);
 
 
 const subjects = [
@@ -353,20 +348,6 @@ onEndReachedThreshold={0.8}
           </View>
         )}
       </View>
-      {viewerMedia && (
-  <FullScreenMediaViewer
-    visible={viewerVisible}
-    media={{
-      id: viewerMedia.id,
-      type: "image",
-      uri: viewerMedia.uri,
-    }}
-    onClose={() => {
-      setViewerVisible(false);
-      setViewerMedia(null);
-    }}
-  />
-)}
     </MainLayout>
   );
 }
