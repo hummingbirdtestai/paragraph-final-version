@@ -43,10 +43,19 @@ export default function AskParagraphScreen() {
   const [conversation, setConversation] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-// ✅ READ MCQ DIRECTLY FROM ROUTER PARAMS (SOURCE OF TRUTH)
+// 1️⃣ Parse MCQ JSON from router
 useEffect(() => {
   if (!params.mcq_json) return;
-// 🧪 DEBUG — VERIFY FULL MCQ JSON (REMOVE AFTER FIX)
+
+  try {
+    const parsed = JSON.parse(params.mcq_json as string);
+    setMcqData(parsed);
+  } catch (e) {
+    console.error("❌ Failed to parse mcq_json from params", e);
+  }
+}, [params.mcq_json]);
+
+// 2️⃣ Debug MCQ shape (SAFE)
 useEffect(() => {
   if (!mcqData) return;
 
@@ -60,13 +69,6 @@ useEffect(() => {
   });
 }, [mcqData]);
 
-  try {
-    const parsed = JSON.parse(params.mcq_json as string);
-    setMcqData(parsed);
-  } catch (e) {
-    console.error("❌ Failed to parse mcq_json from params", e);
-  }
-}, [params.mcq_json]);
 
   useEffect(() => {
   if (!params.session_id) return;
