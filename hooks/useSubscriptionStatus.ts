@@ -1,3 +1,4 @@
+//useSubscriptionStatus.ts
 import { useMemo } from 'react';
 
 export type SubscriptionStatus =
