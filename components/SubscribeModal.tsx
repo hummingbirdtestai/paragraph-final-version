@@ -266,7 +266,7 @@ async function handleSubscribe(
             <View style={[styles.plansGrid, isDesktop && styles.plansGridDesktop]}>
               <PlanCard
                 duration="3 Months"
-                basePrice={a}
+                basePrice={12000}
                 color="#10b981"
                 features={[
                   'Ideal for focused revision phase',
