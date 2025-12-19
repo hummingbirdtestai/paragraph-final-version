@@ -40,6 +40,17 @@ export default function AskParagraphScreen() {
   const [conversation, setConversation] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
+// ✅ READ MCQ DIRECTLY FROM ROUTER PARAMS (SOURCE OF TRUTH)
+useEffect(() => {
+  if (!params.mcq_json) return;
+
+  try {
+    const parsed = JSON.parse(params.mcq_json as string);
+    setMcqData(parsed);
+  } catch (e) {
+    console.error("❌ Failed to parse mcq_json from params", e);
+  }
+}, [params.mcq_json]);
 
   useEffect(() => {
   if (!params.session_id) return;
@@ -63,11 +74,8 @@ export default function AskParagraphScreen() {
       
       setConversation(dialogs);
       
-      // ✅ extract MCQ payload from system message
-      const systemMsg = dialogs.find((d: any) => d.role === "system");
-      if (systemMsg?.content) {
-        setMcqData(systemMsg.content);
-      }
+     
+   
     } catch (e) {
       console.error("Failed to load session", e);
     } finally {
