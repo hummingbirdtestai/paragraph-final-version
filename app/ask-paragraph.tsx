@@ -125,14 +125,8 @@ useEffect(() => {
 };
 
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.accent} />
-        <Text style={styles.loadingText}>Loading discussion...</Text>
-      </View>
-    );
-  }
+// Allow MCQ to render even while chat loads
+
 
   return (
     <View style={styles.container}>
