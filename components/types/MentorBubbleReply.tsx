@@ -1,29 +1,50 @@
 import { View, StyleSheet, Text } from 'react-native';
 import Animated, { FadeInLeft } from 'react-native-reanimated';
 import MarkdownText from './MarkdownText';
+import { parseLLMBlocks } from '@/components/chat/llm/parseLLMBlocks';
+import { ConceptCard } from '@/components/chat/llm/ConceptCard';
+import { TableCard } from '@/components/chat/llm/TableCard';
 
 interface MentorBubbleProps {
   markdownText: string;
 }
 
 export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
-  let content;
+  let blocks = [];
 
   try {
-    if (!markdownText || typeof markdownText !== "string")
-      throw new Error("Invalid markdownText");
-
-    content = <MarkdownText>{markdownText}</MarkdownText>;
+    blocks = parseLLMBlocks(markdownText);
   } catch (e) {
-    console.log("🔥 MentorBubbleReply render failed:", e, markdownText);
-    content = <Text style={{ color: "#e1e1e1" }}>{String(markdownText)}</Text>;
+    console.log("🔥 LLM block parse failed", e);
+    blocks = [{ type: 'TEXT', text: markdownText }];
   }
 
   return (
     <Animated.View entering={FadeInLeft.duration(400)} style={styles.container}>
       <View style={styles.tail} />
       <View style={styles.bubble}>
-        {content}
+        {blocks.map((block, idx) => {
+          switch (block.type) {
+            case 'CONCEPT':
+              return (
+                <ConceptCard
+                  key={idx}
+                  title={block.title}
+                  text={block.text}
+                />
+              );
+
+            case 'CONCEPT_TABLE':
+              return <TableCard key={idx} rows={block.rows} />;
+
+            default:
+              return (
+                <MarkdownText key={idx}>
+                  {'text' in block ? block.text : ''}
+                </MarkdownText>
+              );
+          }
+        })}
       </View>
     </Animated.View>
   );
