@@ -286,7 +286,7 @@ const confirmLogout = async () => {
   return (
     <MainLayout>
     <SafeAreaView style={styles.container}>
-      <PageHeader title="settings" />
+      <PageHeader title="Settings" />
 
       <ScrollView
         style={styles.scrollView}
