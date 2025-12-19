@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
 import SubscribeModal from './SubscribeModal';
+import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 
 
 
@@ -53,6 +54,7 @@ export default function Sidebar({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const isLoggedIn = !!user;
+  const subscriptionState = useSubscriptionStatus(user);
 
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
@@ -169,17 +171,46 @@ export default function Sidebar({
 
       <View style={styles.footer}>
         {isLoggedIn && (
-          <Pressable
-            style={styles.subscribeButton}
-            onPress={() => setShowSubscribeModal(true)}
-          >
-            <View style={styles.navItemContent}>
-              <View style={styles.iconWrapper}>
-                <Crown size={20} color="#fbbf24" strokeWidth={2} />
+          <>
+            {subscriptionState.showUpgradeCTA ? (
+              <Pressable
+                style={[
+                  styles.subscribeButton,
+                  { borderColor: subscriptionState.color },
+                ]}
+                onPress={() => setShowSubscribeModal(true)}
+              >
+                <View style={styles.navItemContent}>
+                  <View style={styles.iconWrapper}>
+                    <Crown size={20} color={subscriptionState.color} strokeWidth={2} />
+                  </View>
+                  <Text style={[styles.subscribeText, { color: subscriptionState.color }]}>
+                    {subscriptionState.statusText}
+                  </Text>
+                </View>
+              </Pressable>
+            ) : (
+              <View
+                style={[
+                  styles.subscribeButton,
+                  styles.nonClickableStatus,
+                  { borderColor: subscriptionState.color },
+                ]}
+              >
+                <View style={styles.statusContent}>
+                  <View style={styles.statusRow}>
+                    <Crown size={18} color={subscriptionState.color} strokeWidth={2} />
+                    <Text style={[styles.statusText, { color: subscriptionState.color }]}>
+                      {subscriptionState.statusText}
+                    </Text>
+                  </View>
+                  {subscriptionState.subText && (
+                    <Text style={styles.statusSubText}>{subscriptionState.subText}</Text>
+                  )}
+                </View>
               </View>
-              <Text style={styles.subscribeText}>Upgrade to Pro</Text>
-            </View>
-          </Pressable>
+            )}
+          </>
         )}
 
         <Link href="/settings" asChild>
@@ -386,5 +417,32 @@ const styles = StyleSheet.create({
     color: '#fbbf24',
     fontWeight: '600',
     lineHeight: 20,
+  },
+  nonClickableStatus: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  statusContent: {
+    flex: 1,
+    gap: 6,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20,
+  },
+  statusSubText: {
+    fontSize: 12,
+    color: '#9A9A9A',
+    fontWeight: '400',
+    lineHeight: 16,
+    marginLeft: 26,
   },
 });
