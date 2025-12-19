@@ -56,37 +56,50 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ⭐ REGISTER USER (centralized)
   const registerUser = async (name: string, phone: string) => {
-    try {
-      const { data: authUser } = await supabase.auth.getUser();
+  try {
+    const { data: authUser } = await supabase.auth.getUser();
 
-      if (!authUser?.user?.id) {
-        console.error("❌ Cannot register — user not authenticated yet");
-        return false;
-      }
-
-      const cleanedPhone = phone.startsWith("+91")
-        ? phone.substring(3)
-        : phone;
-
-     const { error } = await supabase.from("users").update({
-  phone: cleanedPhone,
-  name,
-  is_active: true,
-})
-.eq("id", authUser.user.id);
-
-
-      if (error) {
-        console.error("❌ Supabase registration insert error:", error);
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      console.error("❌ Registration error:", err);
+    if (!authUser?.user?.id) {
+      console.error("❌ Cannot register — user not authenticated yet");
       return false;
     }
-  };
+
+    const cleanedPhone = phone.startsWith("+91")
+      ? phone.substring(3)
+      : phone;
+
+    const trialStart = new Date();
+    const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    const { error } = await supabase
+      .from("users")
+      .upsert(
+        {
+          id: authUser.user.id,     // 🔑 critical
+          phone: cleanedPhone,
+          name,
+          is_active: true,
+          is_paid: false,
+          trial_started_at: trialStart.toISOString(),
+          trial_expires_at: trialEnd.toISOString(),
+          content_access: true,
+          last_login_at: new Date().toISOString(),
+        },
+        { onConflict: "id" }
+      );
+
+    if (error) {
+      console.error("❌ Supabase registration upsert error:", error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("❌ Registration error:", err);
+    return false;
+  }
+};
+
 
   const loginWithOTP = async (phone: string) => {
     const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
