@@ -46,6 +46,19 @@ export default function AskParagraphScreen() {
 // ✅ READ MCQ DIRECTLY FROM ROUTER PARAMS (SOURCE OF TRUTH)
 useEffect(() => {
   if (!params.mcq_json) return;
+// 🧪 DEBUG — VERIFY FULL MCQ JSON (REMOVE AFTER FIX)
+useEffect(() => {
+  if (!mcqData) return;
+
+  console.log("🧠 [AskParagraph] FULL MCQ JSON", {
+    mcqData,
+    stem: mcqData.stem,
+    options: mcqData.options,
+    correct_answer: mcqData.correct_answer,
+    feedback: mcqData.feedback,
+    learning_gap: mcqData.learning_gap,
+  });
+}, [mcqData]);
 
   try {
     const parsed = JSON.parse(params.mcq_json as string);
@@ -173,7 +186,7 @@ useEffect(() => {
             {conversation.map((msg, index) => (
               msg.role === 'student' ? (
                   <StudentBubble key={index} text={msg.content} />
-                ) : (
+                ) : (useEffect(() => {
                   <MentorBubbleReply key={index} markdownText={msg.content} />
                 )
             ))}
