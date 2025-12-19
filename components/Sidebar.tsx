@@ -21,6 +21,13 @@ import NotificationBell from './NotificationBell';
 import SubscribeModal from './SubscribeModal';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 
+const { user } = useAuth();
+
+// 1️⃣ fetch fresh DB profile
+const userProfile = useUserProfile(user?.id);
+
+// 2️⃣ derive UX from profile
+const subscriptionState = useSubscriptionStatus(userProfile);
 
 
 interface NavItem {
