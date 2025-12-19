@@ -96,9 +96,9 @@ export default function PaymentSuccessScreen() {
   };
 
   useEffect(() => {
-  if (!user) return; // ⛔ wait silently
-  checkSubscription();
-}, [user]);
+    if (!user) return; // ⛔ wait silently
+    checkSubscription();
+  }, [user]);
 
   const handleContinue = () => {
     router.replace('/');
