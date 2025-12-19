@@ -245,7 +245,7 @@ const handleRegister = async (name: string) => {
 
 
   const handleManageSubscription = () => {
-    console.log('Manage Subscription');
+    router.push('/manage-subscription');
   };
 
 

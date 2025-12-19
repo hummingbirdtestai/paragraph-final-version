@@ -193,25 +193,28 @@ export default function Sidebar({
                 </View>
               </Pressable>
             ) : (
-              <View
-                style={[
-                  styles.subscribeButton,
-                  styles.nonClickableStatus,
-                  { borderColor: subscriptionState.color },
-                ]}
-              >
-                <View style={styles.statusContent}>
-                  <View style={styles.statusRow}>
-                    <Crown size={18} color={subscriptionState.color} strokeWidth={2} />
-                    <Text style={[styles.statusText, { color: subscriptionState.color }]}>
-                      {subscriptionState.statusText}
-                    </Text>
+              <Link href="/manage-subscription" asChild>
+                <Pressable
+                  style={[
+                    styles.subscribeButton,
+                    styles.nonClickableStatus,
+                    { borderColor: subscriptionState.color },
+                  ]}
+                  onPress={isMobile ? onClose : undefined}
+                >
+                  <View style={styles.statusContent}>
+                    <View style={styles.statusRow}>
+                      <Crown size={18} color={subscriptionState.color} strokeWidth={2} />
+                      <Text style={[styles.statusText, { color: subscriptionState.color }]}>
+                        {subscriptionState.statusText}
+                      </Text>
+                    </View>
+                    {subscriptionState.subText && (
+                      <Text style={styles.statusSubText}>{subscriptionState.subText}</Text>
+                    )}
                   </View>
-                  {subscriptionState.subText && (
-                    <Text style={styles.statusSubText}>{subscriptionState.subText}</Text>
-                  )}
-                </View>
-              </View>
+                </Pressable>
+              </Link>
             )}
           </>
         )}
