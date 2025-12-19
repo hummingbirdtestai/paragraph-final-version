@@ -41,6 +41,7 @@ export default function PaymentSuccessScreen() {
   const [retryCount, setRetryCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [orderStatus, setOrderStatus] = useState<PaymentOrderStatus>(null);
+  const [isCancelled, setIsCancelled] = useState(false);
 
   const MAX_RETRIES = 2;
   const RETRY_DELAY = 2000;
@@ -80,13 +81,23 @@ const verifyOrderStatus = async () => {
   const checkSubscription = async (isRetry = false) => {
     const paymentStatus = await verifyOrderStatus();
   
-    if (paymentStatus === 'CANCELLED' || paymentStatus === 'FAILED') {
-      setStatus('error');
-      setErrorMessage(
-        'You cancelled the payment. No amount has been deducted from your bank account.'
-      );
-      return;
-    }
+    if (paymentStatus === 'CANCELLED') {
+        setIsCancelled(true);
+        setStatus('error');
+        setErrorMessage(
+          'Payment cancelled. No amount has been deducted from your bank account.'
+        );
+        return;
+      }
+      
+      if (paymentStatus === 'FAILED') {
+        setStatus('error');
+        setErrorMessage(
+          'Payment failed. If money was deducted, it will be refunded automatically.'
+        );
+        return;
+      }
+
   
     if (paymentStatus === 'PENDING') {
       if (retryCount < MAX_RETRIES && !isRetry) {
@@ -194,15 +205,20 @@ const verifyOrderStatus = async () => {
             <AlertCircle size={80} color="#ef4444" strokeWidth={1.5} />
           </View>
 
-          <Text style={styles.title}>Payment Processing</Text>
+          <Text style={styles.title}>
+            {isCancelled ? 'Payment Cancelled' : 'Payment Processing'}
+          </Text>
           <Text style={styles.errorText}>{errorMessage}</Text>
 
-          <View style={styles.infoBox}>
-            <Text style={styles.infoText}>
-              If your payment was successful, your subscription will be activated shortly. Please
-              refresh this page or contact support if the issue persists.
-            </Text>
-          </View>
+          {!isCancelled && (
+            <View style={styles.infoBox}>
+              <Text style={styles.infoText}>
+                If your payment was successful, your subscription will be activated shortly.
+                Please refresh this page or contact support if the issue persists.
+              </Text>
+            </View>
+          )}
+
 
           <Pressable style={styles.primaryButton} onPress={handleContinue}>
             <Text style={styles.primaryButtonText}>Go to Home</Text>
