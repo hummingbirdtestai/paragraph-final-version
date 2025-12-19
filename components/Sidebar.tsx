@@ -20,15 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
 import SubscribeModal from './SubscribeModal';
 import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
-
-const { user } = useAuth();
-
-// 1️⃣ fetch fresh DB profile
-const userProfile = useUserProfile(user?.id);
-
-// 2️⃣ derive UX from profile
-const subscriptionState = useSubscriptionStatus(userProfile);
-
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 interface NavItem {
   label: string;
@@ -61,7 +53,11 @@ export default function Sidebar({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const isLoggedIn = !!user;
-  const subscriptionState = useSubscriptionStatus(user);
+  // 1️⃣ Fetch fresh DB profile
+  const userProfile = useUserProfile(user?.id);
+  
+  // 2️⃣ Derive UX from Bolt hook
+  const subscriptionState = useSubscriptionStatus(userProfile);
 
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [hasAccess, setHasAccess] = useState(true);
