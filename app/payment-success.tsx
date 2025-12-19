@@ -99,16 +99,6 @@ export default function PaymentSuccessScreen() {
     checkSubscription();
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = router.beforeRemove((e) => {
-      if (status === 'success') {
-        e.preventDefault();
-      }
-    });
-
-    return unsubscribe;
-  }, [status, router]);
-
   const handleContinue = () => {
     router.replace('/');
   };
