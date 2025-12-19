@@ -5,9 +5,16 @@ interface PageHeaderProps {
   title?: string;
   subtitle?: string;
   children?: React.ReactNode;
+  showLogo?: boolean;   // ✅ ADD THIS
 }
 
-export default function PageHeader({ title, subtitle, children }: PageHeaderProps) {
+
+export default function PageHeader({
+  title,
+  subtitle,
+  children,
+  showLogo = true,      // ✅ DEFAULT TRUE
+}: PageHeaderProps) {
   const { width } = useWindowDimensions();
 
   const isDesktop = width >= 1024;
@@ -20,14 +27,17 @@ export default function PageHeader({ title, subtitle, children }: PageHeaderProp
   return (
     <View style={styles.headerContainer}>
 
-      {/* LEFT: Logo */}
-      <View style={styles.leftContent}>
-        <Image
-          source={require('../../assets/images/paragraph_logo.png')}
-          style={{ width: logoWidth, height: logoHeight }}
-          resizeMode="contain"
-        />
-      </View>
+{/* LEFT: Logo */}
+<View style={styles.leftContent}>
+  {showLogo && (
+    <Image
+      source={require('../../assets/images/paragraph_logo.png')}
+      style={{ width: logoWidth, height: logoHeight }}
+      resizeMode="contain"
+    />
+  )}
+</View>
+
 
       {/* CENTERED TITLE */}
       <View style={styles.centerWrapper}>
