@@ -284,7 +284,7 @@ const confirmLogout = async () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout isHeaderHidden>
     <SafeAreaView style={styles.container}>
       <PageHeader title="Settings" />
 
