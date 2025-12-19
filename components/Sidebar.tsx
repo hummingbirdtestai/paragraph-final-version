@@ -432,17 +432,17 @@ const styles = StyleSheet.create({
   },
   statusContent: {
     flex: 1,
-    gap: 6,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    marginBottom: 6,
   },
   statusText: {
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
+    marginLeft: 8,
   },
   statusSubText: {
     fontSize: 12,
