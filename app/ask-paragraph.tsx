@@ -98,6 +98,11 @@ useEffect(() => {
 
   const handleSendMessage = async (message: string) => {
   if (!message.trim() || !sessionId || isTyping) return;
+     // ✅ ADD THIS (LINE 1)
+  setConversation(prev => [
+    ...prev,
+    { role: "student", content: message }
+  ]);
 
   setIsTyping(true);
 
