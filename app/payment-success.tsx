@@ -78,6 +78,32 @@ const verifyOrderStatus = async () => {
 };
   
   const checkSubscription = async (isRetry = false) => {
+    const paymentStatus = await verifyOrderStatus();
+  
+    if (paymentStatus === 'CANCELLED' || paymentStatus === 'FAILED') {
+      setStatus('error');
+      setErrorMessage(
+        'You cancelled the payment. No amount has been deducted from your bank account.'
+      );
+      return;
+    }
+  
+    if (paymentStatus === 'PENDING') {
+      if (retryCount < MAX_RETRIES && !isRetry) {
+        setStatus('pending');
+        setRetryCount((prev) => prev + 1);
+        setTimeout(() => checkSubscription(true), RETRY_DELAY);
+        return;
+      }
+    
+      setStatus('error');
+      setErrorMessage(
+        'Payment verification is taking longer than expected. If money was deducted, it will be updated shortly.'
+      );
+      return;
+    }
+
+  
     const data = await fetchUserSubscription();
 
     if (!data) {
@@ -153,7 +179,7 @@ const verifyOrderStatus = async () => {
       <View style={styles.container}>
         <View style={styles.centerContent}>
           <Loader2 size={48} color="#fbbf24" strokeWidth={2} />
-          <Text style={styles.loadingText}>Payment received, activating subscription...</Text>
+          <Text style={styles.loadingText}>Verifying payment status...</Text>
           <Text style={styles.subText}>This usually takes a few seconds</Text>
         </View>
       </View>
