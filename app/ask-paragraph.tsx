@@ -24,11 +24,14 @@ interface Dialog {
 }
 
 interface MCQData {
-  question: string;
-  options: Array<{ id: string; text: string }>;
-  correctAnswerId: string;
-  feedback: string;
+  stem?: string;
+  question?: string;
+  options: any;
+  correct_answer?: string;
+  correctAnswerId?: string;
+  feedback: any;
 }
+
 
 export default function AskParagraphScreen() {
   const router = useRouter();
@@ -171,6 +174,14 @@ useEffect(() => {
                   <MentorBubbleReply key={index} markdownText={msg.content} />
                 )
             ))}
+            {/* ✅ ADD THIS BLOCK — EXACT LOCATION */}
+  {loading && (
+    <View style={{ paddingVertical: 20, alignItems: "center" }}>
+      <ActivityIndicator size="small" color={theme.colors.accent} />
+      <Text style={styles.loadingText}>Loading discussion...</Text>
+    </View>
+  )}
+
 
             {isTyping && (
               <MentorBubbleReply markdownText="💬 *Dr. Murali Bharadwaj is typing…*" />
