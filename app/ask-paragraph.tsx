@@ -16,7 +16,7 @@ import { theme } from '@/constants/theme';
 import { StudentBubble } from '@/components/chat/StudentBubble';
 import MentorBubbleReply from '@/components/types/MentorBubbleReply';
 import { MessageInput } from '@/components/chat/MessageInput';
-import { MCQBlock } from '@/components/chat/MCQBlock';
+import LLMMCQCard from '@/components/chat/llm/LLMMCQCard';
 
 interface Dialog {
   role: 'student' | 'mentor';
@@ -163,13 +163,11 @@ useEffect(() => {
           keyboardShouldPersistTaps="handled"
         >
           {mcqData && (
-            <View style={styles.mcqContainer}>
-              <MCQBlock
-                data={mcqData}
-                onAnswer={() => {}}
-              />
-            </View>
-          )}
+  <View style={styles.mcqContainer}>
+    <LLMMCQCard mcq={mcqData} />
+  </View>
+)}
+
 
           <View style={styles.conversationContainer}>
             {conversation.map((msg, index) => (
