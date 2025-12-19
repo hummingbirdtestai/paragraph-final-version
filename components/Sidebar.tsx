@@ -195,11 +195,11 @@ export default function Sidebar({
             ) : (
               <Link href="/manage-subscription" asChild>
                 <Pressable
-                  style={[
-                    styles.subscribeButton,
-                    styles.nonClickableStatus,
-                    { borderColor: subscriptionState.color },
-                  ]}
+                  style={{
+                    ...styles.subscribeButton,
+                    ...styles.nonClickableStatus,
+                    borderColor: subscriptionState.color,
+                  }}
                   onPress={isMobile ? onClose : undefined}
                 >
                   <View style={styles.statusContent}>
