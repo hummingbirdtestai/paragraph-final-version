@@ -43,27 +43,21 @@ export default function PaymentSuccessScreen() {
   const MAX_RETRIES = 2;
   const RETRY_DELAY = 2000;
 
-  const fetchUserSubscription = async (): Promise<UserSubscription | null> => {
-    try {
+const fetchUserSubscription = async (): Promise<UserSubscription | null> => {
+  if (!user?.id) return null;
 
+  const { data, error } = await supabase
+    .from('users')
+    .select(
+      'is_active, is_paid, subscription_start_at, subscription_end_at, purchased_package, amount_paid, subscribed_at'
+    )
+    .eq('id', user.id)
+    .maybeSingle();
 
-      const { data, error } = await supabase
-        .from('users')
-        .select(
-          'is_active, is_paid, subscription_start_at, subscription_end_at, purchased_package, amount_paid, subscribed_at'
-        )
-        .eq('id', user.id)
-        .maybeSingle();
+  if (error || !data) return null;
+  return data;
+};
 
-      if (error) throw error;
-      if (!data) throw new Error('User data not found');
-
-      return data as UserSubscription;
-    } catch (err) {
-      console.error('Error fetching subscription:', err);
-      return null;
-    }
-  };
 
   const checkSubscription = async (isRetry = false) => {
     const data = await fetchUserSubscription();
