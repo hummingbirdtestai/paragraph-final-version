@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import MainLayout from '@/components/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { TrendingUp, TrendingDown, AlertCircle, Target } from 'lucide-react-native';
+
+type TabType = 'practice' | 'mockTests';
 
 interface SubjectAnalytics {
   subject: string;
@@ -35,6 +37,41 @@ const ACCURACY_BAND_COLORS = {
 };
 
 export default function AnalyticsScreen() {
+  const [activeTab, setActiveTab] = useState<TabType>('practice');
+
+  return (
+    <MainLayout>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Your Analytics</Text>
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'practice' && styles.activeTab]}
+              onPress={() => setActiveTab('practice')}
+            >
+              <Text style={[styles.tabText, activeTab === 'practice' && styles.activeTabText]}>
+                Practice
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'mockTests' && styles.activeTab]}
+              onPress={() => setActiveTab('mockTests')}
+            >
+              <Text style={[styles.tabText, activeTab === 'mockTests' && styles.activeTabText]}>
+                Mock Tests
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {activeTab === 'practice' && <PracticeAnalytics />}
+        {activeTab === 'mockTests' && <MockTestsAnalytics />}
+      </View>
+    </MainLayout>
+  );
+}
+
+function PracticeAnalytics() {
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState<SubjectAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,62 +115,81 @@ export default function AnalyticsScreen() {
 
   if (loading) {
     return (
-      <MainLayout>
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#25D366" />
-          <Text style={styles.loadingText}>Loading your analytics...</Text>
-        </View>
-      </MainLayout>
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#25D366" />
+        <Text style={styles.loadingText}>Loading your analytics...</Text>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <MainLayout>
-        <View style={styles.centerContainer}>
-          <AlertCircle size={48} color="#EF4444" />
-          <Text style={styles.errorText}>{error}</Text>
-          <Text style={styles.errorSubText}>Please try again later</Text>
-        </View>
-      </MainLayout>
+      <View style={styles.centerContainer}>
+        <AlertCircle size={48} color="#EF4444" />
+        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorSubText}>Please try again later</Text>
+      </View>
     );
   }
 
   if (!hasAnyAttempts) {
     return (
-      <MainLayout>
-        <View style={styles.centerContainer}>
-          <Target size={64} color="#6B7280" />
-          <Text style={styles.emptyTitle}>Analytics Not Started</Text>
-          <Text style={styles.emptyDescription}>
-            Start practicing MCQs to see your{'\n'}subject-wise performance analytics
-          </Text>
-        </View>
-      </MainLayout>
+      <View style={styles.centerContainer}>
+        <Target size={64} color="#6B7280" />
+        <Text style={styles.emptyTitle}>Analytics Not Started</Text>
+        <Text style={styles.emptyDescription}>
+          Start practicing MCQs to see your{'\n'}subject-wise performance analytics
+        </Text>
+      </View>
     );
   }
 
   return (
-    <MainLayout>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>Your Analytics</Text>
-          <Text style={styles.subtitle}>
-            Subject-wise performance ranked by priority
-          </Text>
-        </View>
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.subtitle}>
+        Subject-wise performance ranked by priority
+      </Text>
 
-        <View style={styles.subjectsContainer}>
-          {analytics.map((subject, index) => (
-            <SubjectCard key={subject.subject} subject={subject} rank={index + 1} />
-          ))}
-        </View>
-      </ScrollView>
-    </MainLayout>
+      <View style={styles.subjectsContainer}>
+        {analytics.map((subject, index) => (
+          <SubjectCard key={subject.subject} subject={subject} rank={index + 1} />
+        ))}
+      </View>
+    </ScrollView>
+  );
+}
+
+function MockTestsAnalytics() {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(false);
+    }, [user?.id])
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#25D366" />
+        <Text style={styles.loadingText}>Loading mock test analytics...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.centerContainer}>
+      <Target size={64} color="#6B7280" />
+      <Text style={styles.emptyTitle}>Mock Test Analytics</Text>
+      <Text style={styles.emptyDescription}>
+        Mock test analytics will be displayed here
+      </Text>
+    </View>
   );
 }
 
@@ -239,9 +295,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0D0D0D',
   },
+  scrollView: {
+    flex: 1,
+  },
   content: {
     paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingBottom: 24,
     maxWidth: 800,
     marginHorizontal: 'auto',
     width: '100%',
@@ -286,18 +345,49 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   header: {
-    marginBottom: 24,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 16,
+    maxWidth: 800,
+    marginHorizontal: 'auto',
+    width: '100%',
   },
   title: {
     fontSize: 32,
     fontWeight: '700',
     color: '#E5E5E5',
-    marginBottom: 8,
+    marginBottom: 16,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#1A1A1A',
+    borderRadius: 12,
+    padding: 4,
+    gap: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  activeTab: {
+    backgroundColor: '#25D366',
+  },
+  tabText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#9A9A9A',
+  },
+  activeTabText: {
+    color: '#0D0D0D',
   },
   subtitle: {
     fontSize: 16,
     color: '#9A9A9A',
     lineHeight: 24,
+    marginBottom: 16,
   },
   subjectsContainer: {
     gap: 16,
