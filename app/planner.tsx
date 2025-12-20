@@ -38,9 +38,9 @@ interface Projection {
 
 interface PlannerData {
   summary: PlannerSummary;
-  today_plan: TodayPlanItem[];
-  today_actuals: TodayActual[];
-  past_7_days: Past7DayItem[];
+  today_plan: TodayPlanItem[] | null;
+  today_actuals: TodayActual[] | null;
+  past_7_days: Past7DayItem[] | null;
   projection: Projection;
 }
 
@@ -223,8 +223,9 @@ function SummarySection({
   );
 }
 
-function TodayPlanSection({ todayPlan }: { todayPlan: TodayPlanItem[] }) {
-  const activePlan = todayPlan.filter((item) => item.planned_hours > 0);
+function TodayPlanSection({ todayPlan }: { todayPlan: TodayPlanItem[] | null }) {
+  const safePlan = todayPlan || [];
+  const activePlan = safePlan.filter((item) => item.planned_hours > 0);
 
   if (activePlan.length === 0) {
     return (
@@ -280,8 +281,9 @@ function TodayPlanSection({ todayPlan }: { todayPlan: TodayPlanItem[] }) {
   );
 }
 
-function TodayActualsSection({ todayActuals }: { todayActuals: TodayActual[] }) {
-  const totalHours = todayActuals.reduce((sum, item) => sum + item.hours_spent, 0);
+function TodayActualsSection({ todayActuals }: { todayActuals: TodayActual[] | null }) {
+  const safeActuals = todayActuals || [];
+  const totalHours = safeActuals.reduce((sum, item) => sum + item.hours_spent, 0);
 
   return (
     <View style={styles.section}>
@@ -296,9 +298,9 @@ function TodayActualsSection({ todayActuals }: { todayActuals: TodayActual[] }) 
           <Text style={styles.totalHoursValue}>{totalHours.toFixed(1)}h</Text>
         </View>
 
-        {todayActuals.length > 0 ? (
+        {safeActuals.length > 0 ? (
           <View style={styles.actualsList}>
-            {todayActuals.map((item) => (
+            {safeActuals.map((item) => (
               <View key={item.subject} style={styles.actualItem}>
                 <Text style={styles.actualSubject}>{item.subject}</Text>
                 <Text style={styles.actualHours}>{item.hours_spent.toFixed(1)}h</Text>
@@ -313,8 +315,9 @@ function TodayActualsSection({ todayActuals }: { todayActuals: TodayActual[] }) 
   );
 }
 
-function Past7DaysSection({ past7Days }: { past7Days: Past7DayItem[] }) {
-  const maxHours = Math.max(...past7Days.map((d) => d.hours_completed), 1);
+function Past7DaysSection({ past7Days }: { past7Days: Past7DayItem[] | null }) {
+  const safePast7Days = past7Days || [];
+  const maxHours = Math.max(...safePast7Days.map((d) => d.hours_completed), 1);
 
   return (
     <View style={styles.section}>
@@ -324,7 +327,10 @@ function Past7DaysSection({ past7Days }: { past7Days: Past7DayItem[] }) {
       </View>
 
       <View style={styles.past7DaysCard}>
-        {past7Days.map((day) => {
+        {safePast7Days.length === 0 ? (
+          <Text style={styles.noActivityText}>No recent activity</Text>
+        ) : (
+          safePast7Days.map((day) => {
           const date = new Date(day.study_date);
           const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
           const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -344,7 +350,8 @@ function Past7DaysSection({ past7Days }: { past7Days: Past7DayItem[] }) {
               </View>
             </View>
           );
-        })}
+        })
+        )}
       </View>
     </View>
   );
