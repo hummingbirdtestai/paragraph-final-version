@@ -17,6 +17,8 @@ interface PlannerSummary {
 interface TodayPlanItem {
   subject: string;
   planned_hours: number;
+  mcqs_today: number;
+  mcqs_remaining: number;
   urgency_score: number;
   accuracy_band: 'none' | 'weak' | 'average' | 'good';
   status_label: 'Not Started' | 'Weak Area' | 'Needs Revision' | 'Strong';
@@ -274,6 +276,11 @@ function TodayPlanSection({ todayPlan }: { todayPlan: TodayPlanItem[] | null }) 
           <View style={styles.planTimeRow}>
             <Clock size={16} color="#9A9A9A" />
             <Text style={styles.planTime}>{item.planned_hours.toFixed(1)} hours</Text>
+          </View>
+
+          <View style={styles.mcqRow}>
+            <Text style={styles.mcqLabel}>Today: {item.mcqs_today} MCQs</Text>
+            <Text style={styles.mcqLabel}>Remaining: {item.mcqs_remaining} MCQs</Text>
           </View>
         </View>
       ))}
@@ -577,6 +584,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#9A9A9A',
+  },
+  mcqRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#2A2A2A',
+  },
+  mcqLabel: {
+    fontSize: 13,
+    color: '#9A9A9A',
+    fontWeight: '500',
   },
   emptyPlanCard: {
     backgroundColor: '#1A1A1A',
