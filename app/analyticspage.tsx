@@ -193,38 +193,31 @@ function MockTestsAnalytics() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMockTest, setSelectedMockTest] = useState<MockTestAnalytics | null>(null);
+const [mockDetail, setMockDetail] = useState<any | null>(null);
 
   const fetchMockTestAnalytics = async () => {
-    if (!user?.id) {
-      setLoading(false);
-      return;
-    }
+  if (!user?.id) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+  try {
+    setLoading(true);
+    setError(null);
 
-      const { data, error } = await supabase.rpc(
-  'get_mock_test_master_analytics_v1',
-  {
-    p_student_id: user.id,
-    p_exam_serial: selectedExamSerial, // number | bigint
+    const { data, error } = await supabase.rpc(
+      'get_student_mock_test_analytics_v1',
+      { p_student_id: user.id }
+    );
+
+    if (error) throw error;
+
+    setMockTests(data || []);
+  } catch (err: any) {
+    console.error('Mock test list fetch error:', err);
+    setError(err.message || 'Failed to load mock test analytics');
+  } finally {
+    setLoading(false);
   }
-);
+};
 
-if (error) {
-  console.error('RPC error:', error);
-} else {
-  console.log('Mock analytics:', data);
-}
-
-    } catch (err: any) {
-      console.error('Mock test analytics fetch error:', err);
-      setError(err.message || 'Failed to load mock test analytics');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -265,7 +258,16 @@ if (error) {
   }
 
   if (selectedMockTest) {
-    return <MockTestDetailView mockTest={selectedMockTest} onBack={() => setSelectedMockTest(null)} />;
+    return (
+  <MockTestDetailView
+    mockTest={selectedMockTest}
+    mockDetail={mockDetail}
+    onBack={() => {
+      setSelectedMockTest(null);
+      setMockDetail(null);
+    }}
+  />
+);
   }
 
   return (
@@ -361,7 +363,15 @@ function MockTestListCard({ mockTest, onPress }: { mockTest: MockTestAnalytics; 
   );
 }
 
-function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTestAnalytics; onBack: () => void }) {
+function MockTestDetailView({
+  mockTest,
+  mockDetail,
+  onBack,
+}: {
+  mockTest: MockTestAnalytics;
+  mockDetail: any;
+  onBack: () => void;
+}) {
   const getAccuracyColor = (accuracy: number) => {
     if (accuracy >= 75) return '#10B981';
     if (accuracy >= 60) return '#F59E0B';
