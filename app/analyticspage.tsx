@@ -226,6 +226,28 @@ const [mockDetail, setMockDetail] = useState<any | null>(null);
     }, [user?.id])
   );
 
+  useEffect(() => {
+  if (!user?.id || !selectedMockTest) return;
+
+  const fetchMockDetail = async () => {
+    const { data, error } = await supabase.rpc(
+      'get_mock_test_master_analytics_v1',
+      {
+        p_student_id: user.id,
+        p_exam_serial: selectedMockTest.exam_serial, // MUST exist in list RPC
+      }
+    );
+
+    if (error) {
+      console.error('Mock detail fetch error:', error);
+    } else {
+      setMockDetail(data);
+    }
+  };
+
+  fetchMockDetail();
+}, [selectedMockTest, user?.id]);
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
