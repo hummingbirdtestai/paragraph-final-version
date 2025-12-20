@@ -49,7 +49,7 @@ export default function AnalyticsScreen() {
               onPress={() => setActiveTab('practice')}
             >
               <Text style={[styles.tabText, activeTab === 'practice' && styles.activeTabText]}>
-                Practice
+                PYQ Concepts
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
