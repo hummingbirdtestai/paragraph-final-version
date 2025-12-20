@@ -203,14 +203,20 @@ function MockTestsAnalytics() {
       setLoading(true);
       setError(null);
 
-      const { data, error: rpcError } = await supabase.rpc(
-        'get_student_mock_test_analytics_v1',
-        { student_id: user.id }
-      );
+      const { data, error } = await supabase.rpc(
+  'get_mock_test_master_analytics_v1',
+  {
+    p_student_id: user.id,
+    p_exam_serial: selectedExamSerial, // number | bigint
+  }
+);
 
-      if (rpcError) {
-        throw rpcError;
-      }
+if (error) {
+  console.error('RPC error:', error);
+} else {
+  console.log('Mock analytics:', data);
+}
+
 
       setMockTests(data || []);
     } catch (err: any) {
