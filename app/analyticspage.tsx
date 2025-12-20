@@ -23,28 +23,30 @@ interface SubjectAnalytics {
   status_label: 'Not Started' | 'Weak Area' | 'Needs Revision' | 'Strong';
 }
 
-interface MockTestSubjectBreakup {
+interface MockTestSubject {
+  subject_id: string;
   subject_name: string;
-  total_questions: number;
-  attempted: number;
-  correct: number;
-  accuracy_percent: number;
+  accuracy: number;
+  score: number;
+  negative_marking_damage_index: number;
+  volatility_index: number;
+  trend: 'improving' | 'declining' | 'stable';
+  smart_revision_priority: number;
 }
 
-interface MockTestAnalytics {
-  mock_test_id: string;
-  mock_test_name: string;
-  mock_test_date: string;
-  total_questions: number;
-  attempted: number;
-  correct: number;
-  incorrect: number;
-  unattempted: number;
-  accuracy_percent: number;
-  attempt_rate_percent: number;
-  total_time_spent_min: number;
-  avg_time_per_question_sec: number;
-  subject_breakup: MockTestSubjectBreakup[];
+interface MockTestSummary {
+  total_score: number;
+  predicted_rank: number;
+}
+
+interface MockTest {
+  exam_serial: number;
+  summary: MockTestSummary;
+  subjects: MockTestSubject[];
+}
+
+interface MockTestMasterAnalytics {
+  mocks: MockTest[];
 }
 
 const STATUS_COLORS = {
@@ -189,64 +191,45 @@ function PracticeAnalytics() {
 
 function MockTestsAnalytics() {
   const { user } = useAuth();
-  const [mockTests, setMockTests] = useState<MockTestAnalytics[]>([]);
+  const [mockAnalytics, setMockAnalytics] = useState<MockTestMasterAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedMockTest, setSelectedMockTest] = useState<MockTestAnalytics | null>(null);
-const [mockDetail, setMockDetail] = useState<any | null>(null);
+  const [selectedMock, setSelectedMock] = useState<MockTest | null>(null);
 
   const fetchMockTestAnalytics = async () => {
-  if (!user?.id) return;
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
 
-  try {
-    setLoading(true);
-    setError(null);
+    try {
+      setLoading(true);
+      setError(null);
 
-    const { data, error } = await supabase.rpc(
-      'get_student_mock_test_analytics_v1',
-      { p_student_id: user.id }
-    );
+      const { data, error: rpcError } = await supabase.rpc(
+        'get_mock_test_master_analytics_v1',
+        { p_student_id: user.id }
+      );
 
-    if (error) throw error;
+      if (rpcError) {
+        throw rpcError;
+      }
 
-    setMockTests(data || []);
-  } catch (err: any) {
-    console.error('Mock test list fetch error:', err);
-    setError(err.message || 'Failed to load mock test analytics');
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setMockAnalytics(data);
+    } catch (err: any) {
+      console.error('Mock test analytics fetch error:', err);
+      setError(err.message || 'Failed to load mock test analytics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
       fetchMockTestAnalytics();
-      setSelectedMockTest(null);
+      setSelectedMock(null);
     }, [user?.id])
   );
-
-  useEffect(() => {
-  if (!user?.id || !selectedMockTest) return;
-
-  const fetchMockDetail = async () => {
-    const { data, error } = await supabase.rpc(
-      'get_mock_test_master_analytics_v1',
-      {
-        p_student_id: user.id,
-        p_exam_serial: selectedMockTest.exam_serial, // MUST exist in list RPC
-      }
-    );
-
-    if (error) {
-      console.error('Mock detail fetch error:', error);
-    } else {
-      setMockDetail(data);
-    }
-  };
-
-  fetchMockDetail();
-}, [selectedMockTest, user?.id]);
 
   if (loading) {
     return (
@@ -267,7 +250,7 @@ const [mockDetail, setMockDetail] = useState<any | null>(null);
     );
   }
 
-  if (mockTests.length === 0) {
+  if (!mockAnalytics || mockAnalytics.mocks.length === 0) {
     return (
       <View style={styles.centerContainer}>
         <Target size={64} color="#6B7280" />
@@ -279,18 +262,11 @@ const [mockDetail, setMockDetail] = useState<any | null>(null);
     );
   }
 
-  if (selectedMockTest) {
-    return (
-  <MockTestDetailView
-    mockTest={selectedMockTest}
-    mockDetail={mockDetail}
-    onBack={() => {
-      setSelectedMockTest(null);
-      setMockDetail(null);
-    }}
-  />
-);
+  if (selectedMock) {
+    return <MockTestDetailView mockTest={selectedMock} onBack={() => setSelectedMock(null)} />;
   }
+
+  const sortedMocks = [...mockAnalytics.mocks].sort((a, b) => b.exam_serial - a.exam_serial);
 
   return (
     <ScrollView
@@ -303,11 +279,11 @@ const [mockDetail, setMockDetail] = useState<any | null>(null);
       </Text>
 
       <View style={styles.subjectsContainer}>
-        {mockTests.map((mockTest) => (
+        {sortedMocks.map((mockTest) => (
           <MockTestListCard
-            key={mockTest.mock_test_id}
+            key={mockTest.exam_serial}
             mockTest={mockTest}
-            onPress={() => setSelectedMockTest(mockTest)}
+            onPress={() => setSelectedMock(mockTest)}
           />
         ))}
       </View>
@@ -315,97 +291,74 @@ const [mockDetail, setMockDetail] = useState<any | null>(null);
   );
 }
 
-function MockTestListCard({ mockTest, onPress }: { mockTest: MockTestAnalytics; onPress: () => void }) {
-  const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 75) return '#10B981';
-    if (accuracy >= 60) return '#F59E0B';
+function MockTestListCard({ mockTest, onPress }: { mockTest: MockTest; onPress: () => void }) {
+  const getScoreColor = (score: number) => {
+    if (score >= 500) return '#10B981';
+    if (score >= 400) return '#F59E0B';
     return '#EF4444';
   };
 
-  const accuracyColor = getAccuracyColor(mockTest.accuracy_percent);
-  const formattedDate = new Date(mockTest.mock_test_date).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
+  const scoreColor = getScoreColor(mockTest.summary.total_score);
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardHeader}>
-        <Text style={styles.subjectName}>{mockTest.mock_test_name}</Text>
-        <Text style={[styles.metricLabel, { marginTop: 4 }]}>{formattedDate}</Text>
+        <View style={styles.cardTitleRow}>
+          <View style={styles.rankBadge}>
+            <Text style={styles.rankText}>#{mockTest.exam_serial}</Text>
+          </View>
+          <Text style={styles.subjectName}>Mock Test {mockTest.exam_serial}</Text>
+        </View>
       </View>
 
       <View style={styles.metricsGrid}>
         <View style={styles.metricBox}>
-          <Text style={styles.metricLabel}>Attempted</Text>
-          <Text style={styles.metricValue}>
-            {mockTest.attempted} / {mockTest.total_questions}
+          <Text style={styles.metricLabel}>Total Score</Text>
+          <Text style={[styles.metricValue, { color: scoreColor }]}>
+            {mockTest.summary.total_score}
           </Text>
         </View>
 
         <View style={styles.metricBox}>
-          <Text style={styles.metricLabel}>Correct</Text>
-          <Text style={[styles.metricValue, { color: accuracyColor }]}>
-            {mockTest.correct}
+          <Text style={styles.metricLabel}>Predicted Rank</Text>
+          <Text style={styles.metricValue}>
+            {mockTest.summary.predicted_rank.toLocaleString()}
           </Text>
-        </View>
-      </View>
-
-      <View style={styles.barSection}>
-        <View style={styles.barLabelRow}>
-          <Text style={styles.barLabel}>Accuracy</Text>
-          <Text style={[styles.barValue, { color: accuracyColor }]}>
-            {mockTest.accuracy_percent.toFixed(1)}%
-          </Text>
-        </View>
-        <View style={styles.barTrack}>
-          <View
-            style={[
-              styles.barFill,
-              {
-                width: `${Math.min(mockTest.accuracy_percent, 100)}%`,
-                backgroundColor: accuracyColor,
-              },
-            ]}
-          />
-        </View>
-      </View>
-
-      <View style={styles.timeSection}>
-        <View style={styles.timeRow}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Clock size={14} color="#9A9A9A" />
-            <Text style={styles.timeLabel}>Time Spent</Text>
-          </View>
-          <Text style={styles.timeValue}>{mockTest.total_time_spent_min} min</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 }
 
-function MockTestDetailView({
-  mockTest,
-  mockDetail,
-  onBack,
-}: {
-  mockTest: MockTestAnalytics;
-  mockDetail: any;
-  onBack: () => void;
-}) {
+function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: () => void }) {
   const getAccuracyColor = (accuracy: number) => {
     if (accuracy >= 75) return '#10B981';
     if (accuracy >= 60) return '#F59E0B';
     return '#EF4444';
   };
 
-  const overallAccuracyColor = getAccuracyColor(mockTest.accuracy_percent);
-  const formattedDate = new Date(mockTest.mock_test_date).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
+  const getScoreColor = (score: number) => {
+    if (score >= 500) return '#10B981';
+    if (score >= 400) return '#F59E0B';
+    return '#EF4444';
+  };
+
+  const getTrendIcon = (trend: string) => {
+    if (trend === 'improving') return <TrendingUp size={16} color="#10B981" />;
+    if (trend === 'declining') return <TrendingDown size={16} color="#EF4444" />;
+    return null;
+  };
+
+  const getTrendColor = (trend: string) => {
+    if (trend === 'improving') return '#10B981';
+    if (trend === 'declining') return '#EF4444';
+    return '#9A9A9A';
+  };
+
+  const scoreColor = getScoreColor(mockTest.summary.total_score);
+  const sortedSubjects = [...mockTest.subjects].sort(
+    (a, b) => b.smart_revision_priority - a.smart_revision_priority
+  );
 
   return (
     <ScrollView
@@ -422,123 +375,67 @@ function MockTestDetailView({
         <Text style={{ fontSize: 15, fontWeight: '600', color: '#25D366' }}>Back to List</Text>
       </TouchableOpacity>
 
-      <Text style={[styles.subjectName, { marginBottom: 4 }]}>{mockTest.mock_test_name}</Text>
-      <Text style={[styles.metricLabel, { marginBottom: 20 }]}>{formattedDate}</Text>
+      <Text style={[styles.subjectName, { marginBottom: 20 }]}>Mock Test {mockTest.exam_serial}</Text>
 
       <View style={styles.card}>
         <Text style={[styles.barLabel, { marginBottom: 16 }]}>Overall Performance</Text>
 
         <View style={styles.metricsGrid}>
           <View style={styles.metricBox}>
-            <Text style={styles.metricLabel}>Attempted</Text>
+            <Text style={styles.metricLabel}>Total Score</Text>
+            <Text style={[styles.metricValue, { color: scoreColor }]}>
+              {mockTest.summary.total_score}
+            </Text>
+          </View>
+
+          <View style={styles.metricBox}>
+            <Text style={styles.metricLabel}>Predicted Rank</Text>
             <Text style={styles.metricValue}>
-              {mockTest.attempted} / {mockTest.total_questions}
+              {mockTest.summary.predicted_rank.toLocaleString()}
             </Text>
-          </View>
-
-          <View style={styles.metricBox}>
-            <Text style={styles.metricLabel}>Correct</Text>
-            <Text style={[styles.metricValue, { color: overallAccuracyColor }]}>
-              {mockTest.correct}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.metricsGrid}>
-          <View style={styles.metricBox}>
-            <Text style={styles.metricLabel}>Incorrect</Text>
-            <Text style={[styles.metricValue, { color: '#EF4444' }]}>
-              {mockTest.incorrect}
-            </Text>
-          </View>
-
-          <View style={styles.metricBox}>
-            <Text style={styles.metricLabel}>Unattempted</Text>
-            <Text style={[styles.metricValue, { color: '#6B7280' }]}>
-              {mockTest.unattempted}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.barSection}>
-          <View style={styles.barLabelRow}>
-            <Text style={styles.barLabel}>Accuracy</Text>
-            <Text style={[styles.barValue, { color: overallAccuracyColor }]}>
-              {mockTest.accuracy_percent.toFixed(1)}%
-            </Text>
-          </View>
-          <View style={styles.barTrack}>
-            <View
-              style={[
-                styles.barFill,
-                {
-                  width: `${Math.min(mockTest.accuracy_percent, 100)}%`,
-                  backgroundColor: overallAccuracyColor,
-                },
-              ]}
-            />
-          </View>
-        </View>
-
-        <View style={styles.barSection}>
-          <View style={styles.barLabelRow}>
-            <Text style={styles.barLabel}>Attempt Rate</Text>
-            <Text style={styles.barValue}>
-              {mockTest.attempt_rate_percent.toFixed(1)}%
-            </Text>
-          </View>
-          <View style={styles.barTrack}>
-            <View
-              style={[
-                styles.barFill,
-                {
-                  width: `${Math.min(mockTest.attempt_rate_percent, 100)}%`,
-                  backgroundColor: '#3B82F6',
-                },
-              ]}
-            />
-          </View>
-        </View>
-
-        <View style={styles.timeSection}>
-          <View style={styles.timeRow}>
-            <Text style={styles.timeLabel}>Total Time Spent</Text>
-            <Text style={styles.timeValue}>{mockTest.total_time_spent_min} min</Text>
-          </View>
-          <View style={styles.timeRow}>
-            <Text style={styles.timeLabel}>Avg Time per Question</Text>
-            <Text style={styles.timeValue}>{mockTest.avg_time_per_question_sec} sec</Text>
           </View>
         </View>
       </View>
 
-      {mockTest.subject_breakup && mockTest.subject_breakup.length > 0 && (
+      {sortedSubjects.length > 0 && (
         <>
           <Text style={[styles.subtitle, { marginTop: 24, marginBottom: 16 }]}>
-            Subject-wise Breakdown
+            Subject-wise Analytics (by Priority)
           </Text>
 
           <View style={styles.subjectsContainer}>
-            {mockTest.subject_breakup.map((subject) => {
-              const subjectAccuracyColor = getAccuracyColor(subject.accuracy_percent);
+            {sortedSubjects.map((subject, index) => {
+              const subjectAccuracyColor = getAccuracyColor(subject.accuracy);
+              const subjectScoreColor = getScoreColor(subject.score);
               return (
-                <View key={subject.subject_name} style={styles.card}>
-                  <Text style={[styles.subjectName, { marginBottom: 16 }]}>
-                    {subject.subject_name}
-                  </Text>
+                <View key={subject.subject_id} style={styles.card}>
+                  <View style={styles.cardHeader}>
+                    <View style={styles.cardTitleRow}>
+                      <View style={styles.rankBadge}>
+                        <Text style={styles.rankText}>#{index + 1}</Text>
+                      </View>
+                      <Text style={styles.subjectName}>{subject.subject_name}</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 }}>
+                      {getTrendIcon(subject.trend)}
+                      <Text style={[styles.metricLabel, { color: getTrendColor(subject.trend) }]}>
+                        {subject.trend}
+                      </Text>
+                    </View>
+                  </View>
 
                   <View style={styles.metricsGrid}>
                     <View style={styles.metricBox}>
-                      <Text style={styles.metricLabel}>Attempted</Text>
-                      <Text style={styles.metricValue}>
-                        {subject.attempted} / {subject.total_questions}
+                      <Text style={styles.metricLabel}>Score</Text>
+                      <Text style={[styles.metricValue, { color: subjectScoreColor }]}>
+                        {subject.score}
                       </Text>
                     </View>
 
                     <View style={styles.metricBox}>
-                      <Text style={styles.metricLabel}>Correct</Text>
-                      <Text style={[styles.metricValue, { color: subjectAccuracyColor }]}>
-                        {subject.correct}
+                      <Text style={styles.metricLabel}>Revision Priority</Text>
+                      <Text style={styles.metricValue}>
+                        {subject.smart_revision_priority.toFixed(1)}
                       </Text>
                     </View>
                   </View>
@@ -547,7 +444,7 @@ function MockTestDetailView({
                     <View style={styles.barLabelRow}>
                       <Text style={styles.barLabel}>Accuracy</Text>
                       <Text style={[styles.barValue, { color: subjectAccuracyColor }]}>
-                        {subject.accuracy_percent.toFixed(1)}%
+                        {subject.accuracy.toFixed(1)}%
                       </Text>
                     </View>
                     <View style={styles.barTrack}>
@@ -555,11 +452,26 @@ function MockTestDetailView({
                         style={[
                           styles.barFill,
                           {
-                            width: `${Math.min(subject.accuracy_percent, 100)}%`,
+                            width: `${Math.min(subject.accuracy, 100)}%`,
                             backgroundColor: subjectAccuracyColor,
                           },
                         ]}
                       />
+                    </View>
+                  </View>
+
+                  <View style={styles.timeSection}>
+                    <View style={styles.timeRow}>
+                      <Text style={styles.timeLabel}>Negative Marking Impact</Text>
+                      <Text style={[styles.timeValue, { color: '#EF4444' }]}>
+                        {subject.negative_marking_damage_index.toFixed(2)}
+                      </Text>
+                    </View>
+                    <View style={styles.timeRow}>
+                      <Text style={styles.timeLabel}>Volatility Index</Text>
+                      <Text style={styles.timeValue}>
+                        {subject.volatility_index.toFixed(1)}
+                      </Text>
                     </View>
                   </View>
                 </View>
