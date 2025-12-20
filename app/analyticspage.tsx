@@ -1,3 +1,4 @@
+//analyticspage.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from 'expo-router';
@@ -217,8 +218,6 @@ if (error) {
   console.log('Mock analytics:', data);
 }
 
-
-      setMockTests(data || []);
     } catch (err: any) {
       console.error('Mock test analytics fetch error:', err);
       setError(err.message || 'Failed to load mock test analytics');
