@@ -4,7 +4,7 @@ import { useFocusEffect } from 'expo-router';
 import MainLayout from '@/components/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
-import { TrendingUp, TrendingDown, AlertCircle, Target } from 'lucide-react-native';
+import { TrendingUp, TrendingDown, AlertCircle, Target, ChevronLeft, Clock } from 'lucide-react-native';
 
 type TabType = 'practice' | 'mockTests';
 
@@ -20,6 +20,30 @@ interface SubjectAnalytics {
   urgency_score: number;
   accuracy_band: 'none' | 'weak' | 'average' | 'good';
   status_label: 'Not Started' | 'Weak Area' | 'Needs Revision' | 'Strong';
+}
+
+interface MockTestSubjectBreakup {
+  subject_name: string;
+  total_questions: number;
+  attempted: number;
+  correct: number;
+  accuracy_percent: number;
+}
+
+interface MockTestAnalytics {
+  mock_test_id: string;
+  mock_test_name: string;
+  mock_test_date: string;
+  total_questions: number;
+  attempted: number;
+  correct: number;
+  incorrect: number;
+  unattempted: number;
+  accuracy_percent: number;
+  attempt_rate_percent: number;
+  total_time_spent_min: number;
+  avg_time_per_question_sec: number;
+  subject_breakup: MockTestSubjectBreakup[];
 }
 
 const STATUS_COLORS = {
@@ -164,11 +188,43 @@ function PracticeAnalytics() {
 
 function MockTestsAnalytics() {
   const { user } = useAuth();
+  const [mockTests, setMockTests] = useState<MockTestAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedMockTest, setSelectedMockTest] = useState<MockTestAnalytics | null>(null);
+
+  const fetchMockTestAnalytics = async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { data, error: rpcError } = await supabase.rpc(
+        'get_student_mock_test_analytics_v1',
+        { student_id: user.id }
+      );
+
+      if (rpcError) {
+        throw rpcError;
+      }
+
+      setMockTests(data || []);
+    } catch (err: any) {
+      console.error('Mock test analytics fetch error:', err);
+      setError(err.message || 'Failed to load mock test analytics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
-      setLoading(false);
+      fetchMockTestAnalytics();
+      setSelectedMockTest(null);
     }, [user?.id])
   );
 
@@ -181,14 +237,301 @@ function MockTestsAnalytics() {
     );
   }
 
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <AlertCircle size={48} color="#EF4444" />
+        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorSubText}>Please try again later</Text>
+      </View>
+    );
+  }
+
+  if (mockTests.length === 0) {
+    return (
+      <View style={styles.centerContainer}>
+        <Target size={64} color="#6B7280" />
+        <Text style={styles.emptyTitle}>No Mock Tests Attempted</Text>
+        <Text style={styles.emptyDescription}>
+          Start attempting mock tests to see your{'\n'}performance analytics
+        </Text>
+      </View>
+    );
+  }
+
+  if (selectedMockTest) {
+    return <MockTestDetailView mockTest={selectedMockTest} onBack={() => setSelectedMockTest(null)} />;
+  }
+
   return (
-    <View style={styles.centerContainer}>
-      <Target size={64} color="#6B7280" />
-      <Text style={styles.emptyTitle}>Mock Test Analytics</Text>
-      <Text style={styles.emptyDescription}>
-        Mock test analytics will be displayed here
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.subtitle}>
+        Your mock test performance history
       </Text>
-    </View>
+
+      <View style={styles.subjectsContainer}>
+        {mockTests.map((mockTest) => (
+          <MockTestListCard
+            key={mockTest.mock_test_id}
+            mockTest={mockTest}
+            onPress={() => setSelectedMockTest(mockTest)}
+          />
+        ))}
+      </View>
+    </ScrollView>
+  );
+}
+
+function MockTestListCard({ mockTest, onPress }: { mockTest: MockTestAnalytics; onPress: () => void }) {
+  const getAccuracyColor = (accuracy: number) => {
+    if (accuracy >= 75) return '#10B981';
+    if (accuracy >= 60) return '#F59E0B';
+    return '#EF4444';
+  };
+
+  const accuracyColor = getAccuracyColor(mockTest.accuracy_percent);
+  const formattedDate = new Date(mockTest.mock_test_date).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.subjectName}>{mockTest.mock_test_name}</Text>
+        <Text style={[styles.metricLabel, { marginTop: 4 }]}>{formattedDate}</Text>
+      </View>
+
+      <View style={styles.metricsGrid}>
+        <View style={styles.metricBox}>
+          <Text style={styles.metricLabel}>Attempted</Text>
+          <Text style={styles.metricValue}>
+            {mockTest.attempted} / {mockTest.total_questions}
+          </Text>
+        </View>
+
+        <View style={styles.metricBox}>
+          <Text style={styles.metricLabel}>Correct</Text>
+          <Text style={[styles.metricValue, { color: accuracyColor }]}>
+            {mockTest.correct}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.barSection}>
+        <View style={styles.barLabelRow}>
+          <Text style={styles.barLabel}>Accuracy</Text>
+          <Text style={[styles.barValue, { color: accuracyColor }]}>
+            {mockTest.accuracy_percent.toFixed(1)}%
+          </Text>
+        </View>
+        <View style={styles.barTrack}>
+          <View
+            style={[
+              styles.barFill,
+              {
+                width: `${Math.min(mockTest.accuracy_percent, 100)}%`,
+                backgroundColor: accuracyColor,
+              },
+            ]}
+          />
+        </View>
+      </View>
+
+      <View style={styles.timeSection}>
+        <View style={styles.timeRow}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Clock size={14} color="#9A9A9A" />
+            <Text style={styles.timeLabel}>Time Spent</Text>
+          </View>
+          <Text style={styles.timeValue}>{mockTest.total_time_spent_min} min</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTestAnalytics; onBack: () => void }) {
+  const getAccuracyColor = (accuracy: number) => {
+    if (accuracy >= 75) return '#10B981';
+    if (accuracy >= 60) return '#F59E0B';
+    return '#EF4444';
+  };
+
+  const overallAccuracyColor = getAccuracyColor(mockTest.accuracy_percent);
+  const formattedDate = new Date(mockTest.mock_test_date).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  return (
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      <TouchableOpacity
+        style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 4 }}
+        onPress={onBack}
+        activeOpacity={0.7}
+      >
+        <ChevronLeft size={20} color="#25D366" />
+        <Text style={{ fontSize: 15, fontWeight: '600', color: '#25D366' }}>Back to List</Text>
+      </TouchableOpacity>
+
+      <Text style={[styles.subjectName, { marginBottom: 4 }]}>{mockTest.mock_test_name}</Text>
+      <Text style={[styles.metricLabel, { marginBottom: 20 }]}>{formattedDate}</Text>
+
+      <View style={styles.card}>
+        <Text style={[styles.barLabel, { marginBottom: 16 }]}>Overall Performance</Text>
+
+        <View style={styles.metricsGrid}>
+          <View style={styles.metricBox}>
+            <Text style={styles.metricLabel}>Attempted</Text>
+            <Text style={styles.metricValue}>
+              {mockTest.attempted} / {mockTest.total_questions}
+            </Text>
+          </View>
+
+          <View style={styles.metricBox}>
+            <Text style={styles.metricLabel}>Correct</Text>
+            <Text style={[styles.metricValue, { color: overallAccuracyColor }]}>
+              {mockTest.correct}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.metricsGrid}>
+          <View style={styles.metricBox}>
+            <Text style={styles.metricLabel}>Incorrect</Text>
+            <Text style={[styles.metricValue, { color: '#EF4444' }]}>
+              {mockTest.incorrect}
+            </Text>
+          </View>
+
+          <View style={styles.metricBox}>
+            <Text style={styles.metricLabel}>Unattempted</Text>
+            <Text style={[styles.metricValue, { color: '#6B7280' }]}>
+              {mockTest.unattempted}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.barSection}>
+          <View style={styles.barLabelRow}>
+            <Text style={styles.barLabel}>Accuracy</Text>
+            <Text style={[styles.barValue, { color: overallAccuracyColor }]}>
+              {mockTest.accuracy_percent.toFixed(1)}%
+            </Text>
+          </View>
+          <View style={styles.barTrack}>
+            <View
+              style={[
+                styles.barFill,
+                {
+                  width: `${Math.min(mockTest.accuracy_percent, 100)}%`,
+                  backgroundColor: overallAccuracyColor,
+                },
+              ]}
+            />
+          </View>
+        </View>
+
+        <View style={styles.barSection}>
+          <View style={styles.barLabelRow}>
+            <Text style={styles.barLabel}>Attempt Rate</Text>
+            <Text style={styles.barValue}>
+              {mockTest.attempt_rate_percent.toFixed(1)}%
+            </Text>
+          </View>
+          <View style={styles.barTrack}>
+            <View
+              style={[
+                styles.barFill,
+                {
+                  width: `${Math.min(mockTest.attempt_rate_percent, 100)}%`,
+                  backgroundColor: '#3B82F6',
+                },
+              ]}
+            />
+          </View>
+        </View>
+
+        <View style={styles.timeSection}>
+          <View style={styles.timeRow}>
+            <Text style={styles.timeLabel}>Total Time Spent</Text>
+            <Text style={styles.timeValue}>{mockTest.total_time_spent_min} min</Text>
+          </View>
+          <View style={styles.timeRow}>
+            <Text style={styles.timeLabel}>Avg Time per Question</Text>
+            <Text style={styles.timeValue}>{mockTest.avg_time_per_question_sec} sec</Text>
+          </View>
+        </View>
+      </View>
+
+      {mockTest.subject_breakup && mockTest.subject_breakup.length > 0 && (
+        <>
+          <Text style={[styles.subtitle, { marginTop: 24, marginBottom: 16 }]}>
+            Subject-wise Breakdown
+          </Text>
+
+          <View style={styles.subjectsContainer}>
+            {mockTest.subject_breakup.map((subject) => {
+              const subjectAccuracyColor = getAccuracyColor(subject.accuracy_percent);
+              return (
+                <View key={subject.subject_name} style={styles.card}>
+                  <Text style={[styles.subjectName, { marginBottom: 16 }]}>
+                    {subject.subject_name}
+                  </Text>
+
+                  <View style={styles.metricsGrid}>
+                    <View style={styles.metricBox}>
+                      <Text style={styles.metricLabel}>Attempted</Text>
+                      <Text style={styles.metricValue}>
+                        {subject.attempted} / {subject.total_questions}
+                      </Text>
+                    </View>
+
+                    <View style={styles.metricBox}>
+                      <Text style={styles.metricLabel}>Correct</Text>
+                      <Text style={[styles.metricValue, { color: subjectAccuracyColor }]}>
+                        {subject.correct}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.barSection}>
+                    <View style={styles.barLabelRow}>
+                      <Text style={styles.barLabel}>Accuracy</Text>
+                      <Text style={[styles.barValue, { color: subjectAccuracyColor }]}>
+                        {subject.accuracy_percent.toFixed(1)}%
+                      </Text>
+                    </View>
+                    <View style={styles.barTrack}>
+                      <View
+                        style={[
+                          styles.barFill,
+                          {
+                            width: `${Math.min(subject.accuracy_percent, 100)}%`,
+                            backgroundColor: subjectAccuracyColor,
+                          },
+                        ]}
+                      />
+                    </View>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </>
+      )}
+    </ScrollView>
   );
 }
 
