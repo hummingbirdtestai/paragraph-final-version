@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
 import { Link, usePathname } from 'expo-router';
-import { Hop as Home, BookOpen, CreditCard, FileText, Swords, ChartBar as BarChart3, Settings, X, Video, Crown, Image as ImageIcon } from 'lucide-react-native';
+import { Hop as Home, BookOpen, CreditCard, FileText, Swords, ChartBar as BarChart3, Settings, X, Video, Crown, Image as ImageIcon, Calendar } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
 import SubscribeModal from './SubscribeModal';
@@ -11,6 +11,7 @@ import { useSubscriptionStatus } from '@/hooks/useSubscriptionStatus';
 import { useUserProfile } from '@/hooks/useUserProfile';
 
 interface NavItem {
+  id: string;
   label: string;
   href: string;
   icon: any;
@@ -30,6 +31,7 @@ const navItems: NavItem[] = [
   { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
   { id: "battle", label: "Battles", href: "/battle", icon: Swords },
   { id: "analytics", label: "Analytics", href: "/analyticspage", icon: BarChart3 },
+  { id: "planner", label: "NEETPG Daily Study Planner", href: "/planner", icon: Calendar },
 ];
 
 export default function Sidebar({
