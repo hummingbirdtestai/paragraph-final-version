@@ -113,10 +113,12 @@ useEffect(() => {
 
   const handleSendMessage = async (message: string) => {
   if (!message.trim() || !sessionId || isTyping) return;
-     // ✅ ADD THIS (LINE 1)
+
+  // 1️⃣ Immediately append student message
   setConversation(prev => [
     ...prev,
-    { role: "student", content: message }
+    { role: "student", content: message },
+    { role: "mentor", content: "" } // placeholder for streaming
   ]);
 
   setIsTyping(true);
@@ -134,18 +136,41 @@ useEffect(() => {
       }),
     });
 
-    if (!res.ok) throw new Error("Chat failed");
+    if (!res.body) throw new Error("No stream body");
 
-    const data = await res.json();
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
 
-    // ✅ SERVER IS SOURCE OF TRUTH
-    setConversation(data.session.dialogs);
+    let done = false;
+
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+
+      if (value) {
+        const chunk = decoder.decode(value, { stream: true });
+
+        // 2️⃣ Append streamed text to last mentor bubble
+        setConversation(prev => {
+          const updated = [...prev];
+          const lastIndex = updated.length - 1;
+
+          updated[lastIndex] = {
+            ...updated[lastIndex],
+            content: updated[lastIndex].content + chunk,
+          };
+
+          return updated;
+        });
+      }
+    }
   } catch (e) {
     console.error("Chat error", e);
   } finally {
     setIsTyping(false);
   }
 };
+
 
 
 // Allow MCQ to render even while chat loads
