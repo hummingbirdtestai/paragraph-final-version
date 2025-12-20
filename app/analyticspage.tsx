@@ -292,13 +292,14 @@ function MockTestsAnalytics() {
 }
 
 function MockTestListCard({ mockTest, onPress }: { mockTest: MockTest; onPress: () => void }) {
-  const getScoreColor = (score: number) => {
+  const getScoreColor = (score: number | null | undefined) => {
+    if (!score) return '#6B7280';
     if (score >= 500) return '#10B981';
     if (score >= 400) return '#F59E0B';
     return '#EF4444';
   };
 
-  const scoreColor = getScoreColor(mockTest.summary.total_score);
+  const scoreColor = getScoreColor(mockTest.summary?.total_score);
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
@@ -315,14 +316,14 @@ function MockTestListCard({ mockTest, onPress }: { mockTest: MockTest; onPress: 
         <View style={styles.metricBox}>
           <Text style={styles.metricLabel}>Total Score</Text>
           <Text style={[styles.metricValue, { color: scoreColor }]}>
-            {mockTest.summary.total_score}
+            {mockTest.summary?.total_score ?? 0}
           </Text>
         </View>
 
         <View style={styles.metricBox}>
           <Text style={styles.metricLabel}>Predicted Rank</Text>
           <Text style={styles.metricValue}>
-            {mockTest.summary.predicted_rank.toLocaleString()}
+            {mockTest.summary?.predicted_rank?.toLocaleString() ?? '0'}
           </Text>
         </View>
       </View>
@@ -331,13 +332,15 @@ function MockTestListCard({ mockTest, onPress }: { mockTest: MockTest; onPress: 
 }
 
 function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: () => void }) {
-  const getAccuracyColor = (accuracy: number) => {
+  const getAccuracyColor = (accuracy: number | null | undefined) => {
+    if (!accuracy) return '#6B7280';
     if (accuracy >= 75) return '#10B981';
     if (accuracy >= 60) return '#F59E0B';
     return '#EF4444';
   };
 
-  const getScoreColor = (score: number) => {
+  const getScoreColor = (score: number | null | undefined) => {
+    if (!score) return '#6B7280';
     if (score >= 500) return '#10B981';
     if (score >= 400) return '#F59E0B';
     return '#EF4444';
@@ -355,9 +358,9 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: 
     return '#9A9A9A';
   };
 
-  const scoreColor = getScoreColor(mockTest.summary.total_score);
-  const sortedSubjects = [...mockTest.subjects].sort(
-    (a, b) => b.smart_revision_priority - a.smart_revision_priority
+  const scoreColor = getScoreColor(mockTest.summary?.total_score);
+  const sortedSubjects = [...(mockTest.subjects || [])].sort(
+    (a, b) => (b.smart_revision_priority ?? 0) - (a.smart_revision_priority ?? 0)
   );
 
   return (
@@ -384,14 +387,14 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: 
           <View style={styles.metricBox}>
             <Text style={styles.metricLabel}>Total Score</Text>
             <Text style={[styles.metricValue, { color: scoreColor }]}>
-              {mockTest.summary.total_score}
+              {mockTest.summary?.total_score ?? 0}
             </Text>
           </View>
 
           <View style={styles.metricBox}>
             <Text style={styles.metricLabel}>Predicted Rank</Text>
             <Text style={styles.metricValue}>
-              {mockTest.summary.predicted_rank.toLocaleString()}
+              {mockTest.summary?.predicted_rank?.toLocaleString() ?? '0'}
             </Text>
           </View>
         </View>
@@ -428,14 +431,14 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: 
                     <View style={styles.metricBox}>
                       <Text style={styles.metricLabel}>Score</Text>
                       <Text style={[styles.metricValue, { color: subjectScoreColor }]}>
-                        {subject.score}
+                        {subject.score ?? 0}
                       </Text>
                     </View>
 
                     <View style={styles.metricBox}>
                       <Text style={styles.metricLabel}>Revision Priority</Text>
                       <Text style={styles.metricValue}>
-                        {subject.smart_revision_priority.toFixed(1)}
+                        {subject.smart_revision_priority?.toFixed(1) ?? '0.0'}
                       </Text>
                     </View>
                   </View>
@@ -444,7 +447,7 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: 
                     <View style={styles.barLabelRow}>
                       <Text style={styles.barLabel}>Accuracy</Text>
                       <Text style={[styles.barValue, { color: subjectAccuracyColor }]}>
-                        {subject.accuracy.toFixed(1)}%
+                        {subject.accuracy?.toFixed(1) ?? '0.0'}%
                       </Text>
                     </View>
                     <View style={styles.barTrack}>
@@ -452,7 +455,7 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: 
                         style={[
                           styles.barFill,
                           {
-                            width: `${Math.min(subject.accuracy, 100)}%`,
+                            width: `${Math.min(subject.accuracy ?? 0, 100)}%`,
                             backgroundColor: subjectAccuracyColor,
                           },
                         ]}
@@ -464,13 +467,13 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: 
                     <View style={styles.timeRow}>
                       <Text style={styles.timeLabel}>Negative Marking Impact</Text>
                       <Text style={[styles.timeValue, { color: '#EF4444' }]}>
-                        {subject.negative_marking_damage_index.toFixed(2)}
+                        {subject.negative_marking_damage_index?.toFixed(2) ?? '0.00'}
                       </Text>
                     </View>
                     <View style={styles.timeRow}>
                       <Text style={styles.timeLabel}>Volatility Index</Text>
                       <Text style={styles.timeValue}>
-                        {subject.volatility_index.toFixed(1)}
+                        {subject.volatility_index?.toFixed(1) ?? '0.0'}
                       </Text>
                     </View>
                   </View>
