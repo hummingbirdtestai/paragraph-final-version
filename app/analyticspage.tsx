@@ -43,7 +43,6 @@ export default function AnalyticsScreen() {
     <MainLayout>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Your Analytics</Text>
           <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[styles.tab, activeTab === 'practice' && styles.activeTab]}
@@ -346,17 +345,11 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingTop: 16,
     paddingBottom: 16,
     maxWidth: 800,
     marginHorizontal: 'auto',
     width: '100%',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#E5E5E5',
-    marginBottom: 16,
   },
   tabContainer: {
     flexDirection: 'row',
