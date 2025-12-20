@@ -23,6 +23,20 @@ interface SubjectAnalytics {
   status_label: 'Not Started' | 'Weak Area' | 'Needs Revision' | 'Strong';
 }
 
+interface MockTestListItem {
+  exam_serial: number;
+  total_questions: number;
+  attempted: number;
+  correct: number;
+  incorrect: number;
+  unattempted: number;
+  total_score: number;
+}
+
+interface MockTestListResponse {
+  mocks: MockTestListItem[];
+}
+
 interface MockTestSubject {
   subject_id: string;
   subject_name: string;
@@ -39,14 +53,10 @@ interface MockTestSummary {
   predicted_rank: number;
 }
 
-interface MockTest {
+interface MockTestDetail {
   exam_serial: number;
   summary: MockTestSummary;
   subjects: MockTestSubject[];
-}
-
-interface MockTestMasterAnalytics {
-  mocks: MockTest[];
 }
 
 const STATUS_COLORS = {
@@ -191,12 +201,14 @@ function PracticeAnalytics() {
 
 function MockTestsAnalytics() {
   const { user } = useAuth();
-  const [mockAnalytics, setMockAnalytics] = useState<MockTestMasterAnalytics | null>(null);
+  const [mockList, setMockList] = useState<MockTestListItem[]>([]);
+  const [selectedMock, setSelectedMock] = useState<number | null>(null);
+  const [mockDetail, setMockDetail] = useState<MockTestDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedMock, setSelectedMock] = useState<MockTest | null>(null);
 
-  const fetchMockTestAnalytics = async () => {
+  const fetchMockTestList = async () => {
     if (!user?.id) {
       setLoading(false);
       return;
@@ -215,21 +227,60 @@ function MockTestsAnalytics() {
         throw rpcError;
       }
 
-      setMockAnalytics(data);
+      setMockList(data?.mocks || []);
     } catch (err: any) {
-      console.error('Mock test analytics fetch error:', err);
-      setError(err.message || 'Failed to load mock test analytics');
+      console.error('Mock test list fetch error:', err);
+      setError(err.message || 'Failed to load mock test list');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchMockTestDetail = async (examSerial: number) => {
+    if (!user?.id) return;
+
+    try {
+      setDetailLoading(true);
+
+      const { data, error: rpcError } = await supabase.rpc(
+        'get_mock_test_master_analytics_v1',
+        {
+          p_student_id: user.id,
+          p_exam_serial: examSerial
+        }
+      );
+
+      if (rpcError) {
+        throw rpcError;
+      }
+
+      setMockDetail(data);
+    } catch (err: any) {
+      console.error('Mock test detail fetch error:', err);
+      setError(err.message || 'Failed to load mock test details');
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
-      fetchMockTestAnalytics();
+      fetchMockTestList();
       setSelectedMock(null);
+      setMockDetail(null);
     }, [user?.id])
   );
+
+  useEffect(() => {
+    if (selectedMock !== null) {
+      fetchMockTestDetail(selectedMock);
+    }
+  }, [selectedMock]);
+
+  const handleBackToList = () => {
+    setSelectedMock(null);
+    setMockDetail(null);
+  };
 
   if (loading) {
     return (
@@ -240,7 +291,7 @@ function MockTestsAnalytics() {
     );
   }
 
-  if (error) {
+  if (error && mockList.length === 0) {
     return (
       <View style={styles.centerContainer}>
         <AlertCircle size={48} color="#EF4444" />
@@ -250,7 +301,7 @@ function MockTestsAnalytics() {
     );
   }
 
-  if (!mockAnalytics || mockAnalytics.mocks.length === 0) {
+  if (mockList.length === 0) {
     return (
       <View style={styles.centerContainer}>
         <Target size={64} color="#6B7280" />
@@ -262,11 +313,19 @@ function MockTestsAnalytics() {
     );
   }
 
-  if (selectedMock) {
-    return <MockTestDetailView mockTest={selectedMock} onBack={() => setSelectedMock(null)} />;
+  if (mockDetail && selectedMock !== null) {
+    if (detailLoading) {
+      return (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#25D366" />
+          <Text style={styles.loadingText}>Loading mock test details...</Text>
+        </View>
+      );
+    }
+    return <MockTestDetailView mockTest={mockDetail} onBack={handleBackToList} />;
   }
 
-  const sortedMocks = [...mockAnalytics.mocks].sort((a, b) => b.exam_serial - a.exam_serial);
+  const sortedMocks = [...mockList].sort((a, b) => b.exam_serial - a.exam_serial);
 
   return (
     <ScrollView
@@ -283,7 +342,7 @@ function MockTestsAnalytics() {
           <MockTestListCard
             key={mockTest.exam_serial}
             mockTest={mockTest}
-            onPress={() => setSelectedMock(mockTest)}
+            onPress={() => setSelectedMock(mockTest.exam_serial)}
           />
         ))}
       </View>
@@ -291,7 +350,7 @@ function MockTestsAnalytics() {
   );
 }
 
-function MockTestListCard({ mockTest, onPress }: { mockTest: MockTest; onPress: () => void }) {
+function MockTestListCard({ mockTest, onPress }: { mockTest: MockTestListItem; onPress: () => void }) {
   const getScoreColor = (score: number | null | undefined) => {
     if (!score) return '#6B7280';
     if (score >= 500) return '#10B981';
@@ -299,7 +358,16 @@ function MockTestListCard({ mockTest, onPress }: { mockTest: MockTest; onPress: 
     return '#EF4444';
   };
 
-  const scoreColor = getScoreColor(mockTest.summary?.total_score);
+  const getAccuracyColor = (accuracy: number | null | undefined) => {
+    if (!accuracy) return '#6B7280';
+    if (accuracy >= 75) return '#10B981';
+    if (accuracy >= 60) return '#F59E0B';
+    return '#EF4444';
+  };
+
+  const scoreColor = getScoreColor(mockTest.total_score);
+  const accuracy = mockTest.attempted > 0 ? (mockTest.correct / mockTest.attempted) * 100 : 0;
+  const accuracyColor = getAccuracyColor(accuracy);
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
@@ -316,22 +384,42 @@ function MockTestListCard({ mockTest, onPress }: { mockTest: MockTest; onPress: 
         <View style={styles.metricBox}>
           <Text style={styles.metricLabel}>Total Score</Text>
           <Text style={[styles.metricValue, { color: scoreColor }]}>
-            {mockTest.summary?.total_score ?? 0}
+            {mockTest.total_score ?? 0}
           </Text>
         </View>
 
         <View style={styles.metricBox}>
-          <Text style={styles.metricLabel}>Predicted Rank</Text>
+          <Text style={styles.metricLabel}>Attempted</Text>
           <Text style={styles.metricValue}>
-            {mockTest.summary?.predicted_rank?.toLocaleString() ?? '0'}
+            {mockTest.correct} / {mockTest.attempted}
           </Text>
+        </View>
+      </View>
+
+      <View style={styles.barSection}>
+        <View style={styles.barLabelRow}>
+          <Text style={styles.barLabel}>Accuracy</Text>
+          <Text style={[styles.barValue, { color: accuracyColor }]}>
+            {accuracy.toFixed(1)}%
+          </Text>
+        </View>
+        <View style={styles.barTrack}>
+          <View
+            style={[
+              styles.barFill,
+              {
+                width: `${Math.min(accuracy, 100)}%`,
+                backgroundColor: accuracyColor,
+              },
+            ]}
+          />
         </View>
       </View>
     </TouchableOpacity>
   );
 }
 
-function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTest; onBack: () => void }) {
+function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTestDetail; onBack: () => void }) {
   const getAccuracyColor = (accuracy: number | null | undefined) => {
     if (!accuracy) return '#6B7280';
     if (accuracy >= 75) return '#10B981';
