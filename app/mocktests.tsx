@@ -792,15 +792,7 @@ const getSectionQNumber = (react_order: number) => {
 };
 const isSectionEnd = (ro: number) =>
   [40, 80, 120, 160].includes(Number(ro));
-
-  // 🎯 Build question status array
-  const questionStatusList = testStarted && phaseData
-    ? Array.from({ length: 40 }).map((_, idx) => ({
-        number: idx + 1,
-        status: determineQuestionStatus(idx + 1),
-      }))
-    : [];
-
+  
   // ───────────────────────────────────────────────
   // 🎨 MAIN RENDER BODY
   // ───────────────────────────────────────────────
