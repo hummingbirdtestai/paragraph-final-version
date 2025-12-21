@@ -128,9 +128,7 @@ const testDate = params.date ? decodeURIComponent(params.date as string) : null;
 const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [showConfirmFinish, setShowConfirmFinish] = useState(false);
 
-
-
-
+const [showSectionConfirm, setShowSectionConfirm] = useState(false);
   
 useEffect(() => {
   if (!autoStartDone.current &&
