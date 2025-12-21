@@ -690,15 +690,9 @@ const formatTime = (seconds: number) => {
 
 const handleNext = async () => {
   const currentRO = Number(phaseData.react_order_final);
+  const isEnd = isSectionEnd(currentRO);
 
-  if (showSectionConfirm) return;
-  setShowSectionConfirm(true);
-  return;
-}
-
-  const isEnd = isSectionEnd(phaseData.react_order_final);
-
-  // 1️⃣ Submit answer
+  // 1️⃣ Always submit current question FIRST
   await fetch(
     "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
     {
@@ -708,7 +702,7 @@ const handleNext = async () => {
         intent: "next_mocktest_phase",
         student_id: userId,
         exam_serial: phaseData.exam_serial,
-        react_order_final: phaseData.react_order_final,
+        react_order_final: currentRO,
         student_answer: selectedOption,
         is_correct: selectedOption === currentMCQ?.correct_answer,
         time_left: formatTime(remainingTime),
@@ -716,13 +710,13 @@ const handleNext = async () => {
     }
   );
 
-  // 2️⃣ If section end → STOP & ASK
+  // 2️⃣ If section ended → STOP and show modal
   if (isEnd) {
     setShowSectionConfirm(true);
     return;
   }
 
-  // 3️⃣ Else → load next MCQ
+  // 3️⃣ Otherwise → load next MCQ
   try {
     const response = await fetch(
       "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
@@ -733,7 +727,7 @@ const handleNext = async () => {
           intent: "next_mocktest_phase",
           student_id: userId,
           exam_serial: phaseData.exam_serial,
-          react_order_final: phaseData.react_order_final,
+          react_order_final: currentRO,
           time_left: formatTime(remainingTime),
         }),
       }
@@ -743,15 +737,15 @@ const handleNext = async () => {
     const normalized = normalizePhaseData(data);
 
     if (normalized?.phase_json) {
-      const ro = Number(normalized.react_order_final);
-      const prevSection = getSection(phaseData.react_order_final);
-      const currSection = getSection(ro);
+      const nextRO = Number(normalized.react_order_final);
+      const prevSection = getSection(currentRO);
+      const nextSection = getSection(nextRO);
 
       setPhaseData(normalized);
       setCurrentMCQ(normalized.phase_json[0]);
       setSelectedOption(null);
 
-      if (prevSection !== currSection) {
+      if (prevSection !== nextSection) {
         setRemainingTime(42 * 60);
       } else if (normalized.time_left) {
         const [h, m, s] = normalized.time_left.split(":").map(Number);
@@ -762,64 +756,6 @@ const handleNext = async () => {
     }
   } catch (err) {
     console.error("Error moving to next question:", err);
-  }
-};
-
-
-
-  try {
-    const response = await fetch(
-      "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          intent: "next_mocktest_phase",
-          student_id: userId,
-          exam_serial: phaseData.exam_serial,
-          react_order_final: phaseData.react_order_final,
-          student_answer: selectedOption,
-          is_correct: selectedOption === currentMCQ?.correct_answer,
-          time_left: formatTime(remainingTime),
-        }),
-      }
-    );
-
-    const data = await response.json();
-    const normalized = normalizePhaseData(data);
-
-    if (normalized?.phase_json) {
-      setTestStarted(true);
-
-      const ro = Number(normalized.react_order_final);
-
-      const previousSection = getSection(phaseData?.react_order_final);
-      const currentSection = getSection(ro);
-
-    if (currentSection !== previousSection) {
-  console.log("⏳ Section changed → Reset timer");
-  const ro = Number(normalized.react_order_final);
-  setRemainingTime(42 * 60);
-} else if (normalized.time_left) {
-  const [h, m, s] = normalized.time_left.split(":").map(Number);
-  setRemainingTime(h * 3600 + m * 60 + s);
-}
-
-
-     setPhaseData(normalized);
-
-
-      setCurrentMCQ(normalized.phase_json[0]);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-      console.log("🧠 LOADED MCQ:", normalized.phase_json[0]);
-
-      setSelectedOption(null);
-    } else {
-      setTestEnded(true);
-      setTestStarted(false);
-    }
-  } catch (error) {
-    console.error("Error moving to next question:", error);
   }
 };
 
@@ -1172,7 +1108,7 @@ const isSectionEnd = (ro: number) =>
                 <Text style={styles.reviewButtonText}>Review</Text>
               </TouchableOpacity>
 
-{Number(phaseData?.react_order_final) >= 181 && Number(phaseData?.react_order_final) <= 200 && (
+{Number(phaseData?.react_order_final) >= 161 && Number(phaseData?.react_order_final) <= 200 && (
   <TouchableOpacity
     style={styles.finishTestButton}
     onPress={() => setShowConfirmFinish(true)} 
