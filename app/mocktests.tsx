@@ -598,7 +598,7 @@ const handleNext = async () => {
           student_answer: selectedOption,
           is_correct: selectedOption === currentMCQ?.correct_answer,
           time_left: formatTime(remainingTime),
-          hold_next_section: true        // ✅ ADD THIS
+          hold_next_section: true,        // ✅ ADD THIS
         }),
       }
     );
