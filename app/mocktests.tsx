@@ -191,6 +191,13 @@ useEffect(() => {
 // ───────────────────────────────────────────────
 const callTimerExpiredRPC = async (currentRO) => {
   try {   // ✅ FIX ADDED
+    console.log("⏰ TIMER EXPIRED — RPC ABOUT TO FIRE", {
+      ro: currentRO,
+      exam_serial: phaseData?.exam_serial,
+      remainingTime,
+      ts: new Date().toISOString(),
+    });
+
     console.log("🟧 [TIMER 0] Trigger → Calling RPC timer_expired_jump_section_v10");
     console.log("🟧 RPC INPUT:", {
       p_student_id: userId,
@@ -580,6 +587,12 @@ const formatTime = (seconds: number) => {
 };
 
 const handleNext = async () => {
+    console.log("🚨 handleNext CALLED", {
+      ro: phaseData?.react_order_final,
+      selectedOption,
+      remainingTime,
+      ts: new Date().toISOString(),
+    });
   const currentRO = Number(phaseData.react_order_final);
   const isEnd = isSectionEnd(currentRO);
 
@@ -666,6 +679,12 @@ const handleSelectQuestion = async (targetRO: number) => {
 
 
 const handleSkip = async () => {
+  console.log("🚨 handleSkip CALLED", {
+    ro: phaseData?.react_order_final,
+    remainingTime,
+    ts: new Date().toISOString(),
+  });
+
   if (testEnded || !phaseData?.exam_serial || !phaseData?.react_order_final)
     return;
 
@@ -725,11 +744,12 @@ const handleReview = async () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          intent: "mark_review",
+          intent: "next_mocktest_phase",
           student_id: userId,
           exam_serial: phaseData.exam_serial,
           react_order_final: phaseData.react_order_final,
           time_left: formatTime(remainingTime),
+          is_review: true,   // 🔥 THIS IS THE KEY
         }),
       }
     );
@@ -1153,12 +1173,43 @@ const isSectionEnd = (ro: number) =>
         {/* Review this section */}
         <TouchableOpacity
           style={[styles.modalButton, { backgroundColor: "#334155" }]}
-          onPress={() => setShowSectionConfirm(false)}
+          onPress={async () => {
+            try {
+              console.log("🟨 SECTION REVIEW CLICKED → sending is_review=true");
+              console.log("🟨 REVIEW PAYLOAD CHECK", {
+                intent: "next_mocktest_phase",
+                ro: phaseData?.react_order_final,
+                is_review: true,
+              });
+              
+              await fetch(
+                "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    intent: "next_mocktest_phase",
+                    student_id: userId,
+                    exam_serial: phaseData.exam_serial,
+                    react_order_final: phaseData.react_order_final,
+                    time_left: formatTime(remainingTime),
+                    is_review: true, // 🔥 THIS IS THE ONLY NEW SIGNAL
+                  }),
+                }
+              );
+        
+              // ✅ Stay in same section, do NOT create next pointer
+              setShowSectionConfirm(false);
+            } catch (err) {
+              console.error("❌ Section review submit failed:", err);
+            }
+          }}
         >
           <Text style={[styles.modalButtonText, { color: "#fff" }]}>
             Review this section
           </Text>
         </TouchableOpacity>
+
 
         {/* Complete Test */}
         <TouchableOpacity
