@@ -209,14 +209,18 @@ const callTimerExpiredRPC = async (currentRO) => {
         p_time_left: "00:00:00"
       }
     );
+
+if (error) {
+  console.error("❌ [TIMER 0 RPC ERROR]", error);
+  return;
+}
+
 if (isSectionEnd(currentRO)) {
+  setPhaseData(normalizePhaseData(data));
+  setCurrentMCQ(normalizePhaseData(data)?.phase_json?.[0] ?? null);
   setShowSectionConfirm(true);
   return;
 }
-    if (error) {
-      console.error("❌ [TIMER 0 RPC ERROR] timer_expired_jump_section_v10:", error);
-      return;
-    }
 
     console.log("🟢 [TIMER 0 RPC SUCCESS] RAW RPC RETURN:", data);
     const normalized = normalizePhaseData(data);
@@ -631,31 +635,6 @@ const handleNext = async () => {
   const currentRO = Number(phaseData.react_order_final);
   const isEnd = isSectionEnd(currentRO);
 
-  // 1️⃣ Always submit current question FIRST
-  await fetch(
-    "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        intent: "next_mocktest_phase",
-        student_id: userId,
-        exam_serial: phaseData.exam_serial,
-        react_order_final: currentRO,
-        student_answer: selectedOption,
-        is_correct: selectedOption === currentMCQ?.correct_answer,
-        time_left: formatTime(remainingTime),
-      }),
-    }
-  );
-
-  // 2️⃣ If section ended → STOP and show modal
-  if (isEnd) {
-    setShowSectionConfirm(true);
-    return;
-  }
-
-  // 3️⃣ Otherwise → load next MCQ
   try {
     const response = await fetch(
       "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
@@ -667,6 +646,8 @@ const handleNext = async () => {
           student_id: userId,
           exam_serial: phaseData.exam_serial,
           react_order_final: currentRO,
+          student_answer: selectedOption,
+          is_correct: selectedOption === currentMCQ?.correct_answer,
           time_left: formatTime(remainingTime),
         }),
       }
@@ -674,6 +655,12 @@ const handleNext = async () => {
 
     const data = await response.json();
     const normalized = normalizePhaseData(data);
+
+    // ⛔ Section ended → show modal AFTER submit
+    if (isEnd) {
+      setShowSectionConfirm(true);
+      return;
+    }
 
     if (normalized?.phase_json) {
       const nextRO = Number(normalized.react_order_final);
@@ -694,9 +681,10 @@ const handleNext = async () => {
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     }
   } catch (err) {
-    console.error("Error moving to next question:", err);
+    console.error("❌ Error in handleNext:", err);
   }
 };
+
 
 const handleSelectQuestion = async (react_order_final_from_palette) => {
   if (!react_order_final_from_palette) {
@@ -717,7 +705,18 @@ const handleSelectQuestion = async (react_order_final_from_palette) => {
     p_target_ro: react_order_final_from_palette,
     p_time_left: formatTime(remainingTime)
   });
-
+  
+  const normalized = normalizePhaseData(data);
+  const mcq = normalized.phase_json[0];
+  
+  mcq.student_answer = data.student_answer;
+  setSelectedOption(data.student_answer ?? null);
+  
+  setPhaseData(normalized);
+  setCurrentMCQ(mcq);
+  setShowNav(false);
+  
+  scrollRef.current?.scrollTo({ y: 0, animated: true });
   if (error) {
     console.log("❌ RPC ERROR:", error);
     return;
@@ -725,25 +724,6 @@ const handleSelectQuestion = async (react_order_final_from_palette) => {
 
   console.log("🟢 RPC SUCCESS (jump):", data);
 console.log("🎯 Jump RPC returned student_answer:", data.student_answer);
-
-const normalized = normalizePhaseData(data);
-const mcq = normalized.phase_json[0];
-
-// ⭐ APPLY student_answer to the MCQ object
-mcq.student_answer = data.student_answer;
-
-// ⭐ SET selectedOption so UI highlights it
-setSelectedOption(data.student_answer ?? null);
-
-setPhaseData(normalized);
-setCurrentMCQ(mcq);
-setShowNav(false);
-
-// Scroll to top
-scrollRef.current?.scrollTo({ y: 0, animated: true });
-
-};
-
 
 const handleSkip = async () => {
   if (testEnded || !phaseData?.exam_serial || !phaseData?.react_order_final)
@@ -834,6 +814,30 @@ const handleReview = async () => {
   }
 };
 
+const handleGoToNextSection = async () => {
+  const nextRO = getNextSectionStart(phaseData.react_order_final);
+  if (!nextRO) return;
+
+  const { data, error } = await supabase.rpc(
+    "jump_to_specific_mcq_mocktest",
+    {
+      p_student_id: userId,
+      p_exam_serial: phaseData.exam_serial,
+      p_target_ro: nextRO,
+      p_time_left: formatTime(remainingTime),
+    }
+  );
+
+  if (!error && data?.phase_json) {
+    const normalized = normalizePhaseData(data);
+    setPhaseData(normalized);
+    setCurrentMCQ(normalized.phase_json[0]);
+    setRemainingTime(42 * 60);
+    setSelectedOption(null);
+    setShowNav(false);
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+  }
+};
 
 
   const sanitize = (text: string) =>
@@ -1130,6 +1134,7 @@ const isSectionEnd = (ro: number) =>
             <QuestionNavigationScreen
               isVisible={showNav}
               onClose={() => setShowNav(false)}
+              onStartNextSection={handleGoToNextSection}
               currentQuestion={phaseData?.section_q_number || 1}
               mcqs={paletteData?.mcqs || []}
               counts={paletteData?.counts || { answered: 0, skipped: 0, marked: 0, unanswered: 0 }}
