@@ -190,20 +190,12 @@ useEffect(() => {
 // 🔥 DIRECT RPC CALL WHEN TIMER HITS ZERO (FINAL)
 // ───────────────────────────────────────────────
 const callTimerExpiredRPC = async (currentRO) => {
-  try {   // ✅ FIX ADDED
+  try {
     console.log("⏰ TIMER EXPIRED — RPC ABOUT TO FIRE", {
       ro: currentRO,
       exam_serial: phaseData?.exam_serial,
       remainingTime,
       ts: new Date().toISOString(),
-    });
-
-    console.log("🟧 [TIMER 0] Trigger → Calling RPC timer_expired_jump_section_v10");
-    console.log("🟧 RPC INPUT:", {
-      p_student_id: userId,
-      p_exam_serial: phaseData.exam_serial,
-      p_current_ro: currentRO,
-      p_time_left: "00:00:00"
     });
 
     const { data, error } = await supabase.rpc(
@@ -212,49 +204,38 @@ const callTimerExpiredRPC = async (currentRO) => {
         p_student_id: userId,
         p_exam_serial: phaseData.exam_serial,
         p_current_ro: currentRO,
-        p_time_left: "00:00:00"
+        p_time_left: "00:00:00",
       }
     );
 
-if (error) {
-  console.error("❌ [TIMER 0 RPC ERROR]", error);
-  return;
-}
-const normalized = normalizePhaseData(data);
+    if (error) {
+      console.error("❌ [TIMER 0 RPC ERROR]", error);
+      return;
+    }
 
-if (normalized?.phase_json) {
-  setPhaseData(normalized);
-  setCurrentMCQ(normalized.phase_json[0]);
-  setSelectedOption(null);
-}
-
-if (isSectionEnd(currentRO)) {
-  setShowSectionConfirm(true);
-  return;
-}
-
-
-    console.log("🟢 [TIMER 0 RPC SUCCESS] RAW RPC RETURN:", data);
     const normalized = normalizePhaseData(data);
-    console.log("🔄 [TIMER 0 NORMALIZED]:", normalized);
 
     if (normalized?.phase_json) {
-      console.log("📘 [TIMER 0] Updating UI with new MCQ:", normalized.phase_json[0]);
       setPhaseData(normalized);
       setCurrentMCQ(normalized.phase_json[0]);
-
-      console.log("⏱ [TIMER RESET] Reset to 42:00");
-      setRemainingTime(42 * 60);
-
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    } else {
-      console.warn("⚠️ [TIMER 0] No phase_json returned");
+      setSelectedOption(null);
     }
+
+    // 🔥 UI decision AFTER state is saved
+    if (isSectionEnd(currentRO)) {
+      setShowSectionConfirm(true);
+      return;
+    }
+
+    // ⏱ reset timer only if continuing
+    setRemainingTime(42 * 60);
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
 
   } catch (err) {
     console.error("🔥 [TIMER 0 RPC FAILED COMPLETELY]:", err);
   }
 };
+
 
   
 useEffect(() => { loadData(); }, []);
