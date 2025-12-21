@@ -1225,6 +1225,7 @@ const isSectionEnd = (ro: number) =>
               sectionId={phaseData?.sections || "A"}
               timeLeft={remainingTime}
               onSelectQuestion={handleSelectQuestion}
+              isSectionComplete={isSectionEnd(phaseData?.react_order_final)}
             />
           </>
         ) : (
