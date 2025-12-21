@@ -593,21 +593,7 @@ const formatTime = (seconds: number) => {
 };
 
 const handleNext = async () => {
-  console.log("🚨 handleNext CALLED", {
-    ro: phaseData?.react_order_final,
-    selectedOption,
-    remainingTime,
-    ts: new Date().toISOString(),
-  });
-
   const currentRO = Number(phaseData.react_order_final);
-
-  // ⛔ ABSOLUTE STOP — DO NOT TOUCH BACKEND
-  if (isSectionEnd(currentRO)) {
-    console.log("🛑 SECTION END DETECTED — BLOCKING RPC");
-    setShowSectionConfirm(true);
-    return;
-  }
 
   try {
     const response = await fetch(
@@ -631,27 +617,29 @@ const handleNext = async () => {
     const normalized = normalizePhaseData(data);
 
     if (normalized?.phase_json) {
-      const nextRO = Number(normalized.react_order_final);
-      const prevSection = getSection(currentRO);
-      const nextSection = getSection(nextRO);
-
       setPhaseData(normalized);
       setCurrentMCQ(normalized.phase_json[0]);
       setSelectedOption(null);
-
-      if (prevSection !== nextSection) {
-        setRemainingTime(42 * 60);
-      } else if (normalized.time_left) {
-        const [h, m, s] = normalized.time_left.split(":").map(Number);
-        setRemainingTime(h * 3600 + m * 60 + s);
-      }
-
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
     }
+
+    // 🔥 ONLY UI DECISION AFTER SUBMIT
+    if (isSectionEnd(currentRO)) {
+      setShowSectionConfirm(true);
+      return;
+    }
+
+    if (normalized.time_left) {
+      const [h, m, s] = normalized.time_left.split(":").map(Number);
+      setRemainingTime(h * 3600 + m * 60 + s);
+    }
+
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+
   } catch (err) {
     console.error("❌ Error in handleNext:", err);
   }
 };
+
 
 
 
