@@ -578,7 +578,7 @@ const formatTime = (seconds: number) => {
   const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
   const s = String(seconds % 60).padStart(2, "0");
   return `${h}:${m}:${s}`;
-}
+};
 
 const handleNext = async () => {
   const currentRO = Number(phaseData.react_order_final);
@@ -792,14 +792,6 @@ const getSectionQNumber = (react_order: number) => {
 };
 const isSectionEnd = (ro: number) =>
   [40, 80, 120, 160].includes(Number(ro));
-
-  // 🎯 Helper to determine question status
-  const determineQuestionStatus = (qNum: number) => {
-    if (phaseData?.answered?.includes(qNum)) return "answered";
-    if (phaseData?.marked?.includes(qNum)) return "marked";
-    if (phaseData?.skipped?.includes(qNum)) return "skipped";
-    return "unanswered";
-  };
 
   // 🎯 Build question status array
   const questionStatusList = testStarted && phaseData
