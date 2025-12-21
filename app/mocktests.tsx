@@ -727,9 +727,29 @@ const formatTime = (seconds: number) => {
 const handleNext = async () => {
   // 🛑 STOP at end of section (40/80/120/160)
   if (isSectionEnd(phaseData.react_order_final)) {
+    // ✅ submit answer first
+    await fetch(
+      "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          intent: "next_mocktest_phase",
+          student_id: userId,
+          exam_serial: phaseData.exam_serial,
+          react_order_final: phaseData.react_order_final,
+          student_answer: selectedOption,
+          is_correct: selectedOption === currentMCQ?.correct_answer,
+          time_left: formatTime(remainingTime),
+        }),
+      }
+    );
+  
+    // 🟢 THEN ask user
     setShowSectionConfirm(true);
     return;
   }
+
 
   try {
     const response = await fetch(
@@ -1307,20 +1327,20 @@ const isSectionEnd = (ro: number) =>
 {showSectionConfirm && (
   <View style={styles.modalOverlay}>
     <Animated.View style={styles.completionModal}>
-      <Text style={styles.modalTitle}>Finish Test?</Text>
+      <Text style={styles.modalTitle}>Section Completed</Text>
       <Text style={styles.modalSubtitle}>
-        Are you sure you want to submit all answers?
+        What would you like to do next?
       </Text>
 
       <View style={{ flexDirection: "row", gap: 12 }}>
         
-        {/* Continue Test */}
+        {/* Review this section */}
         <TouchableOpacity
           style={[styles.modalButton, { backgroundColor: "#334155" }]}
           onPress={() => setShowConfirmFinish(false)}
         >
           <Text style={[styles.modalButtonText, { color: "#fff" }]}>
-            Continue Test
+            Review this section
           </Text>
         </TouchableOpacity>
 
