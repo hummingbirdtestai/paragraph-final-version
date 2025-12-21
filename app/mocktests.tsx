@@ -247,80 +247,29 @@ if (isSectionEnd(currentRO)) {
   
 useEffect(() => { loadData(); }, []);
 useEffect(() => {
-  console.log("⏳ TIMER EFFECT RUN:", {
-    testStarted,
-    testEnded,
-    remainingTime,
-  });
-
-  if (!testStarted) {
-    console.log("⛔ Timer blocked: testStarted = false");
-    return;
-  }
-
-  if (testEnded) {
-    console.log("⛔ Timer blocked: testEnded = true");
-    return;
-  }
-
-  if (remainingTime === null) {
-    console.log("⛔ Timer blocked: remainingTime = null");
-    return;
-  }
-
-  // 🚫 Prevent false-zero and stale values
-  if (remainingTime === null || typeof remainingTime !== "number" || isNaN(remainingTime)) {
-    console.log("⛔ INVALID remainingTime → Skipping timer");
-    return;
-  }
-  
-  // 🚫 If visually > 0, then DO NOT expire
-  if (remainingTime > 1) {
-    console.log("⏳ Timer running normally:", remainingTime);
-  } 
-
-
-  console.log("⏱️ Starting interval tick…");
+  if (!testStarted || testEnded || remainingTime === null) return;
+  if (typeof remainingTime !== "number" || isNaN(remainingTime)) return;
 
   const timer = setInterval(() => {
     setRemainingTime((prev) => {
-      console.log("⏱️ Tick:", prev);
-
-      if (prev === null) {
-        console.log("⛔ Prev = null inside tick");
+      if (prev === null || typeof prev !== "number" || isNaN(prev)) {
         return prev;
       }
 
-    // 🛑 Reject invalid or stale values
-    if (prev === null || typeof prev !== "number" || isNaN(prev)) {
-      console.log("⛔ TIMER TICK SKIPPED (invalid prev):", prev);
-      return prev; 
-    }
-    
-    // 🟢 If real time remaining is > 1 second → continue countdown
-    if (prev > 1) {
-      return prev - 1;
-    }
-    
-    // 🟥 REAL EXPIRY — only TRUE zero reaches here
-    console.log("🟥 TRUE TIMER EXPIRED — Calling RPC v10");
-    clearInterval(timer);
-    
-    const currentRO = Number(phaseData?.react_order_final);
-    callTimerExpiredRPC(currentRO);
-    
-    return 0;
+      if (prev > 1) {
+        return prev - 1;
+      }
 
-
-      return prev - 1;
+      clearInterval(timer);
+      const currentRO = Number(phaseData?.react_order_final);
+      callTimerExpiredRPC(currentRO);
+      return 0;
     });
   }, 1000);
 
-  return () => {
-    console.log("🧹 Clearing interval");
-    clearInterval(timer);
-  };
+  return () => clearInterval(timer);
 }, [testStarted, testEnded, remainingTime]);
+
 const getNextSectionStart = (ro) => {
   if (ro >= 1 && ro <= 40) return 41;
   if (ro >= 41 && ro <= 80) return 81;
@@ -686,44 +635,34 @@ const handleNext = async () => {
 };
 
 
-const handleSelectQuestion = async (react_order_final_from_palette) => {
-  if (!react_order_final_from_palette) {
-    console.log("❌ No react_order_final passed");
-    return;
-  }
+const handleSelectQuestion = async (targetRO: number) => {
+  if (!targetRO || !phaseData?.exam_serial) return;
 
-  console.log("🎯 PALETTE -> MOCKTEST JUMP:", {
-    userId,
-    exam_serial: phaseData.exam_serial,
-    react_order_final_from_palette,
-    time_left: formatTime(remainingTime)
-  });
+  const { data, error } = await supabase.rpc(
+    "jump_to_specific_mcq_mocktest",
+    {
+      p_student_id: userId,
+      p_exam_serial: phaseData.exam_serial,
+      p_target_ro: targetRO,
+      p_time_left: formatTime(remainingTime),
+    }
+  );
 
-  const { data, error } = await supabase.rpc("jump_to_specific_mcq_mocktest", {
-    p_student_id: userId,
-    p_exam_serial: phaseData.exam_serial,
-    p_target_ro: react_order_final_from_palette,
-    p_time_left: formatTime(remainingTime)
-  });
-  
+  if (error || !data?.phase_json) return;
+
   const normalized = normalizePhaseData(data);
   const mcq = normalized.phase_json[0];
-  
-  mcq.student_answer = data.student_answer;
-  setSelectedOption(data.student_answer ?? null);
-  
+
+  mcq.student_answer = data.student_answer ?? null;
+
+  setSelectedOption(mcq.student_answer);
   setPhaseData(normalized);
   setCurrentMCQ(mcq);
   setShowNav(false);
-  
-  scrollRef.current?.scrollTo({ y: 0, animated: true });
-  if (error) {
-    console.log("❌ RPC ERROR:", error);
-    return;
-  }
 
-  console.log("🟢 RPC SUCCESS (jump):", data);
-console.log("🎯 Jump RPC returned student_answer:", data.student_answer);
+  scrollRef.current?.scrollTo({ y: 0, animated: true });
+};
+
 
 const handleSkip = async () => {
   if (testEnded || !phaseData?.exam_serial || !phaseData?.react_order_final)
@@ -749,24 +688,18 @@ const handleSkip = async () => {
     const normalized = normalizePhaseData(data);
 
     if (normalized?.phase_json) {
-      setTestStarted(true);
-
       const ro = Number(normalized.react_order_final);
-      const previousSection = getSection(phaseData?.react_order_final);
+      const previousSection = getSection(phaseData.react_order_final);
       const currentSection = getSection(ro);
 
-    if (currentSection !== previousSection) {
-  console.log("⏳ Section changed → Reset timer");
-  const ro = Number(normalized.react_order_final);
-  setRemainingTime(42 * 60);
-} else if (normalized.time_left) {
-  const [h, m, s] = normalized.time_left.split(":").map(Number);
-  setRemainingTime(h * 3600 + m * 60 + s);
-}
+      if (currentSection !== previousSection) {
+        setRemainingTime(42 * 60);
+      } else if (normalized.time_left) {
+        const [h, m, s] = normalized.time_left.split(":").map(Number);
+        setRemainingTime(h * 3600 + m * 60 + s);
+      }
 
-
-   setPhaseData(normalized);
-
+      setPhaseData(normalized);
       setCurrentMCQ(normalized.phase_json[0]);
       setSelectedOption(null);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -778,6 +711,7 @@ const handleSkip = async () => {
     console.error("Error skipping question:", error);
   }
 };
+
 
 const handleReview = async () => {
   if (testEnded || !phaseData?.exam_serial || !phaseData?.react_order_final)
