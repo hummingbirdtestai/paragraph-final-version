@@ -1303,6 +1303,56 @@ const isSectionEnd = (ro: number) =>
   </View>
 )}
 
+{/* ⚠️ Finish Test Confirmation Modal */}
+{showSectionConfirm && (
+  <View style={styles.modalOverlay}>
+    <Animated.View style={styles.completionModal}>
+      <Text style={styles.modalTitle}>Finish Test?</Text>
+      <Text style={styles.modalSubtitle}>
+        Are you sure you want to submit all answers?
+      </Text>
+
+      <View style={{ flexDirection: "row", gap: 12 }}>
+        
+        {/* Continue Test */}
+        <TouchableOpacity
+          style={[styles.modalButton, { backgroundColor: "#334155" }]}
+          onPress={() => setShowConfirmFinish(false)}
+        >
+          <Text style={[styles.modalButtonText, { color: "#fff" }]}>
+            Continue Test
+          </Text>
+        </TouchableOpacity>
+
+        {/* Complete Test */}
+        <TouchableOpacity
+          style={styles.modalButton}
+          onPress={async () => {
+            try {
+              const { data, error } = await supabase.rpc("test_complete", {
+                p_student_id: userId,
+                p_exam_serial: phaseData.exam_serial,
+              });
+
+              if (error) {
+                Alert.alert("Error", "Could not complete test.");
+                return;
+              }
+
+              setShowConfirmFinish(false);
+              setShowCompletionModal(true);
+            } catch (err) {
+              Alert.alert("Error", "Could not complete test.");
+            }
+          }}
+        >
+          <Text style={styles.modalButtonText}>Complete Test</Text>
+        </TouchableOpacity>
+      </View>
+    </Animated.View>
+  </View>
+)}
+      
       {/* ✅ Completion Modal */}
 {showCompletionModal && (
   <View style={styles.modalOverlay}>
