@@ -173,9 +173,6 @@ useEffect(() => {
   loadProfile();
 }, [user]);
 
-  // ⭐ Auto move to next section
-
-  const isSectionStart = params.start === "true" && params.section;
 
   // 💡 Monolithic test state
   const [testStarted, setTestStarted] = useState(false);
@@ -326,64 +323,6 @@ const getNextSectionStart = (ro) => {
   if (ro >= 81 && ro <= 120) return 121;
   if (ro >= 121 && ro <= 160) return 161;
   return null; // Section E ends → complete test
-};
-
-
-const autoJumpToNextSection = async (currentRO) => {
-  if (isSectionEnd(currentRO)) return;
-
-  try {
-    const response = await fetch(
-      "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          intent: "skip_mocktest_phase",   // 🔥 CORRECT INTENT FOR TIMER EXPIRY
-          student_id: userId,
-          exam_serial: phaseData.exam_serial,
-         react_order_final: getNextSectionStart(currentRO),
-          time_left: "00:00:00",           // 🔥 correct for expiry
-        }),
-      }
-    );
-
-    const data = await response.json();
-    console.log("🔥 AUTO JUMP RESPONSE:", data);
-
-    const normalized = normalizePhaseData(data);
-
-    if (normalized?.phase_json) {
-      setPhaseData(normalized);
-      setCurrentMCQ(normalized.phase_json[0]);
-      setRemainingTime(42 * 60);          // section timer reset
-      setSelectedOption(null);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    } else {
-      console.log("⚠️ No phase_json returned");
-    }
-
-  } catch (err) {
-    console.error("AUTO SECTION JUMP ERROR:", err);
-  }
-};
-
-
-  const autoCompleteTest = async () => {
-  try {
-    const { data, error } = await supabase.rpc("test_complete", {
-      p_student_id: userId,
-      p_exam_serial: phaseData.exam_serial,
-    });
-
-    if (!error) {
-      setShowCompletionModal(true);
-      setTestEnded(true);
-      setTestStarted(false);
-    }
-  } catch (err) {
-    console.error("AUTO COMPLETE ERROR:", err);
-  }
 };
 
 
@@ -724,7 +663,7 @@ const handleNext = async () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          intent: "next_mocktest_phase",
+          intent: "load_next_mocktest_phase",
           student_id: userId,
           exam_serial: phaseData.exam_serial,
           react_order_final: currentRO,
@@ -1135,7 +1074,7 @@ const isSectionEnd = (ro: number) =>
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              intent: "next_mocktest_phase",
+              intent: "load_next_mocktest_phase",
               student_id: userId,
               exam_serial: phaseData.exam_serial,
               react_order_final: phaseData.react_order_final,
