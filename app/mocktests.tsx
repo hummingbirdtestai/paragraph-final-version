@@ -585,14 +585,21 @@ const formatTime = (seconds: number) => {
 };
 
 const handleNext = async () => {
-    console.log("🚨 handleNext CALLED", {
-      ro: phaseData?.react_order_final,
-      selectedOption,
-      remainingTime,
-      ts: new Date().toISOString(),
-    });
+  console.log("🚨 handleNext CALLED", {
+    ro: phaseData?.react_order_final,
+    selectedOption,
+    remainingTime,
+    ts: new Date().toISOString(),
+  });
+
   const currentRO = Number(phaseData.react_order_final);
-  const isEnd = isSectionEnd(currentRO);
+
+  // ⛔ ABSOLUTE STOP — DO NOT TOUCH BACKEND
+  if (isSectionEnd(currentRO)) {
+    console.log("🛑 SECTION END DETECTED — BLOCKING RPC");
+    setShowSectionConfirm(true);
+    return;
+  }
 
   try {
     const response = await fetch(
@@ -608,19 +615,12 @@ const handleNext = async () => {
           student_answer: selectedOption,
           is_correct: selectedOption === currentMCQ?.correct_answer,
           time_left: formatTime(remainingTime),
-          // ✅ NOTHING EXTRA HERE
         }),
       }
     );
 
     const data = await response.json();
     const normalized = normalizePhaseData(data);
-
-    // ⛔ Section ended → show modal AFTER submit
-    if (isEnd) {
-      setShowSectionConfirm(true);
-      return;
-    }
 
     if (normalized?.phase_json) {
       const nextRO = Number(normalized.react_order_final);
