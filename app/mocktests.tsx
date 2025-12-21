@@ -598,7 +598,7 @@ const handleNext = async () => {
           student_answer: selectedOption,
           is_correct: selectedOption === currentMCQ?.correct_answer,
           time_left: formatTime(remainingTime),
-          hold_next_section: true,        // ✅ ADD THIS
+          // ✅ NOTHING EXTRA HERE
         }),
       }
     );
@@ -634,6 +634,7 @@ const handleNext = async () => {
     console.error("❌ Error in handleNext:", err);
   }
 };
+
 
 
 const handleSelectQuestion = async (targetRO: number) => {
@@ -794,10 +795,6 @@ const getSectionQNumber = (react_order: number) => {
 const isSectionEnd = (ro: number) =>
   [40, 80, 120, 160].includes(Number(ro));
   
-  callApi({
-    intent: "next_mocktest_phase",
-    is_review: true
-  });
   
   // ───────────────────────────────────────────────
   // 🎨 MAIN RENDER BODY
@@ -1170,12 +1167,7 @@ const isSectionEnd = (ro: number) =>
           onPress={async () => {
             try {
               setShowSectionConfirm(false);
-
-callApi({
-  intent: "next_mocktest_phase",
-  is_review: false
-});
-              
+        
 const nextRO = getNextSectionStart(phaseData.react_order_final);
 if (!nextRO) return;
 
