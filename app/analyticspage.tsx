@@ -25,11 +25,13 @@ interface SubjectAnalytics {
 
 interface MockTestListItem {
   exam_serial: number;
+  exam_title: string;
+  exam_date: string;
   total_questions: number;
   attempted: number;
+  skipped: number;
   correct: number;
   incorrect: number;
-  unattempted: number;
   total_score: number;
 }
 
@@ -38,14 +40,14 @@ interface MockTestListResponse {
 }
 
 interface MockTestSubject {
-  subject_id: string;
   subject_name: string;
+  attempted: number;
+  correct: number;
+  incorrect: number;
   accuracy: number;
   score: number;
-  negative_marking_damage_index: number;
-  volatility_index: number;
-  trend: 'improving' | 'declining' | 'stable';
   smart_revision_priority: number;
+  negative_marking_damage_index: number;
 }
 
 interface MockTestSummary {
@@ -219,7 +221,7 @@ function MockTestsAnalytics() {
       setError(null);
 
       const { data, error: rpcError } = await supabase.rpc(
-        'get_mock_test_master_analytics_v1',
+        'get_mock_test_list_v1',
         { p_student_id: user.id }
       );
 
@@ -243,7 +245,7 @@ function MockTestsAnalytics() {
       setDetailLoading(true);
 
       const { data, error: rpcError } = await supabase.rpc(
-        'get_mock_test_master_analytics_v1',
+        'get_mock_test_subject_analytics_v1',
         {
           p_student_id: user.id,
           p_exam_serial: examSerial
@@ -369,6 +371,15 @@ function MockTestListCard({ mockTest, onPress }: { mockTest: MockTestListItem; o
   const accuracy = mockTest.attempted > 0 ? (mockTest.correct / mockTest.attempted) * 100 : 0;
   const accuracyColor = getAccuracyColor(accuracy);
 
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch {
+      return dateString;
+    }
+  };
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardHeader}>
@@ -376,7 +387,13 @@ function MockTestListCard({ mockTest, onPress }: { mockTest: MockTestListItem; o
           <View style={styles.rankBadge}>
             <Text style={styles.rankText}>#{mockTest.exam_serial}</Text>
           </View>
-          <Text style={styles.subjectName}>Mock Test {mockTest.exam_serial}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.subjectName}>{mockTest.exam_title}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
+              <Clock size={12} color="#9A9A9A" />
+              <Text style={[styles.metricLabel, { fontSize: 12 }]}>{formatDate(mockTest.exam_date)}</Text>
+            </View>
+          </View>
         </View>
       </View>
 
@@ -434,18 +451,6 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTestDetail; on
     return '#EF4444';
   };
 
-  const getTrendIcon = (trend: string) => {
-    if (trend === 'improving') return <TrendingUp size={16} color="#10B981" />;
-    if (trend === 'declining') return <TrendingDown size={16} color="#EF4444" />;
-    return null;
-  };
-
-  const getTrendColor = (trend: string) => {
-    if (trend === 'improving') return '#10B981';
-    if (trend === 'declining') return '#EF4444';
-    return '#9A9A9A';
-  };
-
   const scoreColor = getScoreColor(mockTest.summary?.total_score);
   const sortedSubjects = [...(mockTest.subjects || [])].sort(
     (a, b) => (b.smart_revision_priority ?? 0) - (a.smart_revision_priority ?? 0)
@@ -499,19 +504,13 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTestDetail; on
               const subjectAccuracyColor = getAccuracyColor(subject.accuracy);
               const subjectScoreColor = getScoreColor(subject.score);
               return (
-                <View key={subject.subject_id} style={styles.card}>
+                <View key={subject.subject_name} style={styles.card}>
                   <View style={styles.cardHeader}>
                     <View style={styles.cardTitleRow}>
                       <View style={styles.rankBadge}>
                         <Text style={styles.rankText}>#{index + 1}</Text>
                       </View>
                       <Text style={styles.subjectName}>{subject.subject_name}</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 }}>
-                      {getTrendIcon(subject.trend)}
-                      <Text style={[styles.metricLabel, { color: getTrendColor(subject.trend) }]}>
-                        {subject.trend}
-                      </Text>
                     </View>
                   </View>
 
@@ -527,6 +526,29 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTestDetail; on
                       <Text style={styles.metricLabel}>Revision Priority</Text>
                       <Text style={styles.metricValue}>
                         {subject.smart_revision_priority?.toFixed(1) ?? '0.0'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.metricsGrid}>
+                    <View style={styles.metricBox}>
+                      <Text style={styles.metricLabel}>Attempted</Text>
+                      <Text style={styles.metricValue}>
+                        {subject.attempted ?? 0}
+                      </Text>
+                    </View>
+
+                    <View style={styles.metricBox}>
+                      <Text style={styles.metricLabel}>Correct</Text>
+                      <Text style={[styles.metricValue, { color: '#10B981' }]}>
+                        {subject.correct ?? 0}
+                      </Text>
+                    </View>
+
+                    <View style={styles.metricBox}>
+                      <Text style={styles.metricLabel}>Incorrect</Text>
+                      <Text style={[styles.metricValue, { color: '#EF4444' }]}>
+                        {subject.incorrect ?? 0}
                       </Text>
                     </View>
                   </View>
@@ -556,12 +578,6 @@ function MockTestDetailView({ mockTest, onBack }: { mockTest: MockTestDetail; on
                       <Text style={styles.timeLabel}>Negative Marking Impact</Text>
                       <Text style={[styles.timeValue, { color: '#EF4444' }]}>
                         {subject.negative_marking_damage_index?.toFixed(2) ?? '0.00'}
-                      </Text>
-                    </View>
-                    <View style={styles.timeRow}>
-                      <Text style={styles.timeLabel}>Volatility Index</Text>
-                      <Text style={styles.timeValue}>
-                        {subject.volatility_index?.toFixed(1) ?? '0.0'}
                       </Text>
                     </View>
                   </View>
