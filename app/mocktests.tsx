@@ -181,7 +181,7 @@ useEffect(() => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [remainingTime, setRemainingTime] = useState(null);
   const [testEnded, setTestEnded] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
+
   const autoStartDone = useRef(false);
   const scrollRef = useRef<ScrollView>(null);
   console.log("🟡 PARAMS RECEIVED IN mocktests.tsx:", params);
@@ -199,10 +199,7 @@ const callTimerExpiredRPC = async (currentRO) => {
       p_current_ro: currentRO,
       p_time_left: "00:00:00"
     });
-if (isSectionEnd(currentRO)) {
-  setShowSectionConfirm(true);
-  return;
-}
+
     const { data, error } = await supabase.rpc(
       "timer_expired_jump_section_v10",
       {
@@ -212,7 +209,10 @@ if (isSectionEnd(currentRO)) {
         p_time_left: "00:00:00"
       }
     );
-
+if (isSectionEnd(currentRO)) {
+  setShowSectionConfirm(true);
+  return;
+}
     if (error) {
       console.error("❌ [TIMER 0 RPC ERROR] timer_expired_jump_section_v10:", error);
       return;
@@ -663,7 +663,7 @@ const handleNext = async () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          intent: "load_next_mocktest_phase",
+          intent: "next_mocktest_phase",
           student_id: userId,
           exam_serial: phaseData.exam_serial,
           react_order_final: currentRO,
@@ -1074,7 +1074,7 @@ const isSectionEnd = (ro: number) =>
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              intent: "load_next_mocktest_phase",
+              intent: "next_mocktest_phase",
               student_id: userId,
               exam_serial: phaseData.exam_serial,
               react_order_final: phaseData.react_order_final,
@@ -1214,7 +1214,7 @@ const isSectionEnd = (ro: number) =>
   </View>
 )}
 
-{/* ⚠️ Finish Test Confirmation Modal */}
+{/* ⚠️ Section Completion Modal */}
 {showSectionConfirm && (
   <View style={styles.modalOverlay}>
     <Animated.View style={styles.completionModal}>
