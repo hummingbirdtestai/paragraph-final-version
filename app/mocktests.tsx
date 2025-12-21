@@ -725,8 +725,11 @@ const formatTime = (seconds: number) => {
 }
 
 const handleNext = async () => {
-  if (testEnded || !phaseData?.exam_serial || !phaseData?.react_order_final)
+  // 🛑 STOP at end of section (40/80/120/160)
+  if (isSectionEnd(phaseData.react_order_final)) {
+    setShowSectionConfirm(true);
     return;
+  }
 
   try {
     const response = await fetch(
