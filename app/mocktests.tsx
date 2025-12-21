@@ -1171,36 +1171,13 @@ const isSectionEnd = (ro: number) =>
         {/* Review this section */}
         <TouchableOpacity
           style={[styles.modalButton, { backgroundColor: "#334155" }]}
-          onPress={async () => {
-            try {
-              console.log("🟨 SECTION REVIEW CLICKED → sending is_review=true");
-              console.log("🟨 REVIEW PAYLOAD CHECK", {
-                intent: "next_mocktest_phase",
-                ro: phaseData?.react_order_final,
-                is_review: true,
-              });
-              
-              await fetch(
-                "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    intent: "next_mocktest_phase",
-                    student_id: userId,
-                    exam_serial: phaseData.exam_serial,
-                    react_order_final: phaseData.react_order_final,
-                    time_left: formatTime(remainingTime),
-                    is_review: true, // 🔥 THIS IS THE ONLY NEW SIGNAL
-                  }),
-                }
-              );
-        
-              // ✅ Stay in same section, do NOT create next pointer
-              setShowSectionConfirm(false);
-            } catch (err) {
-              console.error("❌ Section review submit failed:", err);
-            }
+          onPress={() => {
+            console.log("🟨 SECTION REVIEW CLICKED — NO RPC FIRED");
+            
+            // ✅ Just close modal
+            // ✅ Stay on same question (Q40 / Q80 / Q120 / Q160)
+            // ✅ Do NOT touch backend
+            setShowSectionConfirm(false);
           }}
         >
           <Text style={[styles.modalButtonText, { color: "#fff" }]}>
