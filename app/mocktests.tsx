@@ -724,8 +724,7 @@ const formatTime = (seconds: number) => {
   return `${h}:${m}:${s}`;
 }
 
-const handleNext = async () => 
-  if (isSectionEnd(phaseData.react_order_final)) {
+const handleNext = async () => {
     // ✅ submit answer first
     await fetch(
       "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
@@ -1336,7 +1335,7 @@ const isSectionEnd = (ro: number) =>
         {/* Review this section */}
         <TouchableOpacity
           style={[styles.modalButton, { backgroundColor: "#334155" }]}
-          onPress={() => setShowConfirmFinish(false)}
+          onPress={() => setShowSectionConfirm(false)}
         >
           <Text style={[styles.modalButtonText, { color: "#fff" }]}>
             Review this section
