@@ -724,8 +724,7 @@ const formatTime = (seconds: number) => {
   return `${h}:${m}:${s}`;
 }
 
-const handleNext = async () => {
-  // 🛑 STOP at end of section (40/80/120/160)
+const handleNext = async () => 
   if (isSectionEnd(phaseData.react_order_final)) {
     // ✅ submit answer first
     await fetch(
