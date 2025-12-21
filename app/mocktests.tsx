@@ -220,7 +220,16 @@ if (error) {
   console.error("❌ [TIMER 0 RPC ERROR]", error);
   return;
 }
+// submit ALWAYS happens first
+const data = await response.json();
+const normalized = normalizePhaseData(data);
 
+// update UI with saved state
+if (normalized?.phase_json) {
+  setPhaseData(normalized);
+  setCurrentMCQ(normalized.phase_json[0]);
+  setSelectedOption(null);
+}
 if (isSectionEnd(currentRO)) {
   setShowSectionConfirm(true);
   return;
