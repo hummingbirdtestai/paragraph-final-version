@@ -1338,7 +1338,7 @@ if (!error && data?.phase_json) {
             }
           }}
         >
-          <Text style={styles.modalButtonText}>Complete Test</Text>
+          <Text style={styles.modalButtonText}>Go to Next Section</Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
