@@ -118,7 +118,6 @@ export default function MockTestsScreen() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showNav, setShowNav] = useState(false);
   const [userName, setUserName] = useState("");
-  const [currentSection, setCurrentSection] = useState("A");
   const router = useRouter();
   const params = useLocalSearchParams();
 const testTitle = params.title ? decodeURIComponent(params.title as string) : null;
@@ -1191,13 +1190,6 @@ if (!error && data?.phase_json) {
 }
 
 
-              if (error) {
-                Alert.alert("Error", "Could not complete test.");
-                return;
-              }
-
-              setShowConfirmFinish(false);
-              setShowCompletionModal(true);
             } catch (err) {
               Alert.alert("Error", "Could not complete test.");
             }
