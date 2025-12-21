@@ -940,6 +940,8 @@ const getSection = (react_order: number) => {
 const getSectionQNumber = (react_order: number) => {
   return ((react_order - 1) % 40) + 1;
 };
+const isSectionEnd = (ro: number) =>
+  [40, 80, 120, 160].includes(Number(ro));
 
   // 🎯 Helper to determine question status
   const determineQuestionStatus = (qNum: number) => {
