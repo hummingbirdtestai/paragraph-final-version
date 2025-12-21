@@ -222,8 +222,6 @@ if (error) {
 }
 
 if (isSectionEnd(currentRO)) {
-  setPhaseData(normalizePhaseData(data));
-  setCurrentMCQ(normalizePhaseData(data)?.phase_json?.[0] ?? null);
   setShowSectionConfirm(true);
   return;
 }
