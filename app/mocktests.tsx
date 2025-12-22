@@ -461,7 +461,11 @@ export default function MockTestsScreen() {
       ]);
 
       if (windowRes.data) {
-        setMockWindow(windowRes.data);
+        setMockWindow({
+          present: windowRes.data.present_mock_test,
+          next: windowRes.data.next_mock_test,
+          review: windowRes.data.review_tests,
+        });
       }
 
       if (completedRes.data) {
