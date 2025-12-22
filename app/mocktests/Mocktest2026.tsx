@@ -60,6 +60,22 @@ export default function Mocktest2026() {
   }, []);
 
   /* ---------------------------------
+     AUTO LOAD FIRST SECTION  ✅ FIX #1
+  --------------------------------- */
+  useEffect(() => {
+    if (!userId) return;
+
+    const DEFAULT_EXAM_SERIAL = 1; // 🔧 adjust later via params
+
+    console.log("🚀 Auto loading mocktest", {
+      userId,
+      DEFAULT_EXAM_SERIAL,
+    });
+
+    loadSection(userId, DEFAULT_EXAM_SERIAL);
+  }, [userId]);
+
+  /* ---------------------------------
      LOAD SECTION FEED
   --------------------------------- */
   const loadSection = async (studentId: string, examSerial: number) => {
@@ -107,7 +123,6 @@ export default function Mocktest2026() {
         if (t <= 1) {
           clearInterval(timerRef.current!);
           console.warn("⏰ Section timer expired");
-          handleSectionTimeout();
           return 0;
         }
         return t - 1;
@@ -119,11 +134,6 @@ export default function Mocktest2026() {
       timerRef.current && clearInterval(timerRef.current);
     };
   }, [feed]);
-
-  const handleSectionTimeout = () => {
-    console.warn("🚨 Section timeout reached — UI decision pending");
-    // intentionally UI-only
-  };
 
   /* ---------------------------------
      SUBMIT HELPERS
@@ -138,11 +148,7 @@ export default function Mocktest2026() {
     is_review: boolean;
   }) => {
     if (!userId || !examSerial || !currentMCQ) {
-      console.warn("⚠️ submit blocked — missing state", {
-        userId,
-        examSerial,
-        currentMCQ,
-      });
+      console.warn("⚠️ submit blocked — missing state");
       return;
     }
 
@@ -187,6 +193,7 @@ export default function Mocktest2026() {
       return copy;
     });
   };
+
   /* ---------------------------------
      ACTION HANDLERS
   --------------------------------- */
@@ -217,9 +224,14 @@ export default function Mocktest2026() {
   };
 
   if (!currentMCQ) {
-    return <Text style={{ color: "#999" }}>Loading…</Text>;
+    return (
+      <MainLayout>
+        <SafeAreaView style={styles.container}>
+          <Text style={{ color: "#999" }}>Loading…</Text>
+        </SafeAreaView>
+      </MainLayout>
+    );
   }
-
   /* ---------------------------------
      RENDER
   --------------------------------- */
@@ -288,12 +300,12 @@ export default function Mocktest2026() {
           </TouchableOpacity>
         </View>
 
-        {/* PALETTE */}
+        {/* PALETTE — ✅ FIX #2 */}
         <QuestionNavigationScreenNew
           isVisible={showPalette}
           onClose={() => setShowPalette(false)}
           mcqs={feed}
-          currentQuestion={currentMCQ.section_q_number}
+          currentQuestion={currentMCQ.react_order}
           onSelectQuestion={(ro) => {
             console.log("🧭 Palette jump → react_order", ro);
             const idx = feed.findIndex(
