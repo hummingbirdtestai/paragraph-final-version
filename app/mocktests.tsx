@@ -226,7 +226,7 @@ export default function MockTestsScreen() {
 
       const { data, error } = await supabase.rpc("get_mocktest_section_mcqs", {
         p_student_id: userId,
-        p_exam_serial: Number(exam_serial),
+        p_exam_serial: Number(String(exam_serial).trim()),
       });
 
       if (error) throw error;
@@ -591,12 +591,12 @@ export default function MockTestsScreen() {
 
           <View style={styles.questionCard}>
             <Markdown style={markdownStyles}>
-              {currentMCQ.phase_json.stem || ""}
+              {currentMCQ.stem || ""}
             </Markdown>
           </View>
 
           <View style={styles.optionsContainer}>
-            {Object.entries(currentMCQ.phase_json.options || {}).map(([key, value]: [string, any]) => (
+            {Object.entries(currentMCQ.options || {}).map(([key, value]: [string, any]) => (
               <TouchableOpacity
                 key={key}
                 style={[
