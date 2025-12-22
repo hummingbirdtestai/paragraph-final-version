@@ -60,12 +60,12 @@ export default function Mocktest2026() {
   }, []);
 
   /* ---------------------------------
-     AUTO LOAD FIRST SECTION  ✅ FIX #1
+     AUTO LOAD FIRST SECTION
   --------------------------------- */
   useEffect(() => {
     if (!userId) return;
 
-    const DEFAULT_EXAM_SERIAL = 1; // 🔧 adjust later via params
+    const DEFAULT_EXAM_SERIAL = 1; // TODO: route param later
 
     console.log("🚀 Auto loading mocktest", {
       userId,
@@ -79,10 +79,7 @@ export default function Mocktest2026() {
      LOAD SECTION FEED
   --------------------------------- */
   const loadSection = async (studentId: string, examSerial: number) => {
-    console.log("📥 Loading section feed", {
-      studentId,
-      examSerial,
-    });
+    console.log("📥 Loading section feed", { studentId, examSerial });
 
     setExamSerial(examSerial);
 
@@ -101,11 +98,13 @@ export default function Mocktest2026() {
 
     console.log("📦 Section feed received", data);
 
-    setFeed(data.mcqs);
+    setFeed(data.mcqs || []);
     setCurrentIndex(0);
 
-    const [h, m, s] = data.time_left.split(":").map(Number);
-    setRemainingTime(h * 3600 + m * 60 + s);
+    if (data?.time_left) {
+      const [h, m, s] = data.time_left.split(":").map(Number);
+      setRemainingTime(h * 3600 + m * 60 + s);
+    }
   };
 
   /* ---------------------------------
@@ -134,7 +133,6 @@ export default function Mocktest2026() {
       timerRef.current && clearInterval(timerRef.current);
     };
   }, [feed]);
-
   /* ---------------------------------
      SUBMIT HELPERS
   --------------------------------- */
@@ -160,15 +158,17 @@ export default function Mocktest2026() {
       time_left: formatTime(remainingTime),
     });
 
+    const correctAnswer = currentMCQ?.phase_json?.correct_answer ?? null;
+
     const { error } = await supabase.rpc("submit_mocktest_answer", {
       p_student_id: userId,
       p_exam_serial: examSerial,
       p_react_order_final: currentMCQ.react_order,
-      p_correct_answer: currentMCQ.phase_json.correct_answer,
+      p_correct_answer: correctAnswer,
       p_student_answer: student_answer,
       p_is_correct:
-        student_answer != null
-          ? student_answer === currentMCQ.phase_json.correct_answer
+        student_answer && correctAnswer
+          ? student_answer === correctAnswer
           : null,
       p_is_skipped: is_skipped,
       p_is_review: is_review,
@@ -223,15 +223,30 @@ export default function Mocktest2026() {
     });
   };
 
-  if (!currentMCQ) {
+  /* ---------------------------------
+     HARD GUARD — INVALID MCQ
+  --------------------------------- */
+  if (
+    !currentMCQ ||
+    !currentMCQ.phase_json ||
+    !currentMCQ.phase_json.stem
+  ) {
+    console.warn("⚠️ Invalid MCQ payload", currentMCQ);
     return (
       <MainLayout>
         <SafeAreaView style={styles.container}>
-          <Text style={{ color: "#999" }}>Loading…</Text>
+          <Text style={{ color: "#999" }}>Loading question…</Text>
         </SafeAreaView>
       </MainLayout>
     );
   }
+
+  const options =
+    currentMCQ.phase_json.options &&
+    typeof currentMCQ.phase_json.options === "object"
+      ? currentMCQ.phase_json.options
+      : {};
+
   /* ---------------------------------
      RENDER
   --------------------------------- */
@@ -249,12 +264,7 @@ export default function Mocktest2026() {
             <Text>{formatTime(remainingTime)}</Text>
           </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              console.log("🎨 Opening palette");
-              setShowPalette(true);
-            }}
-          >
+          <TouchableOpacity onPress={() => setShowPalette(true)}>
             <Grid3x3 size={18} />
           </TouchableOpacity>
         </View>
@@ -262,26 +272,22 @@ export default function Mocktest2026() {
         {/* QUESTION */}
         <Markdown>{currentMCQ.phase_json.stem}</Markdown>
 
-        {/* OPTIONS */}
-        {Object.entries(currentMCQ.phase_json.options).map(
-          ([key, value]) => (
-            <TouchableOpacity
-              key={key}
-              onPress={() => {
-                console.log("🟦 Option selected", key);
-                setFeed((f) => {
-                  const c = [...f];
-                  c[currentIndex].student_answer = key;
-                  return c;
-                });
-              }}
-            >
-              <Text>
-                {key}. {value}
-              </Text>
-            </TouchableOpacity>
-          )
-        )}
+        {/* OPTIONS — ✅ SAFE */}
+        {Object.entries(options).map(([key, value]) => (
+          <TouchableOpacity
+            key={key}
+            onPress={() => {
+              console.log("🟦 Option selected", key);
+              setFeed((f) => {
+                const c = [...f];
+                c[currentIndex].student_answer = key;
+                return c;
+              });
+            }}
+          >
+            <Text>{key}. {value}</Text>
+          </TouchableOpacity>
+        ))}
 
         {/* FOOTER */}
         <View style={styles.footer}>
@@ -300,17 +306,14 @@ export default function Mocktest2026() {
           </TouchableOpacity>
         </View>
 
-        {/* PALETTE — ✅ FIX #2 */}
+        {/* PALETTE */}
         <QuestionNavigationScreenNew
           isVisible={showPalette}
           onClose={() => setShowPalette(false)}
           mcqs={feed}
           currentQuestion={currentMCQ.react_order}
           onSelectQuestion={(ro) => {
-            console.log("🧭 Palette jump → react_order", ro);
-            const idx = feed.findIndex(
-              (m) => m.react_order === ro
-            );
+            const idx = feed.findIndex((m) => m.react_order === ro);
             if (idx !== -1) setCurrentIndex(idx);
           }}
         />
