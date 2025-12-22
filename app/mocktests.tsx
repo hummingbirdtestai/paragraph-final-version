@@ -106,12 +106,11 @@ export default function MockTestsScreen() {
     if (!testStarted || testEnded || remainingTime === null) return;
     if (typeof remainingTime !== "number" || isNaN(remainingTime)) return;
 
-    console.log("⏱ TIMER STARTED");
+    console.log("⏱ TIMER STARTED WITH", remainingTime);
 
     const timer = setInterval(() => {
       setRemainingTime((prev) => {
-        if (prev === null || prev <= 0) {
-          clearInterval(timer);
+        if (prev === null || prev <= 1) {
           handleTimerExpired();
           return 0;
         }
@@ -120,7 +119,7 @@ export default function MockTestsScreen() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [testStarted, testEnded]);
+  }, [testStarted, testEnded, remainingTime]);
 
   const handleTimerExpired = async () => {
     console.log("⏰ TIMER EXPIRED - AUTO SUBMITTING");
