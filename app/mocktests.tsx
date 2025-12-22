@@ -122,7 +122,6 @@ export default function MockTestsScreen() {
   const params = useLocalSearchParams();
   const testTitle = params.title ? decodeURIComponent(params.title as string) : null;
   const testDate = params.date ? decodeURIComponent(params.date as string) : null;
-  const [paletteData, setPaletteData] = useState(null);
   const [profile, setProfile] = useState(null);
   const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [showConfirmFinish, setShowConfirmFinish] = useState(false);
