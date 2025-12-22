@@ -1,4 +1,4 @@
-// app/mocktests.tsx - PRODUCTION MOCK TEST SCREEN (RPC-DRIVEN)
+// app/mocktests.tsx - PRODUCTION MOCK TEST SCcREEN (RPC-DRIVEN)
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
