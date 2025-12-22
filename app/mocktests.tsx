@@ -11,15 +11,6 @@ import {
   SafeAreaView,
   ActivityIndicator,
 } from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-} from "react-native-gesture-handler";
-import AnimatedReanimated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
 import { Clock, ChevronRight, SkipForward, Grid3x3, Bookmark } from "lucide-react-native";
 import Markdown from "react-native-markdown-display";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,76 +22,11 @@ import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import MockTestsLanding from "@/components/landing/MockTestsIntro";
 import PageHeader from "@/components/common/PageHeader";
 import QuestionNavigationScreen from "@/components/types/QuestionNavigationScreen";
+import ZoomableImage from "@/components/common/ZoomableImage";
 import type { MockTest, UserMockTest } from "@/types/mock-test";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import MainLayout from "@/components/MainLayout";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-// Zoomable Image Component
-function ZoomableImage({ uri, height = 250 }: { uri: string; height?: number }) {
-  const scale = useSharedValue(1);
-  const translationX = useSharedValue(0);
-  const translationY = useSharedValue(0);
-
-  const pinch = Gesture.Pinch()
-    .onUpdate((e) => {
-      scale.value = Math.min(Math.max(e.scale, 1), 3);
-    })
-    .onEnd(() => {
-      if (scale.value < 1) scale.value = withTiming(1);
-    });
-
-  const pan = Gesture.Pan()
-    .onUpdate((e) => {
-      if (scale.value > 1) {
-        translationX.value = e.translationX;
-        translationY.value = e.translationY;
-      }
-    })
-    .onEnd(() => {
-      translationX.value = withTiming(0);
-      translationY.value = withTiming(0);
-    });
-
-  const doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd(() => {
-      scale.value = withTiming(scale.value > 1 ? 1 : 2, { duration: 200 });
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { translateX: translationX.value },
-      { translateY: translationY.value },
-    ],
-  }));
-
-  return (
-    <View style={[zoomStyles.wrapper, { height }]}>
-      <GestureDetector gesture={Gesture.Simultaneous(pinch, pan, doubleTap)}>
-        <AnimatedReanimated.Image
-          source={{ uri }}
-          style={[zoomStyles.image, animatedStyle]}
-          resizeMode="contain"
-        />
-      </GestureDetector>
-    </View>
-  );
-}
-
-const zoomStyles = StyleSheet.create({
-  wrapper: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#0f172a",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  image: { width: SCREEN_WIDTH - 40, height: "100%", borderRadius: 12 },
-});
 
 export default function MockTestsScreen() {
   const { user, loginWithOTP, verifyOTP } = useAuth();
@@ -226,18 +152,23 @@ export default function MockTestsScreen() {
 
       if (error) throw error;
 
-      console.log("✅ SECTION LOADED:", data);
+      console.log("✅ RAW RPC RESPONSE:", data);
 
-      setMcqs(data.mcqs || []);
-      setExamSerial(data.exam_serial);
-      setCurrentSection(data.section);
+      // Extract payload from response array
+      const payload = data?.[0]?.get_mocktest_section_mcqs || data;
+
+      console.log("✅ SECTION LOADED:", payload);
+
+      setMcqs(payload.mcqs || []);
+      setExamSerial(payload.exam_serial);
+      setCurrentSection(payload.section);
       setCurrentIndex(0);
       setSelectedOption(null);
       setTestStarted(true);
 
       // Initialize timer
-      if (data.time_left) {
-        const [h, m, s] = data.time_left.split(":").map(Number);
+      if (payload.time_left) {
+        const [h, m, s] = payload.time_left.split(":").map(Number);
         setRemainingTime(h * 3600 + m * 60 + s);
       } else {
         setRemainingTime(42 * 60); // Default: 42 minutes
@@ -267,6 +198,7 @@ export default function MockTestsScreen() {
 
     try {
       const timeLeft = formatTime(remainingTime || 0);
+      const question = current.phase_json?.[0] || current.phase_json;
 
       console.log("📤 SUBMITTING ANSWER", {
         react_order: current.react_order,
@@ -280,9 +212,9 @@ export default function MockTestsScreen() {
         p_student_id: userId,
         p_exam_serial: examSerial,
         p_react_order_final: current.react_order,
-        p_correct_answer: current.phase_json.correct_answer,
+        p_correct_answer: question.correct_answer,
         p_student_answer: student_answer,
-        p_is_correct: student_answer === current.phase_json.correct_answer,
+        p_is_correct: student_answer === question.correct_answer,
         p_is_skipped: is_skipped,
         p_is_review: is_review,
         p_time_left: timeLeft,
@@ -299,7 +231,7 @@ export default function MockTestsScreen() {
         student_answer,
         is_skipped,
         is_review,
-        is_correct: student_answer === current.phase_json.correct_answer,
+        is_correct: student_answer === question.correct_answer,
       };
       setMcqs(updatedMcqs);
     } catch (err: any) {
@@ -575,49 +507,51 @@ export default function MockTestsScreen() {
             <Text style={styles.sectionLabel}>Section {currentSection}</Text>
           </View>
 
-          {currentMCQ.is_mcq_image_type && currentMCQ.mcq_image && (
-            <ZoomableImage uri={currentMCQ.mcq_image} height={280} />
-          )}
-
           <View style={styles.questionCard}>
             <Markdown style={markdownStyles}>
-              {currentMCQ.phase_json?.question || ""}
+              {currentMCQ.phase_json?.[0]?.stem || currentMCQ.phase_json?.stem || ""}
             </Markdown>
           </View>
 
+          {currentMCQ.is_mcq_image_type && currentMCQ.mcq_image && (
+            <View style={{ marginBottom: 20 }}>
+              <ZoomableImage uri={currentMCQ.mcq_image} height={260} />
+            </View>
+          )}
+
           <View style={styles.optionsContainer}>
-            {Object.entries(currentMCQ.phase_json?.options || {}).map(
-              ([key, value]: [string, any]) => (
-                <TouchableOpacity
-                  key={key}
-                  style={[
-                    styles.optionButton,
-                    selectedOption === key && styles.optionButtonSelected,
-                  ]}
-                  onPress={() => setSelectedOption(key)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.optionLabelContainer}>
-                    <Text
-                      style={[
-                        styles.optionLabel,
-                        selectedOption === key && styles.optionLabelSelected,
-                      ]}
-                    >
-                      {key}
-                    </Text>
-                  </View>
+            {Object.entries(
+              currentMCQ.phase_json?.[0]?.options || currentMCQ.phase_json?.options || {}
+            ).map(([key, value]: [string, any]) => (
+              <TouchableOpacity
+                key={key}
+                style={[
+                  styles.optionButton,
+                  selectedOption === key && styles.optionButtonSelected,
+                ]}
+                onPress={() => setSelectedOption(key)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.optionLabelContainer}>
                   <Text
                     style={[
-                      styles.optionText,
-                      selectedOption === key && styles.optionTextSelected,
+                      styles.optionLabel,
+                      selectedOption === key && styles.optionLabelSelected,
                     ]}
                   >
-                    {value}
+                    {key}
                   </Text>
-                </TouchableOpacity>
-              )
-            )}
+                </View>
+                <Text
+                  style={[
+                    styles.optionText,
+                    selectedOption === key && styles.optionTextSelected,
+                  ]}
+                >
+                  {value}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
 
