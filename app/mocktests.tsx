@@ -100,6 +100,7 @@ const zoomStyles = StyleSheet.create({
   image: { width: SCREEN_WIDTH - 40, height: "100%", borderRadius: 12 },
 });
 
+console.log("🟥 LOADED SCREEN → app/mocktests.tsx");
 
 // ───────────────────────────────────────────────
 // 🔹 MAIN MONOLITHIC MOCKTEST SCREEN
