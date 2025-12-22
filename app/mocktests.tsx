@@ -307,7 +307,7 @@ export default function MockTestsScreen() {
     }
   };
 
-  const handlePaletteJump = async (targetReactOrder: number) => {
+  const handlePaletteJump = async (sectionId: string, reactOrderFinal: number) => {
     // Submit current before jumping
     await submitAnswer({
       student_answer: selectedOption,
@@ -315,7 +315,8 @@ export default function MockTestsScreen() {
       is_review: false,
     });
 
-    const targetIndex = mcqs.findIndex((m) => m.react_order === targetReactOrder);
+    // Convert 1-based react_order_final to 0-based index
+    const targetIndex = mcqs.findIndex((m) => m.react_order === reactOrderFinal);
     if (targetIndex !== -1) {
       setCurrentIndex(targetIndex);
       setSelectedOption(mcqs[targetIndex].student_answer || null);
@@ -344,27 +345,34 @@ export default function MockTestsScreen() {
   const generatePaletteData = () => {
     if (!mcqs.length) return null;
 
-    const answered = mcqs.filter((m) => m.student_answer && !m.is_review).length;
-    const skipped = mcqs.filter((m) => m.is_skipped).length;
-    const marked = mcqs.filter((m) => m.is_review).length;
-    const unanswered = mcqs.filter(
-      (m) => !m.student_answer && !m.is_skipped && !m.is_review
-    ).length;
+    const paletteMcqs = mcqs.map((mcq) => {
+      let status: 'answered' | 'marked' | 'skipped' | 'unanswered' = 'unanswered';
 
-    return {
-      questions: mcqs.map((m) => ({
-        serial_number: m.section_q_number,
-        react_order_final: m.react_order,
-        status: m.is_review
-          ? "marked"
-          : m.is_skipped
-          ? "skipped"
-          : m.student_answer
-          ? "answered"
-          : "unanswered",
-      })),
-      stats: { answered, skipped, marked, unanswered },
-    };
+      if (mcq.student_answer) status = 'answered';
+      else if (mcq.is_skipped) status = 'skipped';
+      else if (mcq.is_review) status = 'marked';
+
+      return {
+        serial_number: mcq.section_q_number,
+        react_order_final: mcq.react_order,
+        status,
+      };
+    });
+
+    const counts = paletteMcqs.reduce(
+      (acc, q) => {
+        acc[q.status]++;
+        return acc;
+      },
+      {
+        answered: 0,
+        skipped: 0,
+        marked: 0,
+        unanswered: 0,
+      }
+    );
+
+    return { mcqs: paletteMcqs, counts };
   };
 
   // Timer Formatter
@@ -591,13 +599,14 @@ export default function MockTestsScreen() {
 
         {showNav && paletteData && (
           <QuestionNavigationScreen
-            visible={showNav}
+            isVisible={showNav}
             onClose={() => setShowNav(false)}
-            questions={paletteData.questions}
-            stats={paletteData.stats}
+            sectionId={currentSection || "A"}
+            timeLeft={remainingTime || 0}
             currentQuestion={currentMCQ.react_order}
-            onJump={handlePaletteJump}
-            onFinish={handleFinishTest}
+            mcqs={paletteData.mcqs}
+            counts={paletteData.counts}
+            onSelectQuestion={handlePaletteJump}
           />
         )}
 
