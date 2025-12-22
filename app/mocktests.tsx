@@ -307,7 +307,9 @@ export default function MockTestsScreen() {
     }
   };
 
-  const handlePaletteJump = async (sectionId: string, reactOrderFinal: number) => {
+  const handlePaletteJump = async (_sectionId: string, reactOrderFinal: number) => {
+    if (!reactOrderFinal) return;
+
     // Submit current before jumping
     await submitAnswer({
       student_answer: selectedOption,
@@ -315,14 +317,20 @@ export default function MockTestsScreen() {
       is_review: false,
     });
 
-    // Convert 1-based react_order_final to 0-based index
-    const targetIndex = mcqs.findIndex((m) => m.react_order === reactOrderFinal);
-    if (targetIndex !== -1) {
-      setCurrentIndex(targetIndex);
-      setSelectedOption(mcqs[targetIndex].student_answer || null);
-      setShowNav(false);
+    // react_order is 1-based
+    const targetIndex = mcqs.findIndex(
+      (m) => Number(m.react_order) === Number(reactOrderFinal)
+    );
+
+    if (targetIndex === -1) return;
+
+    setCurrentIndex(targetIndex);
+    setSelectedOption(mcqs[targetIndex]?.student_answer || null);
+    setShowNav(false);
+
+    requestAnimationFrame(() => {
       scrollRef.current?.scrollTo({ y: 0, animated: true });
-    }
+    });
   };
 
   const handleFinishTest = () => {
@@ -603,7 +611,7 @@ export default function MockTestsScreen() {
             onClose={() => setShowNav(false)}
             sectionId={currentSection || "A"}
             timeLeft={remainingTime || 0}
-            currentQuestion={currentMCQ.react_order}
+            currentQuestion={currentMCQ.section_q_number}
             mcqs={paletteData.mcqs}
             counts={paletteData.counts}
             onSelectQuestion={handlePaletteJump}

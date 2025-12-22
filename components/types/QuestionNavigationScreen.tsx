@@ -143,7 +143,9 @@ const handleQuestionSelect = (questionNumber: number) => {
     status: selected?.status
   });
 
-  onSelectQuestion(selected?.react_order_final);
+  if (!selected) return;
+
+  onSelectQuestion(sectionId, selected.react_order_final);
 
   if (onClose) onClose();
 };
