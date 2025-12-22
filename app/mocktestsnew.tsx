@@ -30,7 +30,7 @@ import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import MockTestsLanding from "@/components/landing/MockTestsIntro";
 import PageHeader from "@/components/common/PageHeader";
-import QuestionNavigationScreen from "@/components/types/QuestionNavigationScreen";
+import QuestionNavigationScreenNew from "@/components/types/QuestionNavigationScreennew";
 import type { MockTest, UserMockTest } from "@/types/mock-test";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
@@ -175,68 +175,18 @@ useEffect(() => {
 
   // 💡 Monolithic test state
   const [testStarted, setTestStarted] = useState(false);
-  const [phaseData, setPhaseData] = useState<any>(null);
-  const [currentMCQ, setCurrentMCQ] = useState<any | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [remainingTime, setRemainingTime] = useState(null);
   const [testEnded, setTestEnded] = useState(false);
+  const [feed, setFeed] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentMCQ = feed[currentIndex] ?? null;
+  const [examSerial, setExamSerial] = useState<number | null>(null);
 
   const autoStartDone = useRef(false);
   const scrollRef = useRef<ScrollView>(null);
   console.log("🟡 PARAMS RECEIVED IN mocktests.tsx:", params);
   console.log("🟡 Current testStarted:", testStarted);
-
-// ───────────────────────────────────────────────
-// 🔥 DIRECT RPC CALL WHEN TIMER HITS ZERO (FINAL)
-// ───────────────────────────────────────────────
-const callTimerExpiredRPC = async (currentRO) => {
-  try {
-    console.log("⏰ TIMER EXPIRED — RPC ABOUT TO FIRE", {
-      ro: currentRO,
-      exam_serial: phaseData?.exam_serial,
-      remainingTime,
-      ts: new Date().toISOString(),
-    });
-
-    const { data, error } = await supabase.rpc(
-      "timer_expired_jump_section_v10",
-      {
-        p_student_id: userId,
-        p_exam_serial: phaseData.exam_serial,
-        p_current_ro: currentRO,
-        p_time_left: "00:00:00",
-      }
-    );
-
-    if (error) {
-      console.error("❌ [TIMER 0 RPC ERROR]", error);
-      return;
-    }
-
-    const normalized = normalizePhaseData(data);
-
-    if (normalized?.phase_json) {
-      setPhaseData(normalized);
-      setCurrentMCQ(normalized.phase_json[0]);
-      setSelectedOption(null);
-    }
-
-    // 🔥 UI decision AFTER state is saved
-    if (isSectionEnd(currentRO)) {
-      setShowSectionConfirm(true);
-      return;
-    }
-
-    // ⏱ reset timer only if continuing
-    setRemainingTime(42 * 60);
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
-
-  } catch (err) {
-    console.error("🔥 [TIMER 0 RPC FAILED COMPLETELY]:", err);
-  }
-};
-
-
   
 useEffect(() => { loadData(); }, []);
 useEffect(() => {
@@ -254,8 +204,7 @@ useEffect(() => {
       }
 
       clearInterval(timer);
-      const currentRO = Number(phaseData?.react_order_final);
-      callTimerExpiredRPC(currentRO);
+      setTestEnded(true);
       return 0;
     });
   }, 1000);
@@ -403,36 +352,13 @@ const handleRegister = async (name: string) => {
     mockTest: d.mock_test ? mapToMockTest(d.mock_test) : undefined,
   });
 
-
-  // 🔧 Normalize phase data helper (convert string → boolean)
-const normalizePhaseData = (data: any) => {
-  if (!data?.phase_json) return data;
-
-  const mcqs = Array.isArray(data.phase_json)
-    ? data.phase_json
-    : [data.phase_json];
-
-  const normalizedMCQs = mcqs.map((q) => ({
-    ...q,
-    mcq_image: data.mcq_image ?? q.mcq_image,
-    is_mcq_image_type:
-      typeof (data.is_mcq_image_type ?? q.is_mcq_image_type) === "string"
-        ? (data.is_mcq_image_type ?? q.is_mcq_image_type) === "true"
-        : Boolean(data.is_mcq_image_type ?? q.is_mcq_image_type),
-  }));
-
-  return { ...data, phase_json: normalizedMCQs };
-};
-
-
-
 const fetchPalette = async () => {
-  if (!userId || !phaseData?.exam_serial) {
+  if (!userId || !examSerial || !currentMCQ) {
     console.log("⚠️ Palette fetch blocked → Missing userId or phaseData");
     return;
   }
 
-  const ro = Number(phaseData.react_order_final);
+  const ro = currentMCQ.react_order;
   console.log("🎨 Fetching palette for react_order_final:", ro);
 
   // Determine section range
@@ -448,13 +374,13 @@ const fetchPalette = async () => {
 
 const { data, error } = await supabase.rpc("palette_mocktest", {
   p_student_id: userId,
-  p_exam_serial: phaseData.exam_serial,
+  p_exam_serial: examSerial,
   p_section_start: sectionStart,
   p_section_end: sectionEnd,
 });
 console.log("🎨 PALETTE RPC INPUT:", {
   p_student_id: userId,
-  p_exam_serial: phaseData.exam_serial,
+  p_exam_serial: examSerial,
   p_section_start: sectionStart,
   p_section_end: sectionEnd,
 });
@@ -478,93 +404,6 @@ console.log("📦 Stored paletteData:", data);
 
 };
 
-
-
-  // ───────────────────────────────────────────────
-  // 🧭 TEST ACTION HANDLERS  (start / next / skip)
-  // ───────────────────────────────────────────────
-  const handleStartTest = async (exam_serial: string) => {
-    if (!userId) {
-      setShowLoginModal(true);
-      return;
-    }
-
-    // 🔒 Prevent starting future tests before their date
-      if (mockWindow?.next && mockWindow.next.exam_serial === exam_serial) {
-        const today = new Date();
-        const testDate = new Date(mockWindow.next.exam_date);
-        if (today < testDate) {
-          Alert.alert("Locked", "This test will unlock on its scheduled date.");
-          return;
-        }
-      }
-
-console.log("📤 Calling FASTAPI start_mocktest:", {
-  student_id: userId,
-  exam_serial,
-});
-
-    try {
-      const response = await fetch(
-        "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            intent: "start_mocktest",
-            student_id: userId,
-            exam_serial,
-          }),
-        }
-      );
-
-
-      const data = await response.json();
-      console.log("🧠 Orchestrator start result:", data);
-      const normalized = normalizePhaseData(data);
-      console.log("📥 FASTAPI start_mocktest RESPONSE:", data);
-console.log("📥 Normalized response:", normalized);
-console.log("📘 Returned react_order_final:", normalized.react_order_final);
-console.log("⏱ Returned time_left:", normalized.time_left);
-
-
-    if (normalized?.phase_json) {
-      setTestStarted(true);
-
-setPhaseData(normalized);
-setCurrentMCQ(normalized.phase_json[0]);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-
-
-
-      setSelectedOption(null);
-        // 🕒 Initialize timer to 3 hours 30 minutes
-      // 🕒 Initialize timer based on backend value (resume or new)
-// 🔥 FIXED TIMER LOGIC
-const ro = Number(normalized.react_order_final);
-console.log("⏳ INITIALIZING TIMER → react_order_final:", ro);
-
-if ([1, 41, 81, 121, 161].includes(ro)) {
-  console.log("⏳ NEW SECTION → timer start = 42:00");
-  setRemainingTime(42 * 60);
-} else if (normalized.time_left) {
-  console.log("⏳ RESUMING TIMER FROM:", normalized.time_left);
-
- const [h, m, s] = normalized.time_left.split(":").map(Number);
-setRemainingTime(h * 3600 + m * 60 + s);
-
-
-}
-
-      } else {
-        Alert.alert("Test Completed", data?.message || "No more questions.");
-      }
-    } catch (error) {
-      console.error("Error starting test:", error);
-      Alert.alert("Error", "Could not start mock test. Please try again.");
-    }
-  };
-
 // Helper function to format seconds → HH:MM:SS
 const formatTime = (seconds: number) => {
   const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
@@ -572,203 +411,6 @@ const formatTime = (seconds: number) => {
   const s = String(seconds % 60).padStart(2, "0");
   return `${h}:${m}:${s}`;
 };
-
-const handleNext = async () => {
-  const currentRO = Number(phaseData.react_order_final);
-
-  try {
-    const response = await fetch(
-      "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          intent: "next_mocktest_phase",
-          student_id: userId,
-          exam_serial: phaseData.exam_serial,
-          react_order_final: currentRO,
-          student_answer: selectedOption,
-          is_correct: selectedOption === currentMCQ?.correct_answer,
-          time_left: formatTime(remainingTime),
-        }),
-      }
-    );
-
-    const data = await response.json();
-    const normalized = normalizePhaseData(data);
-
-    if (normalized?.phase_json) {
-      setPhaseData(normalized);
-      setCurrentMCQ(normalized.phase_json[0]);
-      setSelectedOption(null);
-    }
-
-    // 🔥 ONLY UI DECISION AFTER SUBMIT
-    if (isSectionEnd(currentRO)) {
-      setShowSectionConfirm(true);
-      return;
-    }
-
-    if (normalized.time_left) {
-      const [h, m, s] = normalized.time_left.split(":").map(Number);
-      setRemainingTime(h * 3600 + m * 60 + s);
-    }
-
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
-
-  } catch (err) {
-    console.error("❌ Error in handleNext:", err);
-  }
-};
-
-
-
-
-const handleSelectQuestion = async (targetRO: number) => {
-  if (!targetRO || !phaseData?.exam_serial) return;
-
-  const { data, error } = await supabase.rpc(
-    "jump_to_specific_mcq_mocktest",
-    {
-      p_student_id: userId,
-      p_exam_serial: phaseData.exam_serial,
-      p_target_ro: targetRO,
-      p_time_left: formatTime(remainingTime),
-    }
-  );
-
-  if (error || !data?.phase_json) return;
-
-  const normalized = normalizePhaseData(data);
-  const mcq = normalized.phase_json[0];
-
-  mcq.student_answer = data.student_answer ?? null;
-
-  setSelectedOption(mcq.student_answer);
-  setPhaseData(normalized);
-  setCurrentMCQ(mcq);
-  setShowNav(false);
-
-  scrollRef.current?.scrollTo({ y: 0, animated: true });
-};
-
-
-const handleSkip = async () => {
-  console.log("🚨 handleSkip CALLED", {
-    ro: phaseData?.react_order_final,
-    remainingTime,
-    ts: new Date().toISOString(),
-  });
-
-  if (testEnded || !phaseData?.exam_serial || !phaseData?.react_order_final)
-    return;
-
-  try {
-    const response = await fetch(
-      "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          intent: "skip_mocktest_phase",
-          student_id: userId,
-          exam_serial: phaseData.exam_serial,
-          react_order_final: phaseData.react_order_final,
-          time_left: formatTime(remainingTime),
-        }),
-      }
-    );
-
-    const data = await response.json();
-    const normalized = normalizePhaseData(data);
-
-    if (normalized?.phase_json) {
-      const ro = Number(normalized.react_order_final);
-      const previousSection = getSection(phaseData.react_order_final);
-      const currentSection = getSection(ro);
-
-      if (currentSection !== previousSection) {
-        setRemainingTime(42 * 60);
-      } else if (normalized.time_left) {
-        const [h, m, s] = normalized.time_left.split(":").map(Number);
-        setRemainingTime(h * 3600 + m * 60 + s);
-      }
-
-      setPhaseData(normalized);
-      setCurrentMCQ(normalized.phase_json[0]);
-      setSelectedOption(null);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    } else {
-      setTestEnded(true);
-      setTestStarted(false);
-    }
-  } catch (error) {
-    console.error("Error skipping question:", error);
-  }
-};
-
-
-const handleReview = async () => {
-  if (testEnded || !phaseData?.exam_serial || !phaseData?.react_order_final)
-    return;
-
-  try {
-    const response = await fetch(
-      "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          intent: "next_mocktest_phase",
-          student_id: userId,
-          exam_serial: phaseData.exam_serial,
-          react_order_final: phaseData.react_order_final,
-          time_left: formatTime(remainingTime),
-          is_review: true,   // 🔥 THIS IS THE KEY
-        }),
-      }
-    );
-
-    const data = await response.json();
-    const normalized = normalizePhaseData(data);
-
-    if (normalized?.phase_json) {
-      setTestStarted(true);
-      setPhaseData(normalized);
-      setCurrentMCQ(normalized.phase_json[0]);
-      setSelectedOption(null);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    }
-  } catch (err) {
-    console.error("Error marking review:", err);
-  }
-};
-
-const handleGoToNextSection = async () => {
-  const nextRO = getNextSectionStart(phaseData.react_order_final);
-  if (!nextRO) return;
-
-  const { data, error } = await supabase.rpc(
-    "jump_to_specific_mcq_mocktest",
-    {
-      p_student_id: userId,
-      p_exam_serial: phaseData.exam_serial,
-      p_target_ro: nextRO,
-      p_time_left: formatTime(remainingTime),
-    }
-  );
-
-  if (!error && data?.phase_json) {
-    const normalized = normalizePhaseData(data);
-    setPhaseData(normalized);
-    setCurrentMCQ(normalized.phase_json[0]);
-    setRemainingTime(42 * 60);
-    setSelectedOption(null);
-    setShowNav(false);
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
-  }
-};
-
 
   const sanitize = (text: string) =>
     text?.replace(/(\*\*|__|_|`|~|\*)/g, "").trim();
@@ -782,6 +424,72 @@ const getSection = (react_order: number) => {
   return null;
 };
 
+const submitAndNext = async () => {
+  const mcq = currentMCQ;
+  if (!mcq) return;
+
+  await supabase.rpc("submit_mocktest_answer", {
+    p_student_id: userId,
+    p_exam_serial: examSerial,
+    p_react_order_final: mcq.react_order,
+    p_correct_answer: mcq.correct_answer,
+    p_student_answer: selectedOption,
+    p_is_correct: selectedOption === mcq.correct_answer,
+    p_is_skipped: false,
+    p_is_review: false,
+    p_time_left: formatTime(remainingTime),
+  });
+
+  setSelectedOption(null);
+  setCurrentIndex((i) => i + 1);
+};
+
+const skipCurrent = async () => {
+  const mcq = currentMCQ;
+  if (!mcq) return;
+
+  await supabase.rpc("submit_mocktest_answer", {
+    p_student_id: userId,
+    p_exam_serial: examSerial,
+    p_react_order_final: mcq.react_order,
+    p_correct_answer: mcq.correct_answer,
+    p_student_answer: null,
+    p_is_correct: null,
+    p_is_skipped: true,
+    p_is_review: false,
+    p_time_left: formatTime(remainingTime),
+  });
+
+  setSelectedOption(null);
+  setCurrentIndex((i) => i + 1);
+};
+
+  const markReview = async () => {
+    const mcq = currentMCQ;
+    if (!mcq) return;
+  
+    await supabase.rpc("submit_mocktest_answer", {
+      p_student_id: userId,
+      p_exam_serial: examSerial,
+      p_react_order_final: mcq.react_order,
+      p_correct_answer: mcq.correct_answer,
+      p_student_answer: null,
+      p_is_correct: null,
+      p_is_skipped: false,
+      p_is_review: true,
+      p_time_left: formatTime(remainingTime),
+    });
+  };
+
+  const jumpToIndex = (targetRO: number) => {
+    const idx = feed.findIndex((m) => m.react_order === targetRO);
+    if (idx !== -1) {
+      setCurrentIndex(idx);
+      setShowNav(false);
+    }
+  };
+
+    
 // 🔥 Compute section question number (1–40)
 const getSectionQNumber = (react_order: number) => {
   return ((react_order - 1) % 40) + 1;
@@ -789,6 +497,28 @@ const getSectionQNumber = (react_order: number) => {
 const isSectionEnd = (ro: number) =>
   [40, 80, 120, 160].includes(Number(ro));
   
+
+const handleStartTest = async (exam_serial: number) => {
+  const { data, error } = await supabase.rpc(
+    "get_mocktest_section_mcqs",
+    {
+      p_student_id: userId,
+      p_exam_serial: exam_serial,
+    }
+  );
+
+  if (error || !data) return;
+
+  setExamSerial(exam_serial);
+  setFeed(data.mcqs);
+  setCurrentIndex(0);
+
+  const [h, m, s] = data.time_left.split(":").map(Number);
+  setRemainingTime(h * 3600 + m * 60 + s);
+
+  setTestStarted(true);
+};
+
   
   // ───────────────────────────────────────────────
   // 🎨 MAIN RENDER BODY
@@ -815,7 +545,26 @@ const isSectionEnd = (ro: number) =>
             userId={userId}
             mockWindow={mockWindow}
             completedTests={completedTests}
-            onStartTest={(exam_serial) => router.push(`/testsections?exam_serial=${exam_serial}`)}
+            onStartTest={async (exam_serial) => {
+              const { data, error } = await supabase.rpc(
+                "get_mocktest_section_mcqs",
+                {
+                  p_student_id: userId,
+                  p_exam_serial: exam_serial,
+                }
+              );
+            
+              if (error) return;
+            
+              setFeed(data.mcqs);
+              setCurrentIndex(0);
+              setExamSerial(exam_serial);
+              
+              const [h, m, s] = data.time_left.split(":").map(Number);
+              setRemainingTime(h * 3600 + m * 60 + s);
+            
+              setTestStarted(true);
+            }}
             onReviewTest={(exam_serial) => router.push(`/reviewmocktest?exam_serial=${exam_serial}`)}
             loading={loading}
           />
@@ -830,11 +579,11 @@ const isSectionEnd = (ro: number) =>
             <View style={styles.headerTop}>
                 <View style={styles.questionInfo}>
                   <View style={styles.sectionBadge}>
-                    <Text style={styles.sectionText}>Section {getSection(phaseData?.react_order_final || 1)}</Text>
+                    <Text style={styles.sectionText}>Section {getSection(currentMCQ.react_order || 1)}</Text>
                   </View>
                   <View style={styles.questionBadge}>
                     <Text style={styles.questionCounter}>
-                      Q {getSectionQNumber(phaseData?.react_order_final || 1)}/40
+                      Q {getSectionQNumber(currentMCQ.react_order || 1)}/40
                     </Text>
                   </View>
                 </View>
@@ -943,7 +692,7 @@ const isSectionEnd = (ro: number) =>
   style={[
     styles.skipButton,
   ]}
-  onPress={handleSkip}           // ← always allowed
+  onPress={skipCurrent}           // ← always allowed
   disabled={false}               // ← skip is never disabled
   activeOpacity={0.7}
 >
@@ -958,7 +707,7 @@ const isSectionEnd = (ro: number) =>
     styles.reviewButton,
     selectedOption ? { opacity: 0.3 } : {}
   ]}
-  onPress={selectedOption ? undefined : handleReview}  // ❌ disable
+  onPress={selectedOption ? undefined : markReview}  // ❌ disable
   disabled={!!selectedOption}                          // ❌ disable
   activeOpacity={0.7}
 >
@@ -966,7 +715,7 @@ const isSectionEnd = (ro: number) =>
                 <Text style={styles.reviewButtonText}>Review</Text>
               </TouchableOpacity>
 
-{Number(phaseData?.react_order_final) >= 161 && Number(phaseData?.react_order_final) <= 200 && (
+{Number(currentMCQ.react_order) >= 161 && Number(currentMCQ.react_order) <= 200 && (
   <TouchableOpacity
     style={styles.finishTestButton}
     onPress={() => setShowConfirmFinish(true)} 
@@ -976,48 +725,15 @@ const isSectionEnd = (ro: number) =>
   </TouchableOpacity>
 )}
 
-{Number(phaseData?.react_order_final) === 200 ? (
+{Number(currentMCQ.react_order) === 200 ? (
   <TouchableOpacity
     style={[
       styles.nextButton,
       !selectedOption && styles.nextButtonDisabled,
     ]}
     onPress={async () => {
-      if (!selectedOption) return;
-
-      try {
-        // ✅ Send final update to backend just like "Next"
-        const response = await fetch(
-          "https://mocktest-orchestra-production.up.railway.app/mocktest_orchestrate",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              intent: "next_mocktest_phase",
-              student_id: userId,
-              exam_serial: phaseData.exam_serial,
-              react_order_final: phaseData.react_order_final,
-              student_answer: selectedOption,
-              is_correct: selectedOption === currentMCQ?.correct_answer,
-              time_left: formatTime(remainingTime),
-            }),
-          }
-        );
-
-        const data = await response.json();
-        console.log("✅ Final question submitted:", data);
-
-        // 🧠 Optional: you can verify if test really ended here
-        if (data?.message?.includes("completed") || !data?.phase_json) {
-          setShowCompletionModal(true);
-        } else {
-          // fallback: still show modal
-          setShowCompletionModal(true);
-        }
-      } catch (error) {
-        console.error("❌ Error completing test:", error);
-        Alert.alert("Error", "Could not submit final question.");
-      }
+      await submitAndNext();
+      setShowCompletionModal(true);
     }}
     disabled={!selectedOption}
     activeOpacity={0.7}
@@ -1031,7 +747,7 @@ const isSectionEnd = (ro: number) =>
       styles.nextButton,
       !selectedOption && styles.nextButtonDisabled,
     ]}
-    onPress={handleNext}
+    onPress={submitAndNext}
     disabled={!selectedOption}
     activeOpacity={0.7}
   >
@@ -1046,17 +762,12 @@ const isSectionEnd = (ro: number) =>
             {/* Question Navigation - Mobile Modal */}
             {console.log("🧭 Passing paletteData to UI:", paletteData)}
 
-            <QuestionNavigationScreen
+            <QuestionNavigationScreenNew
               isVisible={showNav}
               onClose={() => setShowNav(false)}
-              onStartNextSection={handleGoToNextSection}
-              currentQuestion={phaseData?.section_q_number || 1}
-              mcqs={paletteData?.mcqs || []}
-              counts={paletteData?.counts || { answered: 0, skipped: 0, marked: 0, unanswered: 0 }}
-              sectionId={phaseData?.sections || "A"}
-              timeLeft={remainingTime}
-              onSelectQuestion={handleSelectQuestion}
-              isSectionComplete={isSectionEnd(phaseData?.react_order_final)}
+              mcqs={feed}
+              currentReactOrder={currentMCQ?.react_order}
+              onSelectQuestion={jumpToIndex}
             />
           </>
         ) : (
@@ -1112,7 +823,7 @@ const isSectionEnd = (ro: number) =>
             try {
               const { data, error } = await supabase.rpc("test_complete", {
                 p_student_id: userId,
-                p_exam_serial: phaseData.exam_serial,
+                p_exam_serial: examSerial,
               });
 
               if (error) {
@@ -1166,36 +877,8 @@ const isSectionEnd = (ro: number) =>
         {/* Complete Test */}
         <TouchableOpacity
           style={styles.modalButton}
-          onPress={async () => {
-            try {
-              setShowSectionConfirm(false);
-        
-const nextRO = getNextSectionStart(phaseData.react_order_final);
-if (!nextRO) return;
-
-const { data, error } = await supabase.rpc(
-  "jump_to_specific_mcq_mocktest",
-  {
-    p_student_id: userId,
-    p_exam_serial: phaseData.exam_serial,
-    p_target_ro: nextRO,
-    p_time_left: formatTime(remainingTime),
-  }
-);
-
-if (!error && data?.phase_json) {
-  const normalized = normalizePhaseData(data);
-  setPhaseData(normalized);
-  setCurrentMCQ(normalized.phase_json[0]);
-  setRemainingTime(42 * 60);
-  setSelectedOption(null);
-  scrollRef.current?.scrollTo({ y: 0, animated: true });
-}
-
-
-            } catch (err) {
-              Alert.alert("Error", "Could not complete test.");
-            }
+          onPress={() => {
+            setShowSectionConfirm(false);
           }}
         >
           <Text style={styles.modalButtonText}>Go to Next Section</Text>
@@ -1220,8 +903,8 @@ if (!error && data?.phase_json) {
           setShowCompletionModal(false);
           setTestStarted(false);
           setTestEnded(false);
-          setPhaseData(null);
-          setCurrentMCQ(null);
+          setFeed([]);
+          setCurrentIndex(0);
         }}
         activeOpacity={0.8}
       >
