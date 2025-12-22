@@ -28,7 +28,7 @@ const navItems: NavItem[] = [
   { id: "flash", label: "Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
   { id: "videos", label: "Videos", href: "/videos", icon: Video },
   { id: "image", label: "Image Based MCQs", href: "/image", icon: ImageIcon },
-  { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
+  { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktest2026", icon: FileText },
   { id: "battle", label: "Battles", href: "/battle", icon: Swords },
   { id: "analytics", label: "Analytics", href: "/analyticspage", icon: BarChart3 },
   { id: "planner", label: "NEETPG Daily Study Planner", href: "/planner", icon: Calendar },
