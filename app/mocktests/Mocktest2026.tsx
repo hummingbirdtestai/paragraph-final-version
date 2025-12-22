@@ -24,6 +24,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+console.log("🟦 LOADED SCREEN → app/mocktests/Mocktest2026.tsx");
+
 export default function Mocktest2026() {
   const { user } = useAuth();
   const router = useRouter();
