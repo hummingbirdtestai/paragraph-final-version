@@ -12,7 +12,7 @@ import { Clock, Grid3x3, ChevronRight, SkipForward } from "lucide-react-native";
 import Markdown from "react-native-markdown-display";
 import { supabase } from "@/lib/supabaseClient";
 import MainLayout from "@/components/MainLayout";
-import QuestionNavigationScreen from "@/components/types/QuestionNavigationScreen";
+import QuestionNavigationScreenNew from "@/components/types/QuestionNavigationScreennew";
 
 export default function Mocktest2026() {
   const [feed, setFeed] = useState<any[]>([]);
