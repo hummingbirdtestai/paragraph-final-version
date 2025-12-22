@@ -7,9 +7,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StyleSheet,
-  ScrollView,
 } from "react-native";
-import { Clock, ChevronRight, SkipForward, Grid3x3 } from "lucide-react-native";
+import { Clock, Grid3x3 } from "lucide-react-native";
 import Markdown from "react-native-markdown-display";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
@@ -34,41 +33,60 @@ export default function Mocktest2026() {
     ? Number(params.exam_serial)
     : null;
 
-  console.log("🧭 ROUTE", { examSerial });
+  console.log("🧭 [2026] ROUTE PARAMS:", { examSerial });
 
   /* ---------------- DASHBOARD STATE ---------------- */
   const [mockWindow, setMockWindow] = useState<any>(null);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
 
-  /* ---------------- FEED STATE ---------------- */
+  /* ---------------- SECTION STATE ---------------- */
   const [feed, setFeed] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentMCQ = feed[currentIndex] ?? null;
 
-  /* ---------------- SECTION META ---------------- */
-  const [section, setSection] = useState("A");
-  const [remainingTime, setRemainingTime] = useState(42 * 60);
-
+  const [section, setSection] = useState<string>("A");
+  const [remainingTime, setRemainingTime] = useState<number>(42 * 60);
   const [showPalette, setShowPalette] = useState(false);
+
   /* =====================================================
-     DASHBOARD LOAD (ONLY WHEN NO exam_serial)
+     1️⃣ DASHBOARD LOAD (ONLY WHEN exam_serial IS ABSENT)
   ===================================================== */
   useEffect(() => {
     if (!user?.id || examSerial) return;
 
-    console.log("📊 Loading dashboard");
+    console.log("📊 [2026] Loading Mock Test Dashboard");
 
     const loadDashboard = async () => {
-      const { data } = await supabase.rpc("get_mock_test_window", {
-        p_student_id: user.id,
+      const { data, error } = await supabase.rpc(
+        "get_mock_test_window",
+        { p_student_id: user.id }
+      );
+
+      if (error) {
+        console.error("❌ Dashboard RPC failed", error);
+        setLoadingDashboard(false);
+        return;
+      }
+
+      const parsed = data?.get_mock_test_window || data;
+
+      console.log("🟢 Dashboard RPC Parsed:", parsed);
+
+      setMockWindow({
+        present: parsed.present_mock_test,
+        next: parsed.next_mock_test,
+        review: parsed.review_tests,
       });
-      setMockWindow(data);
+
       setLoadingDashboard(false);
     };
 
     loadDashboard();
   }, [user?.id, examSerial]);
 
+  /* =====================================================
+     DASHBOARD SCREEN
+  ===================================================== */
   if (!examSerial) {
     return (
       <MainLayout>
@@ -77,23 +95,27 @@ export default function Mocktest2026() {
             mockWindow={mockWindow}
             completedTests={[]}
             loading={loadingDashboard}
-            onStartTest={(exam) =>
-              router.push(`/mocktests/Mocktest2026?exam_serial=${exam}`)
-            }
-            onReviewTest={() => {}}
+            onStartTest={(exam) => {
+              console.log("▶️ Start Test Clicked:", exam);
+              router.push(`/mocktests/Mocktest2026?exam_serial=${exam}`);
+            }}
+            onReviewTest={(exam) => {
+              console.log("📘 Review Test Clicked:", exam);
+              router.push(`/reviewmocktest?exam_serial=${exam}`);
+            }}
           />
         </SafeAreaView>
       </MainLayout>
     );
   }
-
   /* =====================================================
-     LOAD SECTION (40 MCQs AT ONCE)
+     2️⃣ LOAD SECTION MCQs (40 AT A TIME)
+     RPC: get_mocktest_section_mcqs
   ===================================================== */
   useEffect(() => {
     if (!user?.id || !examSerial) return;
 
-    console.log("🟢 Loading section MCQs");
+    console.log("📦 [2026] Loading Section MCQs");
 
     const loadSection = async () => {
       const { data, error } = await supabase.rpc(
@@ -105,14 +127,14 @@ export default function Mocktest2026() {
       );
 
       if (error) {
-        console.error("❌ Section load failed", error);
+        console.error("❌ Section RPC failed", error);
         return;
       }
 
-      console.log("🟢 Section Loaded", {
+      console.log("🟢 Section RPC Response:", {
         section: data.section,
         count: data.mcqs.length,
-        time: data.time_left,
+        time_left: data.time_left,
       });
 
       setFeed(data.mcqs);
@@ -122,6 +144,8 @@ export default function Mocktest2026() {
       if (data.time_left) {
         const [h, m, s] = data.time_left.split(":").map(Number);
         setRemainingTime(h * 3600 + m * 60 + s);
+      } else {
+        setRemainingTime(42 * 60);
       }
     };
 
@@ -129,12 +153,12 @@ export default function Mocktest2026() {
   }, [user?.id, examSerial]);
 
   /* =====================================================
-     SECTION TIMER
+     3️⃣ SECTION TIMER
   ===================================================== */
   useEffect(() => {
     if (!feed.length) return;
 
-    console.log("⏱ Timer started");
+    console.log("⏱ [2026] Section Timer Started");
 
     const timer = setInterval(() => {
       setRemainingTime((t) => (t > 0 ? t - 1 : 0));
@@ -142,12 +166,16 @@ export default function Mocktest2026() {
 
     return () => clearInterval(timer);
   }, [feed]);
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}:${String(s).padStart(2, "0")}`;
   };
-
+  /* =====================================================
+     4️⃣ SUBMIT ANSWER
+     RPC: submit_mocktest_answer
+  ===================================================== */
   const submit = async ({
     answer,
     skipped,
@@ -159,8 +187,8 @@ export default function Mocktest2026() {
   }) => {
     if (!user?.id || !currentMCQ) return;
 
-    console.log("📤 SUBMIT", {
-      ro: currentMCQ.react_order,
+    console.log("📤 [2026] SUBMIT", {
+      react_order: currentMCQ.react_order,
       answer,
       skipped,
       review,
@@ -174,7 +202,6 @@ export default function Mocktest2026() {
         currentMCQ.phase_json?.correct_answer ?? null,
       p_student_answer: answer,
       p_is_correct:
-        answer &&
         answer === currentMCQ.phase_json?.correct_answer,
       p_is_skipped: skipped,
       p_is_review: review,
@@ -194,19 +221,20 @@ export default function Mocktest2026() {
 
     setCurrentIndex((i) => i + 1);
   };
+
   /* =====================================================
-     IMAGE MCQ (ZOOMABLE)
+     5️⃣ IMAGE MCQ — ZOOMABLE
   ===================================================== */
   const scale = useSharedValue(1);
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-
   if (!currentMCQ) {
     return (
       <MainLayout>
         <SafeAreaView style={styles.container}>
-          <Text style={{ color: "#888" }}>Loading…</Text>
+          <Text style={{ color: "#888" }}>Loading MCQs…</Text>
         </SafeAreaView>
       </MainLayout>
     );
@@ -227,7 +255,7 @@ export default function Mocktest2026() {
         </View>
 
         {/* IMAGE MCQ */}
-        {currentMCQ.is_mcq_image_type && (
+        {currentMCQ.is_mcq_image_type && currentMCQ.mcq_image && (
           <GestureDetector
             gesture={Gesture.Pinch().onUpdate((e) => {
               scale.value = withTiming(e.scale);
@@ -264,25 +292,6 @@ export default function Mocktest2026() {
           )
         )}
 
-        {/* FOOTER */}
-        <View style={styles.footer}>
-          <TouchableOpacity
-            onPress={() =>
-              submit({ answer: null, skipped: true, review: false })
-            }
-          >
-            <SkipForward /> <Text>Skip</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() =>
-              submit({ answer: null, skipped: false, review: true })
-            }
-          >
-            <Text>Review</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* PALETTE */}
         <QuestionNavigationScreennew
           isVisible={showPalette}
@@ -296,8 +305,9 @@ export default function Mocktest2026() {
             const idx = feed.findIndex(
               (m) => m.react_order === ro
             );
-            console.log("🟣 Palette Jump", { ro, idx });
-            setCurrentIndex(idx);
+            console.log("🟣 Palette Jump:", { ro, idx });
+            if (idx >= 0) setCurrentIndex(idx);
+            setShowPalette(false);
           }}
         />
       </SafeAreaView>
@@ -316,9 +326,4 @@ const styles = StyleSheet.create({
   timer: { color: "#4ade80" },
   image: { width: "100%", height: 280, marginBottom: 16 },
   option: { color: "#e5e7eb", padding: 12 },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
 });
