@@ -285,9 +285,9 @@ export default function MockTestsScreen() {
         p_student_id: userId,
         p_exam_serial: examSerial,
         p_react_order_final: current.react_order,
-        p_correct_answer: current.phase_json.correct_answer,
+        p_correct_answer: current.correct_answer,
         p_student_answer: student_answer,
-        p_is_correct: student_answer === current.phase_json.correct_answer,
+        p_is_correct: student_answer === current.correct_answer,
         p_is_skipped: is_skipped,
         p_is_review: is_review,
         p_time_left: timeLeft,
@@ -304,7 +304,7 @@ export default function MockTestsScreen() {
         student_answer,
         is_skipped,
         is_review,
-        is_correct: student_answer === current.phase_json.correct_answer,
+        is_correct: student_answer === current.correct_answer,
       };
       setMcqs(updatedMcqs);
     } catch (err: any) {
