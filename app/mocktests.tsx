@@ -69,8 +69,6 @@ export default function MockTestsScreen() {
   const autoStartDone = useRef(false);
   const scrollRef = useRef<ScrollView>(null);
   const confettiRef = useRef<any>(null);
-  const timerExpiredRef = useRef(false);
-
   const userId = user?.id || null;
 
   // Auto-start from params
@@ -142,39 +140,29 @@ export default function MockTestsScreen() {
   }, [showCompletionModal]);
 
   const handleTimerExpired = async () => {
-  if (timerExpiredRef.current) return;
-  timerExpiredRef.current = true;
+    console.log("⏰ TIMER EXPIRED - AUTO SUBMITTING");
+    const current = mcqs[currentIndex];
+    if (!current) return;
 
-  console.log("⏰ TIMER EXPIRED - AUTO SUBMITTING");
+   const current = mcqs[currentIndex];
 
-  const current = mcqs[currentIndex];
-  if (!current) return;
-
-  // submit only if changed
-  if (
-    selectedOption !== null &&
-    selectedOption !== current.student_answer
-  ) {
-    await submitAnswer({
-      student_answer: selectedOption,
-      is_skipped: false,
-      is_review: false,
-    });
-  }
-
-  if (currentIndex >= mcqs.length - 1) {
-    setShowSectionConfirm(true);
-  }
-};
+// Only submit if user actually selected something NEW
+if (
+  selectedOption !== null &&
+  selectedOption !== current.student_answer
+) {
+  await submitAnswer({
+    student_answer: selectedOption,
+    is_skipped: false,
+    is_review: false,
+  });
+}
 
 
-  if (currentIndex >= mcqs.length - 1) {
-    setShowSectionConfirm(true);
-  }
-};
-
-
-
+    if (currentIndex >= mcqs.length - 1) {
+      setShowSectionConfirm(true);
+    }
+  };
 
   // RPC #1: Load Section MCQs
   const loadSectionMCQs = async (exam_serial: string | number) => {
@@ -203,8 +191,6 @@ export default function MockTestsScreen() {
       setCurrentIndex(0);
       setSelectedOption(null);
       setTestStarted(true);
-      timerExpiredRef.current = false;
-
 
       // Initialize timer
       if (payload.time_left) {
@@ -290,19 +276,19 @@ export default function MockTestsScreen() {
   };
 
   const handleNext = async () => {
-  const current = mcqs[currentIndex];
+  await submitAnswer({
+    student_answer: selectedOption,
+    is_skipped: false,
+    is_review: false,
+  });
 
-  // ✅ submit ONLY if changed
-  if (
-    selectedOption !== null &&
-    selectedOption !== current?.student_answer
-  ) {
-    await submitAnswer({
-      student_answer: selectedOption,
-      is_skipped: false,
-      is_review: false,
-    });
-  }
+
+
+
+
+
+
+
 
   setSelectedOption(null);
 
@@ -310,7 +296,7 @@ export default function MockTestsScreen() {
     setShowSectionConfirm(true);
   } else {
     setCurrentIndex(currentIndex + 1);
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
+
   }
 };
 
@@ -406,61 +392,46 @@ export default function MockTestsScreen() {
   };
 
   const handlePaletteJump = async (_sectionId: string, reactOrderFinal: number) => {
-  if (!reactOrderFinal) return;
+    if (!reactOrderFinal) return;
 
-  const current = mcqs[currentIndex];
-
-  // ✅ submit ONLY if answer actually changed
-  if (
-    selectedOption !== null &&
-    selectedOption !== current?.student_answer
-  ) {
+    // Submit current before jumping
     await submitAnswer({
       student_answer: selectedOption,
       is_skipped: false,
       is_review: false,
     });
-  }
 
-  const targetIndex = mcqs.findIndex(
-    (m) => Number(m.react_order) === Number(reactOrderFinal)
-  );
+    // react_order is 1-based
+    const targetIndex = mcqs.findIndex(
+      (m) => Number(m.react_order) === Number(reactOrderFinal)
+    );
 
-  if (targetIndex === -1) return;
+    if (targetIndex === -1) return;
 
-  setCurrentIndex(targetIndex);
-  setSelectedOption(mcqs[targetIndex]?.student_answer || null);
-  setShowNav(false);
+    setCurrentIndex(targetIndex);
+    setSelectedOption(mcqs[targetIndex]?.student_answer || null);
+    setShowNav(false);
 
-  requestAnimationFrame(() => {
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
-  });
-};
-
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    });
+  };
 
   const handleFinishTest = () => {
     setShowConfirmFinish(true);
   };
 
   const confirmFinishTest = async () => {
-  const current = mcqs[currentIndex];
-
-  if (
-    selectedOption !== null &&
-    selectedOption !== current?.student_answer
-  ) {
     await submitAnswer({
       student_answer: selectedOption,
       is_skipped: false,
       is_review: false,
     });
-  }
 
-  setTestEnded(true);
-  setShowConfirmFinish(false);
-  setShowCompletionModal(true);
-};
-
+    setTestEnded(true);
+    setShowConfirmFinish(false);
+    setShowCompletionModal(true);
+  };
 
   // Palette Data Generator
   const generatePaletteData = () => {
