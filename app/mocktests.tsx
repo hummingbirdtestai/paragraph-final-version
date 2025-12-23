@@ -13,7 +13,8 @@ import {
   useWindowDimensions,
   Pressable,
 } from "react-native";
-import { Clock, ChevronRight, SkipForward, Grid3x3, Bookmark, Menu } from "lucide-react-native";
+import { Clock, ChevronRight, SkipForward, Grid3x3, Bookmark, Menu, BarChart3, Eye } from "lucide-react-native";
+import ConfettiCannon from "react-native-confetti-cannon";
 import Markdown from "react-native-markdown-display";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
@@ -67,6 +68,7 @@ export default function MockTestsScreen() {
 
   const autoStartDone = useRef(false);
   const scrollRef = useRef<ScrollView>(null);
+  const confettiRef = useRef<any>(null);
   const userId = user?.id || null;
 
   // Auto-start from params
@@ -128,6 +130,14 @@ export default function MockTestsScreen() {
 
     return () => clearInterval(timer);
   }, [testStarted, testEnded, remainingTime]);
+
+  useEffect(() => {
+    if (showCompletionModal && confettiRef.current) {
+      setTimeout(() => {
+        confettiRef.current?.start();
+      }, 300);
+    }
+  }, [showCompletionModal]);
 
   const handleTimerExpired = async () => {
     console.log("⏰ TIMER EXPIRED - AUTO SUBMITTING");
@@ -317,8 +327,49 @@ export default function MockTestsScreen() {
 
   const moveToNextSection = async () => {
     setShowSectionConfirm(false);
-    if (examSerial) {
-      await loadSectionMCQs(examSerial);
+
+    if (!userId || !examSerial || !currentSection) return;
+
+    try {
+      console.log("🔄 MOVING TO NEXT SECTION", { currentSection, examSerial });
+
+      const { data, error } = await supabase.rpc(
+        "end_section_and_load_next_section",
+        {
+          p_student_id: userId,
+          p_exam_serial: examSerial,
+          p_ended_section: currentSection,
+        }
+      );
+
+      if (error) throw error;
+
+      const payload = data?.[0]?.end_section_and_load_next_section || data;
+
+      console.log("✅ SECTION TRANSITION RESPONSE:", payload);
+
+      if (payload?.test_complete) {
+        setTestEnded(true);
+        setShowCompletionModal(true);
+        return;
+      }
+
+      setMcqs(payload.mcqs || []);
+      setCurrentSection(payload.section);
+      setCurrentIndex(0);
+      setSelectedOption(null);
+
+      if (payload.time_left) {
+        const [h, m, s] = payload.time_left.split(":").map(Number);
+        setRemainingTime(h * 3600 + m * 60 + s);
+      } else {
+        setRemainingTime(42 * 60);
+      }
+
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    } catch (err) {
+      console.error("❌ Failed to move to next section", err);
+      Alert.alert("Error", "Unable to load next section");
     }
   };
 
@@ -659,26 +710,31 @@ export default function MockTestsScreen() {
         {showSectionConfirm && (
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Section Completed!</Text>
+              <Text style={styles.modalTitle}>
+                {currentSection === 'E' ? 'Mock Test Completed 🎉' : `Section ${currentSection} Completed`}
+              </Text>
               <Text style={styles.modalText}>
-                You've finished Section {currentSection}. Continue to the next section?
+                {currentSection === 'E'
+                  ? "You've reached the end of the mock test.\n\nYou can:\n• Review questions from Section E, or\n• Complete the mock test and view your performance."
+                  : `You've reached the end of Section ${currentSection}.\n\nYou can:\n• Review questions in this section, or\n• Move ahead to the next section with a fresh 42-minute timer.`
+                }
               </Text>
               <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.modalButtonSecondary]}
+                  onPress={() => setShowSectionConfirm(false)}
+                >
+                  <Text style={styles.modalButtonTextSecondary}>
+                    {currentSection === 'E' ? 'Review Section E' : 'Review This Section'}
+                  </Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.modalButton, styles.modalButtonPrimary]}
                   onPress={moveToNextSection}
                 >
-                  <Text style={styles.modalButtonText}>Next Section</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.modalButtonSecondary]}
-                  onPress={() => {
-                    setShowSectionConfirm(false);
-                    setTestEnded(true);
-                    setShowCompletionModal(true);
-                  }}
-                >
-                  <Text style={styles.modalButtonTextSecondary}>Finish Test</Text>
+                  <Text style={styles.modalButtonText}>
+                    {currentSection === 'E' ? 'Complete Mock Test' : 'Move to Next Section'}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -758,24 +814,60 @@ export default function MockTestsScreen() {
     return (
       <MainLayout>
         <View style={styles.centerContainer}>
-          <Text style={styles.completionTitle}>Test Completed!</Text>
+          <ConfettiCannon
+            ref={confettiRef}
+            count={200}
+            origin={{ x: width / 2, y: 0 }}
+            autoStart={false}
+            fadeOut
+            colors={['#25D366', '#58A6FF', '#E6EDF3', '#FFA657', '#FF7B72']}
+          />
+          <Text style={styles.completionTitle}>🎉 Mock Test Completed!</Text>
           <Text style={styles.completionText}>
-            Your responses have been saved successfully.
+            Great job! You've successfully completed this mock test.
           </Text>
-          <TouchableOpacity
-            style={styles.completionButton}
-            onPress={() => {
-              setShowCompletionModal(false);
-              setTestStarted(false);
-              setTestEnded(false);
-              setMcqs([]);
-              setCurrentIndex(0);
-              setExamSerial(null);
-              loadData();
-            }}
-          >
-            <Text style={styles.completionButtonText}>Back to Dashboard</Text>
-          </TouchableOpacity>
+          <Text style={styles.completionSubtext}>
+            Next steps:
+            {'\n'}• Visit the Review Session to revise MCQs
+            {'\n'}• Visit the Analytics Session to view your score and performance insights
+          </Text>
+
+          <View style={styles.completionButtons}>
+            <TouchableOpacity
+              style={[styles.completionButton, styles.completionButtonPrimary]}
+              onPress={() => {
+                router.push(`/reviewmocktest?exam_serial=${examSerial}`);
+              }}
+            >
+              <Eye size={20} color="#FFF" />
+              <Text style={styles.completionButtonText}>Go to Review Session</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.completionButton, styles.completionButtonSecondary]}
+              onPress={() => {
+                router.push(`/analyticspage?exam_serial=${examSerial}`);
+              }}
+            >
+              <BarChart3 size={20} color="#FFF" />
+              <Text style={styles.completionButtonText}>View Analytics</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.completionButton, styles.completionButtonTertiary]}
+              onPress={() => {
+                setShowCompletionModal(false);
+                setTestStarted(false);
+                setTestEnded(false);
+                setMcqs([]);
+                setCurrentIndex(0);
+                setExamSerial(null);
+                loadData();
+              }}
+            >
+              <Text style={styles.completionButtonTextTertiary}>Back to Dashboard</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </MainLayout>
     );
@@ -1011,28 +1103,61 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   completionTitle: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "700",
     color: "#25D366",
-    marginBottom: 12,
+    marginBottom: 16,
+    textAlign: "center",
   },
   completionText: {
-    fontSize: 16,
-    color: "#C9D1D9",
+    fontSize: 18,
+    color: "#E6EDF3",
     textAlign: "center",
-    marginBottom: 24,
-    lineHeight: 24,
+    marginBottom: 16,
+    lineHeight: 26,
+    fontWeight: "500",
+  },
+  completionSubtext: {
+    fontSize: 15,
+    color: "#8B949E",
+    textAlign: "center",
+    marginBottom: 32,
+    lineHeight: 22,
+  },
+  completionButtons: {
+    width: "100%",
+    maxWidth: 400,
+    gap: 12,
   },
   completionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+  },
+  completionButtonPrimary: {
     backgroundColor: "#25D366",
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 10,
+  },
+  completionButtonSecondary: {
+    backgroundColor: "#238636",
+  },
+  completionButtonTertiary: {
+    backgroundColor: "transparent",
+    borderWidth: 1.5,
+    borderColor: "#30363D",
   },
   completionButtonText: {
     fontSize: 16,
     fontWeight: "600",
     color: "#FFF",
+  },
+  completionButtonTextTertiary: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#8B949E",
   },
   modalOverlay: {
     position: "absolute",
@@ -1058,27 +1183,31 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     color: "#E6EDF3",
-    marginBottom: 12,
+    marginBottom: 16,
+    textAlign: "center",
   },
   modalText: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#8B949E",
     marginBottom: 24,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   modalButtons: {
     gap: 12,
+    flexDirection: "column-reverse",
   },
   modalButton: {
-    paddingVertical: 14,
-    borderRadius: 10,
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: "center",
   },
   modalButtonPrimary: {
     backgroundColor: "#25D366",
   },
   modalButtonSecondary: {
-    backgroundColor: "#30363D",
+    backgroundColor: "transparent",
+    borderWidth: 1.5,
+    borderColor: "#30363D",
   },
   modalButtonText: {
     fontSize: 16,
