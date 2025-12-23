@@ -513,8 +513,8 @@ export default function MockTestsScreen() {
 
   // RENDER: Test In Progress
   if (testStarted && !testEnded && currentMCQ) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
+    const testContentView = (
+      <>
         <View style={styles.header}>
           <View style={styles.timerContainer}>
             <Clock size={20} color="#25D366" />
@@ -706,7 +706,7 @@ export default function MockTestsScreen() {
           </View>
         )}
 
-        {isMobile ? (
+        {isMobile && (
           <MobileDrawer
             visible={drawerVisible}
             onClose={() => setDrawerVisible(false)}
@@ -719,29 +719,31 @@ export default function MockTestsScreen() {
               }
             }}
           />
+        )}
+      </>
+    );
+
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        {isMobile ? (
+          testContentView
         ) : (
-          drawerVisible && (
-            <View style={styles.webSidebarOverlay}>
-              <Pressable
-                style={styles.webSidebarBackdrop}
-                onPress={() => setDrawerVisible(false)}
+          <View style={styles.desktopContainer}>
+            <View style={styles.desktopSidebar}>
+              <Sidebar
+                onOpenAuth={(mode) => {
+                  if (mode === 'login') {
+                    setShowLoginModal(true);
+                  } else {
+                    setShowRegistrationModal(true);
+                  }
+                }}
               />
-              <View style={styles.webSidebarContainer}>
-                <Sidebar
-                  isOpen={drawerVisible}
-                  onClose={() => setDrawerVisible(false)}
-                  onOpenAuth={(mode) => {
-                    setDrawerVisible(false);
-                    if (mode === 'login') {
-                      setShowLoginModal(true);
-                    } else {
-                      setShowRegistrationModal(true);
-                    }
-                  }}
-                />
-              </View>
             </View>
-          )
+            <View style={styles.desktopContent}>
+              {testContentView}
+            </View>
+          </View>
         )}
       </SafeAreaView>
     );
@@ -1068,30 +1070,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#C9D1D9",
   },
-  webSidebarOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1000,
+  desktopContainer: {
+    flex: 1,
+    flexDirection: "row",
   },
-  webSidebarBackdrop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  webSidebarContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
+  desktopSidebar: {
     width: 280,
     backgroundColor: "#0D1117",
-    zIndex: 1001,
+    borderRightWidth: 1,
+    borderRightColor: "#30363D",
+  },
+  desktopContent: {
+    flex: 1,
   },
 });
 
