@@ -1,4 +1,4 @@
-//usePracticeData.ts
+//useMockPracticeData.ts
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
