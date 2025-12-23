@@ -139,6 +139,13 @@ export default function MockTestsScreen() {
     }
   }, [showCompletionModal]);
 
+  useEffect(() => {
+    const current = mcqs[currentIndex];
+    if (!current) return;
+
+    setSelectedOption(current.student_answer || null);
+  }, [currentIndex, mcqs]);
+
   const handleTimerExpired = async () => {
   console.log("⏰ TIMER EXPIRED - AUTO SUBMITTING");
 
@@ -188,7 +195,6 @@ export default function MockTestsScreen() {
       setExamSerial(payload.exam_serial);
       setCurrentSection(payload.section);
       setCurrentIndex(0);
-      setSelectedOption(null);
       setTestStarted(true);
 
       // Initialize timer
@@ -289,8 +295,6 @@ export default function MockTestsScreen() {
     });
   }
 
-  setSelectedOption(null);
-
   if (currentIndex >= mcqs.length - 1) {
     setShowSectionConfirm(true);
   } else {
@@ -308,8 +312,6 @@ export default function MockTestsScreen() {
       is_skipped: true,
       is_review: false,
     });
-
-    setSelectedOption(null);
 
     if (currentIndex >= mcqs.length - 1) {
       setShowSectionConfirm(true);
@@ -329,8 +331,6 @@ export default function MockTestsScreen() {
       is_skipped: false,
       is_review: true,
     });
-
-    setSelectedOption(null);
 
     if (currentIndex >= mcqs.length - 1) {
       setShowSectionConfirm(true);
@@ -374,7 +374,6 @@ export default function MockTestsScreen() {
       setMcqs(payload.mcqs || []);
       setCurrentSection(payload.section);
       setCurrentIndex(0);
-      setSelectedOption(null);
 
       if (payload.time_left) {
         const [h, m, s] = payload.time_left.split(":").map(Number);
