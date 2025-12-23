@@ -393,14 +393,19 @@ export default function MockTestsScreen() {
   const handlePaletteJump = async (_sectionId: string, reactOrderFinal: number) => {
     if (!reactOrderFinal) return;
 
-    // Submit current before jumping
-    await submitAnswer({
-      student_answer: selectedOption,
-      is_skipped: false,
-      is_review: false,
-    });
+    const current = mcqs[currentIndex];
 
-    // react_order is 1-based
+    if (
+      selectedOption !== null &&
+      selectedOption !== current?.student_answer
+    ) {
+      await submitAnswer({
+        student_answer: selectedOption,
+        is_skipped: false,
+        is_review: false,
+      });
+    }
+
     const targetIndex = mcqs.findIndex(
       (m) => Number(m.react_order) === Number(reactOrderFinal)
     );
@@ -421,11 +426,18 @@ export default function MockTestsScreen() {
   };
 
   const confirmFinishTest = async () => {
-    await submitAnswer({
-      student_answer: selectedOption,
-      is_skipped: false,
-      is_review: false,
-    });
+    const current = mcqs[currentIndex];
+
+    if (
+      selectedOption !== null &&
+      selectedOption !== current?.student_answer
+    ) {
+      await submitAnswer({
+        student_answer: selectedOption,
+        is_skipped: false,
+        is_review: false,
+      });
+    }
 
     setTestEnded(true);
     setShowConfirmFinish(false);
