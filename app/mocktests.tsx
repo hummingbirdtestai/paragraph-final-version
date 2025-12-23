@@ -280,6 +280,10 @@ export default function MockTestsScreen() {
     await loadSectionMCQs(exam_serial);
   };
 
+  const handleReviewTest = (examSerial: number) => {
+    router.push(`/mockPractice?exam_serial=${examSerial}`);
+  };
+
   const handleNext = async () => {
   const current = mcqs[currentIndex];
 
@@ -925,6 +929,7 @@ export default function MockTestsScreen() {
             mockWindow={mockWindow}
             completedTests={completedTests}
             onStartTest={handleStartTest}
+            onReviewTest={handleReviewTest}
             isLoading={loading}
           />
         )}
