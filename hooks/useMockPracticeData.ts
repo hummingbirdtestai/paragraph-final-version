@@ -1,98 +1,61 @@
-//useMockPracticeData.ts
+// hooks/useMockPracticeData.ts
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-export function usePracticeData(
-  subject = null,
-  userId = null,
-  category = "unviewed"
+export function useMockPracticeData(
+  examSerial: number | null,
+  userId: string | null
 ) {
-  const [phases, setPhases] = useState([]);
+  const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const [offset, setOffset] = useState(0);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  
-  // ⭐ NEW — STOP LOAD MORE WHEN DATA FINISHES
-  const [hasMoreData, setHasMoreData] = useState(true);
-
-  const LIMIT = 20;
-
-  const fetchPhases = async (currentOffset = 0) => {
-    if (!subject || !userId) {
-      setPhases([]);
+  useEffect(() => {
+    if (!examSerial || !userId) {
+      setRows([]);
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.rpc(
-      "get_concept_practice_feed_v14",
-      {
-        p_subject: subject,
-        p_student_id: userId,
-        p_filter: category,
-        p_limit: LIMIT,
-        p_offset: currentOffset
+    const fetch = async () => {
+      setLoading(true);
+
+      const { data, error } = await supabase.rpc(
+        "get_mock_test_feed_v2",
+        {
+          p_student_id: userId,
+          p_exam_serial: examSerial,
+        }
+      );
+
+      if (error) {
+        console.error("❌ get_mock_test_feed_v2 error", error);
+        setRows([]);
+      } else {
+        setRows(data || []);
       }
-    );
 
-    if (error) {
-      console.log("RPC Error", error);
-      return;
-    }
+      setLoading(false);
+    };
 
-    // ⭐ If NO new records → no more pagination
-    if (!data || data.length === 0) {
-      setHasMoreData(false);
-      setIsLoadingMore(false);
-      return;
-    }
+    fetch();
+  }, [examSerial, userId]);
 
-    if (currentOffset === 0) {
-      setPhases(data);
-    } else {
-      setPhases((prev) => [...prev, ...data]);
-    }
-
-    setIsLoadingMore(false);
-    setLoading(false);
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    setOffset(0);
-    setHasMoreData(true);   // ⭐ RESET WHEN SUBJECT/CATEGORY CHANGE
-    setLoading(true);
-    fetchPhases(0);
-  }, [subject, userId, category]);
-
-  const refresh = async () => {
-    setRefreshing(true);
-    setOffset(0);
-    setHasMoreData(true);  
-    await fetchPhases(0);
-  };
-
-  const loadMore = async () => {
-    if (!hasMoreData) return;         // ⭐ STOP LOADING
-    if (isLoadingMore || loading) return;
-
-    setIsLoadingMore(true);
-
-    const newOffset = offset + LIMIT;
-    setOffset(newOffset);
-
-    await fetchPhases(newOffset);
-  };
+  /* ---------------------------------
+     GROUP BY SUBJECT (FRONTEND)
+  --------------------------------- */
+  const subjectBuckets = rows.reduce<Record<string, any[]>>(
+    (acc, row) => {
+      const subject = row.subject_name || "Unknown";
+      if (!acc[subject]) acc[subject] = [];
+      acc[subject].push(row);
+      return acc;
+    },
+    {}
+  );
 
   return {
-    phases,
     loading,
-    refreshing,
-    refresh,
-    loadMore,
-    isLoadingMore,
-    hasMoreData,       // Optional, if UI needs to show “No more items”
+    rows,
+    subjectBuckets, // 👈 THIS replaces subject-based RPC calls
   };
 }
