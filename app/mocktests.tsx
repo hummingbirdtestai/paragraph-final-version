@@ -140,29 +140,28 @@ export default function MockTestsScreen() {
   }, [showCompletionModal]);
 
   const handleTimerExpired = async () => {
-    console.log("⏰ TIMER EXPIRED - AUTO SUBMITTING");
-    const current = mcqs[currentIndex];
-    if (!current) return;
+  console.log("⏰ TIMER EXPIRED - AUTO SUBMITTING");
 
-   const current = mcqs[currentIndex];
+  const current = mcqs[currentIndex];
+  if (!current) return;
 
-// Only submit if user actually selected something NEW
-if (
-  selectedOption !== null &&
-  selectedOption !== current.student_answer
-) {
-  await submitAnswer({
-    student_answer: selectedOption,
-    is_skipped: false,
-    is_review: false,
-  });
-}
+  // Only submit if user actually selected something NEW
+  if (
+    selectedOption !== null &&
+    selectedOption !== current.student_answer
+  ) {
+    await submitAnswer({
+      student_answer: selectedOption,
+      is_skipped: false,
+      is_review: false,
+    });
+  }
 
+  if (currentIndex >= mcqs.length - 1) {
+    setShowSectionConfirm(true);
+  }
+};
 
-    if (currentIndex >= mcqs.length - 1) {
-      setShowSectionConfirm(true);
-    }
-  };
 
   // RPC #1: Load Section MCQs
   const loadSectionMCQs = async (exam_serial: string | number) => {
