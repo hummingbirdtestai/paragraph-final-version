@@ -13,7 +13,7 @@ import {
   useWindowDimensions,
   Pressable,
 } from "react-native";
-import { Clock, ChevronRight, SkipForward, Grid3x3, Bookmark, Menu, BarChart3, Eye } from "lucide-react-native";
+import { Clock, ChevronRight, SkipForward, Grid3x3, Bookmark, Menu, ChartBar as BarChart3, Eye } from "lucide-react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
 import Markdown from "react-native-markdown-display";
 import { useAuth } from "@/contexts/AuthContext";
