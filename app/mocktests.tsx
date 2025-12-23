@@ -40,6 +40,7 @@ export default function MockTestsScreen() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [showBlockedModal, setShowBlockedModal] = useState(false);
+  const [activeAction, setActiveAction] = useState<'skip' | 'review' | null>(null);
   const router = useRouter();
   const params = useLocalSearchParams();
 
@@ -266,6 +267,8 @@ export default function MockTestsScreen() {
   };
 
   const handleSkip = async () => {
+    setActiveAction('skip');
+
     await submitAnswer({
       student_answer: null,
       is_skipped: true,
@@ -280,9 +283,13 @@ export default function MockTestsScreen() {
       setCurrentIndex(currentIndex + 1);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     }
+
+    setActiveAction(null);
   };
 
   const handleReview = async () => {
+    setActiveAction('review');
+
     await submitAnswer({
       student_answer: selectedOption,
       is_skipped: false,
@@ -297,6 +304,8 @@ export default function MockTestsScreen() {
       setCurrentIndex(currentIndex + 1);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     }
+
+    setActiveAction(null);
   };
 
   const moveToNextSection = async () => {
@@ -572,7 +581,11 @@ export default function MockTestsScreen() {
 
         <View style={styles.footer}>
           <TouchableOpacity
-            style={[styles.actionButton, styles.skipButton]}
+            style={[
+              styles.actionButton,
+              styles.skipButton,
+              activeAction === 'skip' && styles.activeButton,
+            ]}
             onPress={handleSkip}
             activeOpacity={0.8}
           >
@@ -581,7 +594,11 @@ export default function MockTestsScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionButton, styles.reviewButton]}
+            style={[
+              styles.actionButton,
+              styles.reviewButton,
+              activeAction === 'review' && styles.activeButton,
+            ]}
             onPress={handleReview}
             activeOpacity={0.8}
           >
@@ -866,13 +883,17 @@ const styles = StyleSheet.create({
     borderColor: "#30363D",
   },
   reviewButton: {
-    backgroundColor: "#58A6FF",
-    borderWidth: 1,
-    borderColor: "#79C0FF",
+    backgroundColor: "#21262D",
+    borderWidth: 1.5,
+    borderColor: "#30363D",
   },
   nextButton: {
     backgroundColor: "#238636",
     borderWidth: 1,
+    borderColor: "#2EA043",
+  },
+  activeButton: {
+    borderWidth: 2,
     borderColor: "#2EA043",
   },
   disabledButton: {
