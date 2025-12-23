@@ -535,15 +535,16 @@ export default function MockTestsScreen() {
         <ScrollView
           ref={scrollRef}
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, !isMobile && styles.scrollContentDesktop]}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.questionHeader}>
-            <Text style={styles.questionNumber}>
-              Q{currentMCQ.section_q_number} of {mcqs.length}
-            </Text>
-            <Text style={styles.sectionLabel}>Section {currentSection}</Text>
-          </View>
+          <View style={!isMobile && styles.desktopContentWrapper}>
+            <View style={styles.questionHeader}>
+              <Text style={styles.questionNumber}>
+                Q{currentMCQ.section_q_number} of {mcqs.length}
+              </Text>
+              <Text style={styles.sectionLabel}>Section {currentSection}</Text>
+            </View>
 
           <View style={styles.questionCard}>
             <Markdown style={markdownStyles}>
@@ -591,52 +592,55 @@ export default function MockTestsScreen() {
               </TouchableOpacity>
             ))}
           </View>
+          </View>
         </ScrollView>
 
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              styles.skipButton,
-              selectedOption && styles.disabledButton,
-              activeAction === 'skip' && !selectedOption && styles.activeButton,
-            ]}
-            onPress={!selectedOption ? handleSkip : undefined}
-            disabled={!!selectedOption}
-            activeOpacity={0.8}
-          >
-            <SkipForward size={18} color={selectedOption ? "#8B949E" : "#FFF"} />
-            <Text style={[styles.buttonText, selectedOption && styles.disabledButtonText]}>Skip</Text>
-          </TouchableOpacity>
+          <View style={[styles.footerContent, !isMobile && styles.footerContentDesktop]}>
+            <TouchableOpacity
+              style={[
+                styles.actionButton,
+                styles.skipButton,
+                selectedOption && styles.disabledButton,
+                activeAction === 'skip' && !selectedOption && styles.activeButton,
+              ]}
+              onPress={!selectedOption ? handleSkip : undefined}
+              disabled={!!selectedOption}
+              activeOpacity={0.8}
+            >
+              <SkipForward size={18} color={selectedOption ? "#8B949E" : "#FFF"} />
+              <Text style={[styles.buttonText, selectedOption && styles.disabledButtonText]}>Skip</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              styles.reviewButton,
-              selectedOption && styles.disabledButton,
-              activeAction === 'review' && !selectedOption && styles.activeButton,
-            ]}
-            onPress={!selectedOption ? handleReview : undefined}
-            disabled={!!selectedOption}
-            activeOpacity={0.8}
-          >
-            <Bookmark size={18} color={selectedOption ? "#8B949E" : "#FFF"} />
-            <Text style={[styles.buttonText, selectedOption && styles.disabledButtonText]}>Review</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.actionButton,
+                styles.reviewButton,
+                selectedOption && styles.disabledButton,
+                activeAction === 'review' && !selectedOption && styles.activeButton,
+              ]}
+              onPress={!selectedOption ? handleReview : undefined}
+              disabled={!!selectedOption}
+              activeOpacity={0.8}
+            >
+              <Bookmark size={18} color={selectedOption ? "#8B949E" : "#FFF"} />
+              <Text style={[styles.buttonText, selectedOption && styles.disabledButtonText]}>Review</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              styles.nextButton,
-              !selectedOption && styles.disabledButton,
-            ]}
-            onPress={selectedOption ? handleNext : undefined}
-            disabled={!selectedOption}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.buttonText, !selectedOption && styles.disabledButtonText]}>Next</Text>
-            <ChevronRight size={18} color={!selectedOption ? "#8B949E" : "#FFF"} />
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.actionButton,
+                styles.nextButton,
+                !selectedOption && styles.disabledButton,
+              ]}
+              onPress={selectedOption ? handleNext : undefined}
+              disabled={!selectedOption}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.buttonText, !selectedOption && styles.disabledButtonText]}>Next</Text>
+              <ChevronRight size={18} color={!selectedOption ? "#8B949E" : "#FFF"} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {showNav && paletteData && (
@@ -845,6 +849,14 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
+  scrollContentDesktop: {
+    alignItems: "center",
+  },
+  desktopContentWrapper: {
+    width: "100%",
+    maxWidth: 900,
+    paddingHorizontal: 40,
+  },
   questionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -919,12 +931,19 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   footer: {
-    flexDirection: "row",
     padding: 16,
-    gap: 12,
     backgroundColor: "#0D1117",
     borderTopWidth: 1,
     borderTopColor: "#21262D",
+  },
+  footerContent: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  footerContentDesktop: {
+    maxWidth: 900,
+    marginHorizontal: "auto",
+    paddingHorizontal: 40,
   },
   actionButton: {
     flex: 1,
