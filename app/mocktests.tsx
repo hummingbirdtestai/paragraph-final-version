@@ -878,7 +878,7 @@ export default function MockTestsScreen() {
             <TouchableOpacity
               style={[styles.completionButton, styles.completionButtonPrimary]}
               onPress={() => {
-                router.push(`/reviewmocktest?exam_serial=${examSerial}`);
+                router.push(`/mockPractice?exam_serial=${examSerial}`);
               }}
             >
               <Eye size={20} color="#FFF" />
