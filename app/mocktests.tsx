@@ -366,6 +366,11 @@ export default function MockTestsScreen() {
       console.log("✅ SECTION TRANSITION RESPONSE:", payload);
 
       if (payload?.test_complete) {
+        await supabase.rpc("mark_mock_test_complete", {
+          p_student_id: userId,
+          p_exam_serial: examSerial,
+        });
+
         setTestEnded(true);
         setShowCompletionModal(true);
         return;
@@ -437,6 +442,11 @@ export default function MockTestsScreen() {
         is_review: false,
       });
     }
+
+    await supabase.rpc("mark_mock_test_complete", {
+      p_student_id: userId,
+      p_exam_serial: examSerial,
+    });
 
     setTestEnded(true);
     setShowConfirmFinish(false);
