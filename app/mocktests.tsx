@@ -939,10 +939,11 @@ const styles = StyleSheet.create({
   footerContent: {
     flexDirection: "row",
     gap: 12,
+    width: "100%",
   },
   footerContentDesktop: {
     maxWidth: 900,
-    marginHorizontal: "auto",
+    alignSelf: "center",
     paddingHorizontal: 40,
   },
   actionButton: {
