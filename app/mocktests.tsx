@@ -584,26 +584,30 @@ export default function MockTestsScreen() {
             style={[
               styles.actionButton,
               styles.skipButton,
-              activeAction === 'skip' && styles.activeButton,
+              selectedOption && styles.disabledButton,
+              activeAction === 'skip' && !selectedOption && styles.activeButton,
             ]}
-            onPress={handleSkip}
+            onPress={!selectedOption ? handleSkip : undefined}
+            disabled={!!selectedOption}
             activeOpacity={0.8}
           >
-            <SkipForward size={18} color="#FFF" />
-            <Text style={styles.buttonText}>Skip</Text>
+            <SkipForward size={18} color={selectedOption ? "#8B949E" : "#FFF"} />
+            <Text style={[styles.buttonText, selectedOption && styles.disabledButtonText]}>Skip</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
               styles.actionButton,
               styles.reviewButton,
-              activeAction === 'review' && styles.activeButton,
+              selectedOption && styles.disabledButton,
+              activeAction === 'review' && !selectedOption && styles.activeButton,
             ]}
-            onPress={handleReview}
+            onPress={!selectedOption ? handleReview : undefined}
+            disabled={!!selectedOption}
             activeOpacity={0.8}
           >
-            <Bookmark size={18} color="#FFF" />
-            <Text style={styles.buttonText}>Review</Text>
+            <Bookmark size={18} color={selectedOption ? "#8B949E" : "#FFF"} />
+            <Text style={[styles.buttonText, selectedOption && styles.disabledButtonText]}>Review</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -616,8 +620,8 @@ export default function MockTestsScreen() {
             disabled={!selectedOption}
             activeOpacity={0.8}
           >
-            <Text style={styles.buttonText}>Next</Text>
-            <ChevronRight size={18} color="#FFF" />
+            <Text style={[styles.buttonText, !selectedOption && styles.disabledButtonText]}>Next</Text>
+            <ChevronRight size={18} color={!selectedOption ? "#8B949E" : "#FFF"} />
           </TouchableOpacity>
         </View>
 
@@ -905,6 +909,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#FFF",
     letterSpacing: 0.3,
+  },
+  disabledButtonText: {
+    color: "#8B949E",
   },
   centerContainer: {
     flex: 1,
