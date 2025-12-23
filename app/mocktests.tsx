@@ -144,11 +144,20 @@ export default function MockTestsScreen() {
     const current = mcqs[currentIndex];
     if (!current) return;
 
-    await submitAnswer({
-      student_answer: selectedOption,
-      is_skipped: !selectedOption,
-      is_review: false,
-    });
+   const current = mcqs[currentIndex];
+
+// Only submit if user actually selected something NEW
+if (
+  selectedOption !== null &&
+  selectedOption !== current.student_answer
+) {
+  await submitAnswer({
+    student_answer: selectedOption,
+    is_skipped: false,
+    is_review: false,
+  });
+}
+
 
     if (currentIndex >= mcqs.length - 1) {
       setShowSectionConfirm(true);
@@ -267,21 +276,21 @@ export default function MockTestsScreen() {
   };
 
   const handleNext = async () => {
-    await submitAnswer({
-      student_answer: selectedOption,
-      is_skipped: false,
-      is_review: false,
-    });
+  await submitAnswer({
+    student_answer: selectedOption,
+    is_skipped: false,
+    is_review: false,
+  });
 
-    setSelectedOption(null);
+  setSelectedOption(null);
 
-    if (currentIndex >= mcqs.length - 1) {
-      setShowSectionConfirm(true);
-    } else {
-      setCurrentIndex(currentIndex + 1);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    }
-  };
+  if (currentIndex >= mcqs.length - 1) {
+    setShowSectionConfirm(true);
+  } else {
+    setCurrentIndex(currentIndex + 1);
+  }
+};
+
 
   const handleSkip = async () => {
     setActiveAction('skip');
