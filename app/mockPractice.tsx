@@ -4,7 +4,6 @@ import {
   View,
   Text,
   ScrollView,
-  RefreshControl,
   StyleSheet,
   Platform,
   TouchableOpacity,
@@ -13,49 +12,28 @@ import {
 import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
-import { usePracticeData } from "@/hooks/usePracticeData";
+import { useMockPracticeData } from "@/hooks/useMockPracticeData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
 import { FlatList } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 
 export default function PracticeScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const { exam_serial } = useLocalSearchParams();
 
   const [containersVisible, setContainersVisible] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
 
-  const subjects = [
-    "General Medicine",
-    "General Surgery",
-    "Obstetrics and Gynaecology",
-    "Anatomy",
-    "Anesthesia",
-    "Biochemistry",
-    "Community Medicine",
-    "Dermatology",
-    "ENT",
-    "Forensic Medicine",
-    "Microbiology",
-    "Ophthalmology",
-    "Orthopedics",
-    "Pathology",
-    "Pediatrics",
-    "Pharmacology",
-    "Physiology",
-    "Psychiatry",
-    "Radiology",
-  ];
-
-  const [selectedSubject, setSelectedSubject] = useState("General Medicine");
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] =
     useState<"unviewed" | "viewed" | "bookmarked" | "wrong">("unviewed");
   const [userId, setUserId] = useState<string | null>(null);
   const [showScrollControls, setShowScrollControls] = useState(false);
-   // ✅ FIX 1 — declare ref BEFORE scroll effect
   const listRef = React.useRef<FlatList>(null);
- 
-  
+
+
   useEffect(() => {
     const loadUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -64,18 +42,23 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-  const practiceData = usePracticeData(selectedSubject, userId, selectedCategory);
- const {
-  phases,
-  loading,
-  refreshing,
-  refresh,
-  loadMore,
-  isLoadingMore,
-  hasMoreData
-} = practiceData;
-  const PAGE_LIMIT = 20;
- // Scroll to top ONLY when subject or category changes
+  const { rows, subjectBuckets, loading } = useMockPracticeData(
+    Number(exam_serial),
+    userId
+  );
+
+  const subjects = Object.keys(subjectBuckets);
+
+  useEffect(() => {
+    if (subjects.length > 0 && !selectedSubject) {
+      setSelectedSubject(subjects[0]);
+    }
+  }, [subjects.length]);
+
+  const visibleRows = selectedSubject
+    ? subjectBuckets[selectedSubject] ?? []
+    : rows;
+
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollToOffset({ offset: 0, animated: true });
@@ -161,13 +144,10 @@ export default function PracticeScreen() {
         ) : (
    <FlatList
   ref={listRef}
-  data={phases}
+  data={visibleRows}
   keyExtractor={(item) => item.id}
   renderItem={({ item }) => <PracticeCard phase={item} />}
   contentContainerStyle={styles.cardsWrapper}
-  refreshControl={
-    <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#10b981" />
-  }
   onScroll={(e) => {
     const offsetY = e.nativeEvent.contentOffset.y;
 
@@ -192,26 +172,6 @@ export default function PracticeScreen() {
   maxToRenderPerBatch={6}
   windowSize={10}
   removeClippedSubviews={true}
-
-  onEndReached={() => {
-    if (
-      hasMoreData &&
-      !isLoadingMore &&
-      !loading &&
-      phases.length >= PAGE_LIMIT       // ⭐ REQUIRED FIX FOR WEB FLICKER
-    ) {
-      loadMore();
-    }
-  }}
-  onEndReachedThreshold={hasMoreData ? 0.5 : 0.01}
-
-  ListFooterComponent={
-    isLoadingMore ? (
-      <View style={{ padding: 20 }}>
-        <Text style={{ textAlign: "center", color: "#999" }}>Loading more…</Text>
-      </View>
-    ) : null
-  }
 />
         )}
 
