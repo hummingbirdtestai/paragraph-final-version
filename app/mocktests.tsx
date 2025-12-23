@@ -276,19 +276,19 @@ if (
   };
 
   const handleNext = async () => {
-  await submitAnswer({
-    student_answer: selectedOption,
-    is_skipped: false,
-    is_review: false,
-  });
+  const current = mcqs[currentIndex];
 
-
-
-
-
-
-
-
+  // ✅ submit ONLY if changed
+  if (
+    selectedOption !== null &&
+    selectedOption !== current?.student_answer
+  ) {
+    await submitAnswer({
+      student_answer: selectedOption,
+      is_skipped: false,
+      is_review: false,
+    });
+  }
 
   setSelectedOption(null);
 
@@ -296,7 +296,7 @@ if (
     setShowSectionConfirm(true);
   } else {
     setCurrentIndex(currentIndex + 1);
-
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
   }
 };
 
