@@ -8,18 +8,22 @@ import {
   StyleSheet,
   Animated,
 } from "react-native";
-import { supabase } from "@/lib/supabaseClient";
+import ZoomableImage from "@/components/common/ZoomableImage";
 
 interface MCQData {
-  id: string;
-  stem: string;
-  options: { [key: string]: string } | string[];
-  feedback: {
-    wrong: string;
-    correct: string;
+  id?: string;
+  stem?: string;
+  options?: { [key: string]: string } | string[];
+  feedback?: {
+    wrong?: string;
+    correct?: string;
   };
-  learning_gap: string;
-  correct_answer: string;
+  learning_gap?: string;
+  high_yield_facts?: string;
+  correct_answer?: string;
+  phase_json?: any;
+  is_mcq_image_type?: boolean;
+  mcq_image?: string;
 }
 
 export default function MCQChatScreen({
@@ -39,11 +43,10 @@ export default function MCQChatScreen({
   phaseUniqueId,
   practicecardId,
   subject,
-  mode = "practice",   // 👈 ADD THIS (DEFAULT)
 }: {
   item: MCQData;
   onNext?: () => void;
-  studentId: string;
+  studentId?: string;
   conceptId?: string;
   mcqId?: string;
   correctAnswer?: string;
@@ -52,152 +55,44 @@ export default function MCQChatScreen({
   hideInternalNext?: boolean;
   disabled?: boolean;
   reviewMode?: boolean;
-  isBookmarked: boolean;
+  isBookmarked?: boolean;
   studentSelected?: string | null;
-  phaseUniqueId: string;
+  phaseUniqueId?: string;
   practicecardId?: string;
   subject?: string;
-  mode?: "practice" | "video";   // 👈 ADD THIS
 }) {
+  const mcqData = item?.phase_json?.[0] ?? item?.phase_json ?? item;
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // 🟦 Log when MCQ screen mounts
-  useEffect(() => {
-    console.log("🟦 [MCQScreen] Mounted MCQ", {
-      mcqId,
-      conceptId,
-      correctAnswer,
-      mcqData: item,
-    });
-  }, []);
+  const handleOptionSelect = (option: string) => {
+    if (selectedOption || reviewMode) return;
+    setSelectedOption(option);
+    onAnswered?.();
+  };
 
-  useEffect(() => {
-    if (selectedOption) {
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 300);
-    }
-  }, [selectedOption]);
-
-const handleOptionSelect = async (option: string) => {
-  if (selectedOption) return;
-
-  // 🟧 Log when an option is selected
-  console.log("🟧 [MCQScreen] Option Selected", {
-    selected: option,
-    mcqId,
-    conceptId,
-  });
-
-  setSelectedOption(option);
-  onAnswered?.();
-
-  const correct_answer = correctAnswer || item.correct_answer;
-  const is_correct = option === correct_answer;
-
-  // ⭐ PRACTICE MODE — no RPC
-  if (!studentId) {
-    console.log("🧠 Practice Mode → Local Save", {
-      mcq_id: mcqId || item.id,
-      selected: option,
-      correct_answer,
-      is_correct,
-    });
-    return;
-  }
-
-// ==============================
-// PRACTICE MODE (DEFAULT)
-// ==============================
-if (mode === "practice") {
-  console.log("📤 PRACTICE MCQ → my_answers", mcqId);
-
-  try {
-    const { error } = await supabase.rpc("my_answers", {
-      p_student_id: studentId,
-      p_mcq_id: mcqId,
-      p_student_answer: option,
-      p_is_correct: is_correct,
-      p_correct_answer: correct_answer,
-    });
-
-    if (error) {
-      console.log("❌ my_answers error:", error);
-    }
-  } catch (err) {
-    console.log("🔥 my_answers exception:", err);
-  }
-
-  return;
-}
-
-// ==============================
-// VIDEO MODE
-// ==============================
-if (mode === "video") {
-  console.log("📤 VIDEO MCQ → submit_video_mcq_answer_v1", mcqId);
-
-  try {
-    const { error } = await supabase.rpc(
-      "submit_video_mcq_answer_v1",
-      {
-        p_student_id: studentId,
-        p_video_mcq_id: mcqId,
-        p_student_answer: option,
-        p_is_correct: is_correct,
-        p_correct_answer: correct_answer,
-        p_video_mcq_unique_id: phaseUniqueId,
-      }
-    );
-
-    if (error) {
-      console.log("❌ submit_video_mcq_answer_v1 error:", error);
-    }
-  } catch (err) {
-    console.log("🔥 submit_video_mcq_answer_v1 exception:", err);
-  }
-
-  return;
-}
-
-// ✅ CLOSE the handleOptionSelect function
-};
-  const isCorrect = selectedOption === item.correct_answer;
+  const isCorrect = selectedOption === mcqData.correct_answer;
 
   return (
     <View style={styles.container}>
       <ScrollView ref={scrollViewRef} style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
-        <MCQQuestion
-          mcq={item}
-          studentId={studentId}
-          isBookmarked={isBookmarked}
-          reviewMode={reviewMode}
-          phaseUniqueId={phaseUniqueId}
-          practicecardId={practicecardId}
-          subject={subject}
-        />
+        <MCQQuestion mcq={mcqData} />
 
         <OptionsGrid
-          options={item.options}
+          options={mcqData.options}
           selectedOption={reviewMode ? studentSelected : selectedOption}
-          correctAnswer={item.correct_answer}
+          correctAnswer={mcqData.correct_answer}
           onSelect={handleOptionSelect}
           reviewMode={reviewMode}
         />
 
         {(reviewMode || selectedOption) && (
           <FeedbackSection
-            feedback={
-              reviewMode
-                ? item.feedback.correct
-                : isCorrect
-                ? item.feedback.correct
-                : item.feedback.wrong
-            }
-            learningGap={item.learning_gap}
-            correctAnswer={item.correct_answer}
+            learningGap={mcqData.learning_gap}
+            highYieldFacts={mcqData.high_yield_facts}
+            correctAnswer={mcqData.correct_answer}
           />
         )}
       </ScrollView>
@@ -205,71 +100,24 @@ if (mode === "video") {
   );
 }
 
-function MentorMessage() {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-  }, []);
-
-  return (
-    <Animated.View style={[styles.mentorBubble, { opacity: fadeAnim }]}>
-      <Text style={styles.mentorText}>
-        Let's test your understanding with this question. Take your time and choose the best answer.
-      </Text>
-    </Animated.View>
-  );
-}
-
-function MCQQuestion({
-  mcq,
-  studentId,
-  isBookmarked,
-  reviewMode,
-  phaseUniqueId,
-  practicecardId,
-  subject,
-}: {
-  mcq: MCQData;
-  studentId: string;
-  isBookmarked: boolean;
-  reviewMode: boolean;
-  phaseUniqueId: string;
-  practicecardId?: string;
-  subject?: string;
-}) {
+function MCQQuestion({ mcq }: { mcq: MCQData }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 100, useNativeDriver: true }).start();
   }, []);
 
-  async function toggleBookmarkInLearningMode() {
-  try {
-    console.log("📌 Learning Mode MCQ Bookmark Toggle");
-
-    const { data, error } = await supabase.rpc("toggle_latest_bookmark", {
-      p_student_id: studentId,
-      p_phase_unique_id: phaseUniqueId
-    });
-
-    if (error) {
-      console.error("❌ Learning bookmark RPC error:", error);
-    } else {
-      console.log("🟢 Bookmark toggled:", data);
-    }
-  } catch (err) {
-    console.error("🔥 toggleBookmarkInLearningMode failed:", err);
-  }
-}
-
-
   return (
     <Animated.View style={[styles.mcqCard, { opacity: fadeAnim }]}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <View style={{ flex: 1, paddingRight: 8 }}>
-          {renderMarkupText(mcq.stem, styles.mcqStem)}
-        </View>
+      <View style={{ flex: 1 }}>
+        {renderMarkupText(mcq.stem || "", styles.mcqStem)}
       </View>
+
+      {mcq.is_mcq_image_type && mcq.mcq_image && (
+        <View style={{ marginTop: 12 }}>
+          <ZoomableImage uri={mcq.mcq_image} height={260} />
+        </View>
+      )}
     </Animated.View>
   );
 }
@@ -281,9 +129,9 @@ function OptionsGrid({
   onSelect,
   reviewMode = false,
 }: {
-  options: MCQData["options"] | string[];
+  options?: MCQData["options"] | string[];
   selectedOption: string | null;
-  correctAnswer: string;
+  correctAnswer?: string;
   onSelect: (option: string) => void;
   reviewMode?: boolean;
 }) {
@@ -292,6 +140,10 @@ function OptionsGrid({
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 200, useNativeDriver: true }).start();
   }, []);
+
+  if (!options || (typeof options === 'object' && Object.keys(options).length === 0)) {
+    return null;
+  }
 
   const optionEntries = Array.isArray(options)
     ? options.map((opt, i) => {
@@ -396,13 +248,13 @@ function OptionButton({
 }
 
 function FeedbackSection({
-  feedback,
   learningGap,
+  highYieldFacts,
   correctAnswer,
 }: {
-  feedback: string;
-  learningGap: string;
-  correctAnswer: string;
+  learningGap?: string;
+  highYieldFacts?: string;
+  correctAnswer?: string;
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -410,21 +262,33 @@ function FeedbackSection({
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 300, useNativeDriver: true }).start();
   }, []);
 
+  const hasContent = learningGap || highYieldFacts || correctAnswer;
+  if (!hasContent) return null;
+
   return (
     <Animated.View style={[styles.feedbackContainer, { opacity: fadeAnim }]}>
-      <View style={styles.feedbackBubble}>{renderMarkupText(feedback, styles.feedbackText)}</View>
+      {learningGap && (
+        <View style={styles.learningGapCard}>
+          <Text style={styles.learningGapTitle}>Learning Gap</Text>
+          {renderMarkupText(learningGap, styles.learningGapText)}
+        </View>
+      )}
 
-      <View style={styles.learningGapCard}>
-        <Text style={styles.learningGapTitle}>Learning Gap</Text>
-        {renderMarkupText(learningGap, styles.learningGapText)}
-      </View>
+      {highYieldFacts && (
+        <View style={styles.learningGapCard}>
+          <Text style={styles.learningGapTitle}>High Yield Facts</Text>
+          {renderMarkupText(highYieldFacts, styles.learningGapText)}
+        </View>
+      )}
 
-      <View style={styles.correctAnswerCard}>
-        <Text style={styles.correctAnswerText}>
-          Correct Answer:{" "}
-          <Text style={styles.correctAnswerBold}>{correctAnswer}</Text>
-        </Text>
-      </View>
+      {correctAnswer && (
+        <View style={styles.correctAnswerCard}>
+          <Text style={styles.correctAnswerText}>
+            Correct Answer:{" "}
+            <Text style={styles.correctAnswerBold}>{correctAnswer}</Text>
+          </Text>
+        </View>
+      )}
     </Animated.View>
   );
 }
