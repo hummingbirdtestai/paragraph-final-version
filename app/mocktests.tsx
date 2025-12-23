@@ -10,8 +10,10 @@ import {
   Alert,
   SafeAreaView,
   ActivityIndicator,
+  useWindowDimensions,
+  Pressable,
 } from "react-native";
-import { Clock, ChevronRight, SkipForward, Grid3x3, Bookmark } from "lucide-react-native";
+import { Clock, ChevronRight, SkipForward, Grid3x3, Bookmark, Menu } from "lucide-react-native";
 import Markdown from "react-native-markdown-display";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
@@ -27,10 +29,14 @@ import type { MockTest, UserMockTest } from "@/types/mock-test";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import MainLayout from "@/components/MainLayout";
+import MobileDrawer from "@/components/MobileDrawer";
+import Sidebar from "@/components/Sidebar";
 
 export default function MockTestsScreen() {
   const { user, loginWithOTP, verifyOTP } = useAuth();
   const isLoggedIn = !!user;
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
@@ -41,6 +47,7 @@ export default function MockTestsScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [activeAction, setActiveAction] = useState<'skip' | 'review' | null>(null);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const router = useRouter();
   const params = useLocalSearchParams();
 
@@ -513,9 +520,16 @@ export default function MockTestsScreen() {
             <Clock size={20} color="#25D366" />
             <Text style={styles.timerText}>{formatTime(remainingTime || 0)}</Text>
           </View>
-          <TouchableOpacity onPress={() => setShowNav(true)} style={styles.navButton}>
-            <Grid3x3 size={24} color="#25D366" />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            {isMobile && (
+              <TouchableOpacity onPress={() => setDrawerVisible(true)} style={styles.navButton}>
+                <Menu size={24} color="#25D366" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={() => setShowNav(true)} style={styles.navButton}>
+              <Grid3x3 size={24} color="#25D366" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ScrollView
@@ -691,6 +705,44 @@ export default function MockTestsScreen() {
             </View>
           </View>
         )}
+
+        {isMobile ? (
+          <MobileDrawer
+            visible={drawerVisible}
+            onClose={() => setDrawerVisible(false)}
+            onOpenAuth={(mode) => {
+              setDrawerVisible(false);
+              if (mode === 'login') {
+                setShowLoginModal(true);
+              } else {
+                setShowRegistrationModal(true);
+              }
+            }}
+          />
+        ) : (
+          drawerVisible && (
+            <View style={styles.webSidebarOverlay}>
+              <Pressable
+                style={styles.webSidebarBackdrop}
+                onPress={() => setDrawerVisible(false)}
+              />
+              <View style={styles.webSidebarContainer}>
+                <Sidebar
+                  isOpen={drawerVisible}
+                  onClose={() => setDrawerVisible(false)}
+                  onOpenAuth={(mode) => {
+                    setDrawerVisible(false);
+                    if (mode === 'login') {
+                      setShowLoginModal(true);
+                    } else {
+                      setShowRegistrationModal(true);
+                    }
+                  }}
+                />
+              </View>
+            </View>
+          )
+        )}
       </SafeAreaView>
     );
   }
@@ -775,6 +827,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#25D366",
     fontVariant: ["tabular-nums"],
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
   navButton: {
     padding: 8,
@@ -1010,6 +1067,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#C9D1D9",
+  },
+  webSidebarOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+  },
+  webSidebarBackdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  webSidebarContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: 280,
+    backgroundColor: "#0D1117",
+    zIndex: 1001,
   },
 });
 
