@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
-import MocktestMCQScreen, { FeedbackSection } from "@/components/types/ MocktestMCQScreen";
+import MocktestMCQScreen from "@/components/types/ MocktestMCQScreen";
 import ZoomableImage from "@/components/common/ZoomableImage";
 import ConfettiCannon from "react-native-confetti-cannon";
 import { TouchableOpacity } from "react-native";
@@ -26,16 +26,17 @@ export function PracticeCard({ phase }: { phase: any }) {
   const [revealed, setRevealed] = useState(false);
   const confettiRef = useRef<any>(null);
 
-  const handleReviewAnswer = (answer: string, isCorrect: boolean) => {
-    if (revealed) return;
-
+  const handleReviewAnswer = (answer: string) => {
     setReviewAnswer(answer);
     setRevealed(true);
 
-    if (isCorrect) {
-      requestAnimationFrame(() => {
+    const correctAnswer = phase.phase_json?.correct_answer || phase.correct_answer;
+    const isCorrect = answer === correctAnswer;
+
+    if (isCorrect && confettiRef.current) {
+      setTimeout(() => {
         confettiRef.current?.start();
-      });
+      }, 100);
     }
   };
 
@@ -128,13 +129,12 @@ export function PracticeCard({ phase }: { phase: any }) {
       onAnswerSelected={handleReviewAnswer}
     />
 
-    {revealed && (
-      <FeedbackSection
-        learningGap={phase.phase_json?.learning_gap}
-        highYieldFacts={phase.phase_json?.high_yield_facts}
-        correctAnswer={phase.phase_json?.correct_answer}
-      />
-    )}
+    {phase.is_mcq_image_type === true &&
+      phase.mcq_image && (
+        <View style={{ marginVertical: 16 }}>
+          <ZoomableImage uri={phase.mcq_image} height={260} />
+        </View>
+      )}
 
     <AskParagraphButton
       studentId={user?.id}
