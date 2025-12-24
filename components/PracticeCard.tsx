@@ -119,11 +119,16 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
   </View>
 )}
 
-  
-      {phase.image_url && (
-        <Image source={{ uri: phase.image_url }} style={styles.image} />
+
+      {phase.is_mcq_image_type === true &&
+        phase.mcq_image && (
+          <Image
+            source={{ uri: phase.mcq_image }}
+            style={styles.image}
+            resizeMode="contain"
+          />
       )}
-   
+
     </View>
   );
 }
