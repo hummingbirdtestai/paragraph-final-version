@@ -92,7 +92,6 @@ export function PracticeCard({
       style={[
         styles.card,
         isConcept && styles.cardConcept,
-        shouldHighlight && styles.cardHighlighted,
         shouldDim && styles.cardDimmed,
       ]}
     >
@@ -292,11 +291,6 @@ const styles = StyleSheet.create({
   },
   cardConcept: {
     paddingHorizontal: 0,
-  },
-  cardHighlighted: {
-    borderWidth: 2,
-    borderColor: "#10b981",
-    backgroundColor: "#0d2017",
   },
   cardDimmed: {
     opacity: 0.3,
