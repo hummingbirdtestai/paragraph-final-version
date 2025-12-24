@@ -75,6 +75,12 @@ export default function MCQChatScreen({
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  useEffect(() => {
+    if (reviewMode && studentSelected) {
+      setSelectedOption(studentSelected);
+    }
+  }, [reviewMode, studentSelected]);
+
   const handleOptionSelect = (option: string) => {
     if (selectedOption) return;
     if (reviewMode && !interactiveReview) return;
