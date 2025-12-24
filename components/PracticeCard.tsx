@@ -1,11 +1,9 @@
 //practicecard.tsx
-import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
-import MocktestMCQScreen, { FeedbackSection } from "@/components/types/ MocktestMCQScreen";
-import ZoomableImage from "@/components/common/ZoomableImage";
-import ConfettiCannon from "react-native-confetti-cannon";
+import MocktestMCQScreen from "@/components/types/ MocktestMCQScreen";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
@@ -13,43 +11,16 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 
-export function PracticeCard({
-  phase,
-  examSerial,
-  viewMode = "unviewed",
-  bookmarkedMCQs,
-  wrongMCQs,
-}: {
-  phase: any;
-  examSerial?: number;
-  viewMode?: "unviewed" | "bookmarked" | "wrong";
-  bookmarkedMCQs?: Set<number>;
-  wrongMCQs?: Set<number>;
-}) {
-   const { width } = useWindowDimensions();
-  const isWeb = width >= 1024;
+export function PracticeCard({ phase }) {
+   const { width } = useWindowDimensions();   // ✅ ADD
+  const isWeb = width >= 1024;               // ✅ ADD
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const { user } = useAuth();
   const router = useRouter();
+  // Local bookmark state (like FlashcardCard)
+const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
-  const [isBookmarked, setIsBookmarked] = useState(phase.is_bookmarked);
-  const [reviewAnswer, setReviewAnswer] = useState<string | null>(null);
-  const [revealed, setRevealed] = useState(false);
-  const confettiRef = useRef<any>(null);
-
-  const handleReviewAnswer = (answer: string, isCorrect: boolean) => {
-    if (revealed) return;
-
-    setReviewAnswer(answer);
-    setRevealed(true);
-
-    if (isCorrect) {
-      requestAnimationFrame(() => {
-        confettiRef.current?.start();
-      });
-    }
-  };
 
   // 🔵 DEBUG: Log concept/mcq IDs when card loads
   React.useEffect(() => {
@@ -69,56 +40,47 @@ export function PracticeCard({
   }, [phase]);
 
   return (
-    <View
-      style={[
-        styles.card,
-        isConcept && styles.cardConcept,
-      ]}
-    >
+    <View style={[styles.card, isConcept && styles.cardConcept]}>
       {/* SUBJECT NAME */}
       <Text style={[styles.subject, isConcept && styles.subjectConcept]}>{phase.subject}</Text>
+      {/* 🔖 Inline bookmark icon (same as flashcards) */}
+<View style={[styles.bookmarkRow, isConcept && styles.bookmarkRowConcept]}>
+  <TouchableOpacity
+    onPress={async () => {
+      if (!user?.id) return;
 
-      {/* 🔖 Bookmark icon - ONLY for MCQs */}
-      {isMCQ && (
-        <View style={styles.bookmarkRow}>
-          <TouchableOpacity
-            onPress={async () => {
-              if (!user?.id || !examSerial) return;
+      console.log("🔖 Toggle practice bookmark", {
+        practicecard_id: phase.id,
+        subject: phase.subject,
+      });
 
-              console.log("🔖 Toggle mocktest bookmark", {
-                exam_serial: examSerial,
-                react_order_final: phase.react_order_final,
-                subject: phase.subject,
-              });
+      const { data, error } = await supabase.rpc(
+        "toggle_practice_bookmark_v1",
+        {
+          p_student_id: user.id,
+          p_practicecard_id: phase.id,
+          p_subject: phase.subject,
+        }
+      );
 
-              const { data, error } = await supabase.rpc(
-                "toggle_mocktest_bookmark_v1",
-                {
-                  p_student_id: user.id,
-                  p_exam_serial: examSerial,
-                  p_react_order_final: phase.react_order_final,
-                  p_subject: phase.subject,
-                }
-              );
+      if (error) {
+        console.log("❌ Bookmark toggle error:", error);
+        return;
+      }
 
-              if (error) {
-                console.log("❌ Bookmark toggle error:", error);
-                return;
-              }
+      const newState = data?.is_bookmark ?? !isBookmarked;
+      setIsBookmarked(newState);
+    }}
+  >
+    <Bookmark
+      size={22}
+      color="#10b981"
+      strokeWidth={2}
+      fill={isBookmarked ? "#10b981" : "transparent"}
+    />
+  </TouchableOpacity>
+</View>
 
-              const newState = data?.is_bookmark ?? !isBookmarked;
-              setIsBookmarked(newState);
-            }}
-          >
-            <Bookmark
-              size={22}
-              color="#10b981"
-              strokeWidth={2}
-              fill={isBookmarked ? "#10b981" : "transparent"}
-            />
-          </TouchableOpacity>
-        </View>
-      )}
 
       {/* 🔥 NEW — Progress Counter */}
       <View style={[styles.progressRow, isConcept && styles.progressRowConcept]}>
@@ -143,20 +105,9 @@ export function PracticeCard({
   <View style={isWeb ? styles.webConstrained : undefined}>
     <MocktestMCQScreen
       item={phase}
-      studentSelected={null}
+      studentSelected={phase.student_answer || null}
       reviewMode={true}
-      interactiveReview={true}
-      onAnswerSelected={handleReviewAnswer}
-      isBookmarked={isBookmarked}
     />
-
-    {revealed && (
-      <FeedbackSection
-        learningGap={phase.phase_json?.learning_gap}
-        highYieldFacts={phase.phase_json?.high_yield_facts}
-        correctAnswer={phase.phase_json?.correct_answer}
-      />
-    )}
 
     <AskParagraphButton
       studentId={user?.id}
@@ -168,14 +119,11 @@ export function PracticeCard({
   </View>
 )}
 
-      <ConfettiCannon
-        ref={confettiRef}
-        count={150}
-        origin={{ x: width / 2, y: 0 }}
-        autoStart={false}
-        fadeOut={true}
-      />
-
+  
+      {phase.image_url && (
+        <Image source={{ uri: phase.image_url }} style={styles.image} />
+      )}
+   
     </View>
   );
 }
@@ -292,6 +240,9 @@ const styles = StyleSheet.create({
     top: 12,
     right: 16,
     zIndex: 999,
+  },
+  bookmarkRowConcept: {
+    right: 16,
   },
   progressRow: {
     marginBottom: 12,
