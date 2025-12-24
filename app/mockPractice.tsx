@@ -71,6 +71,30 @@ export default function PracticeScreen() {
       .map(r => r.react_order_final)
   );
 
+  const filteredRows = baseRows.filter((phase) => {
+    if (selectedCategory === "unviewed") {
+      return true;
+    }
+
+    if (selectedCategory === "bookmarked") {
+      const isMCQ = phase.phase_type === "mcq";
+      const isConcept = phase.phase_type === "concept";
+      const isBookmarkedMCQ = isMCQ && bookmarkedMCQs.has(phase.react_order_final);
+      const isAssociatedConcept = isConcept && bookmarkedMCQs.has(phase.react_order_final + 1);
+      return isBookmarkedMCQ || isAssociatedConcept;
+    }
+
+    if (selectedCategory === "wrong") {
+      const isMCQ = phase.phase_type === "mcq";
+      const isConcept = phase.phase_type === "concept";
+      const isWrongMCQ = isMCQ && wrongMCQs.has(phase.react_order_final);
+      const isAssociatedConcept = isConcept && wrongMCQs.has(phase.react_order_final + 1);
+      return isWrongMCQ || isAssociatedConcept;
+    }
+
+    return true;
+  });
+
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollToOffset({ offset: 0, animated: true });
@@ -146,7 +170,7 @@ export default function PracticeScreen() {
         ) : (
    <FlatList
   ref={listRef}
-  data={baseRows}
+  data={filteredRows}
   keyExtractor={(item) => item.id}
   renderItem={({ item }) => (
     <PracticeCard

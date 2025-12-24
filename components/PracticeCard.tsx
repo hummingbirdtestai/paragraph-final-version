@@ -50,13 +50,6 @@ export function PracticeCard({
   const isAssociatedConceptForWrong =
     isConcept && wrongMCQs?.has(phase.react_order_final + 1);
 
-  const shouldHighlight =
-    viewMode === "unviewed" ||
-    (viewMode === "bookmarked" && (isBookmarkedMCQ || isAssociatedConceptForBookmark)) ||
-    (viewMode === "wrong" && (isWrongMCQ || isAssociatedConceptForWrong));
-
-  const shouldDim = !shouldHighlight && viewMode !== "unviewed";
-
   const handleReviewAnswer = (answer: string, isCorrect: boolean) => {
     if (revealed) return;
 
@@ -92,7 +85,6 @@ export function PracticeCard({
       style={[
         styles.card,
         isConcept && styles.cardConcept,
-        shouldDim && styles.cardDimmed,
       ]}
     >
       {/* SUBJECT NAME */}
@@ -291,9 +283,6 @@ const styles = StyleSheet.create({
   },
   cardConcept: {
     paddingHorizontal: 0,
-  },
-  cardDimmed: {
-    opacity: 0.3,
   },
   subject: {
     color: "#25D366",
