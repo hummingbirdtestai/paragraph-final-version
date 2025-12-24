@@ -179,7 +179,6 @@ export default function PracticeScreen() {
       viewMode={selectedCategory}
       bookmarkedMCQs={bookmarkedMCQs}
       wrongMCQs={wrongMCQs}
-      onBookmarkChange={refetch}
     />
   )}
   contentContainerStyle={styles.cardsWrapper}
