@@ -298,21 +298,21 @@ export function FeedbackSection({
       {learningGap && (
         <View style={styles.learningGapCard}>
           <Text style={styles.learningGapTitle}>Learning Gap</Text>
-          {renderMarkupText(learningGap, styles.learningGapText)}
+          {renderMarkupText(learningGap, styles.learningGapText, true)}
         </View>
       )}
 
       {highYieldFacts && (
         <View style={styles.learningGapCard}>
           <Text style={styles.learningGapTitle}>High Yield Facts</Text>
-          {renderMarkupText(highYieldFacts, styles.learningGapText)}
+          {renderMarkupText(highYieldFacts, styles.learningGapText, true)}
         </View>
       )}
 
       {imageDescription && (
         <View style={styles.learningGapCard}>
           <Text style={styles.learningGapTitle}>Image Description</Text>
-          {renderMarkupText(imageDescription, styles.learningGapText)}
+          {renderMarkupText(imageDescription, styles.learningGapText, true)}
         </View>
       )}
     </Animated.View>
@@ -320,7 +320,7 @@ export function FeedbackSection({
 }
 
 /* MARKUP PARSER */
-function renderMarkupText(content: string | undefined | null, baseStyle: any) {
+function renderMarkupText(content: string | undefined | null, baseStyle: any, isExplanation: boolean = false) {
   if (!content || typeof content !== "string") {
     return null;
   }
@@ -331,7 +331,7 @@ function renderMarkupText(content: string | undefined | null, baseStyle: any) {
     <Text style={baseStyle}>
       {lines.map((line, lineIndex) => (
         <React.Fragment key={lineIndex}>
-          {parseInlineMarkup(line)}
+          {parseInlineMarkup(line, isExplanation)}
           {lineIndex < lines.length - 1 && "\n"}
         </React.Fragment>
       ))}
@@ -339,7 +339,7 @@ function renderMarkupText(content: string | undefined | null, baseStyle: any) {
   );
 }
 
-function parseInlineMarkup(text: string) {
+function parseInlineMarkup(text: string, isExplanation: boolean = false) {
   const parts: React.ReactNode[] = [];
   let key = 0;
 
@@ -349,19 +349,19 @@ function parseInlineMarkup(text: string) {
   segments.forEach((segment) => {
     if (segment.startsWith("*_") && segment.endsWith("_*")) {
       parts.push(
-        <Text key={key++} style={styles.boldItalic}>
+        <Text key={key++} style={isExplanation ? styles.explanationBoldItalic : styles.boldItalic}>
           {segment.slice(2, -2)}
         </Text>
       );
     } else if (segment.startsWith("*") && segment.endsWith("*")) {
       parts.push(
-        <Text key={key++} style={styles.bold}>
+        <Text key={key++} style={isExplanation ? styles.explanationBold : styles.bold}>
           {segment.slice(1, -1)}
         </Text>
       );
     } else if (segment.startsWith("_") && segment.endsWith("_")) {
       parts.push(
-        <Text key={key++} style={styles.italic}>
+        <Text key={key++} style={isExplanation ? styles.explanationItalic : styles.italic}>
           {segment.slice(1, -1)}
         </Text>
       );
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
   learningGapText: {
     fontSize: 14,
     lineHeight: 21,
-    color: "#b0b0b0",
+    color: "#ffffff",
   },
   correctAnswerCard: {
     backgroundColor: "#1a2a1a",
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
   },
   correctAnswerText: {
     fontSize: 14,
-    color: "#b0b0b0",
+    color: "#ffffff",
   },
   correctAnswerBold: {
     fontSize: 16,
@@ -492,5 +492,8 @@ const styles = StyleSheet.create({
   bold: { fontWeight: "700" },
   italic: { fontStyle: "italic" },
   boldItalic: { fontWeight: "700", fontStyle: "italic" },
+  explanationBold: { fontWeight: "700", color: "#d9f99d" },
+  explanationItalic: { fontStyle: "italic", color: "#ffffff" },
+  explanationBoldItalic: { fontWeight: "700", fontStyle: "italic", color: "#d9f99d" },
 });
 
