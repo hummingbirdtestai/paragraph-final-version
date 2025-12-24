@@ -1,9 +1,10 @@
 //practicecard.tsx
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
 import MocktestMCQScreen from "@/components/types/ MocktestMCQScreen";
+import ZoomableImage from "@/components/common/ZoomableImage";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
@@ -109,6 +110,13 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
       reviewMode={true}
     />
 
+    {phase.is_mcq_image_type === true &&
+      phase.mcq_image && (
+        <View style={{ marginVertical: 16 }}>
+          <ZoomableImage uri={phase.mcq_image} height={260} />
+        </View>
+      )}
+
     <AskParagraphButton
       studentId={user?.id}
       mcqId={phase.id}
@@ -118,16 +126,6 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
     />
   </View>
 )}
-
-
-      {phase.is_mcq_image_type === true &&
-        phase.mcq_image && (
-          <Image
-            source={{ uri: phase.mcq_image }}
-            style={styles.image}
-            resizeMode="contain"
-          />
-      )}
 
     </View>
   );
