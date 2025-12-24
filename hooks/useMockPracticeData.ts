@@ -6,6 +6,8 @@ function normalizeMockRows(rows: any[]) {
   return rows.flatMap((row) => {
     const phases = [];
 
+    const isWrong = row.is_correct === false;
+
     if (row.concept_json) {
       phases.push({
         id: `${row.id}-concept`,
@@ -14,6 +16,7 @@ function normalizeMockRows(rows: any[]) {
         phase_json: row.concept_json,
         react_order_final: row.react_order,
         total_count: rows.length,
+        is_wrong: isWrong,
         is_bookmarked: false,
       });
     }
@@ -29,7 +32,7 @@ function normalizeMockRows(rows: any[]) {
       student_answer: row.student_answer,
       correct_answer: row.correct_answer,
       is_correct_latest: row.is_correct,
-      is_wrong: row.is_correct === false,
+      is_wrong: isWrong,
       is_bookmarked: row.is_bookmarked ?? false,
 
       is_mcq_image_type: row.is_mcq_image_type,
