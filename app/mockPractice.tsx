@@ -60,12 +60,17 @@ export default function PracticeScreen() {
     : rows;
 
   if (selectedCategory === "wrong") {
-    visibleRows = visibleRows.filter((row) => row.is_correct === false);
+    visibleRows = visibleRows.filter(
+      (row) => row.phase_type === "mcq" && row.is_correct === false
+    );
   } else if (selectedCategory === "bookmarked") {
     visibleRows = visibleRows.filter((row) => row.is_bookmarked === true);
   } else if (selectedCategory === "unviewed") {
     visibleRows = visibleRows.filter(
-      (row) => row.is_correct !== false && row.is_bookmarked !== true
+      (row) =>
+        row.phase_type === "mcq" &&
+        row.is_correct !== false &&
+        row.is_bookmarked !== true
     );
   }
 
