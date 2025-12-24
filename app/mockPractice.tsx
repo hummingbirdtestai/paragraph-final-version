@@ -42,7 +42,7 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-  const { rows, subjectBuckets, loading } = useMockPracticeData(
+  const { rows, subjectBuckets, loading, refetch } = useMockPracticeData(
     Number(exam_serial),
     userId
   );
@@ -179,6 +179,7 @@ export default function PracticeScreen() {
       viewMode={selectedCategory}
       bookmarkedMCQs={bookmarkedMCQs}
       wrongMCQs={wrongMCQs}
+      onBookmarkChange={refetch}
     />
   )}
   contentContainerStyle={styles.cardsWrapper}

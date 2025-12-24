@@ -50,6 +50,11 @@ export function useMockPracticeData(
 ) {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refetch = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   useEffect(() => {
     if (!examSerial || !userId) {
@@ -80,7 +85,7 @@ export function useMockPracticeData(
     };
 
     fetch();
-  }, [examSerial, userId]);
+  }, [examSerial, userId, refreshKey]);
 
   const subjectBuckets = rows.reduce<Record<string, any[]>>(
     (acc, row) => {
@@ -96,5 +101,6 @@ export function useMockPracticeData(
     loading,
     rows,
     subjectBuckets,
+    refetch,
   };
 }

@@ -19,12 +19,14 @@ export function PracticeCard({
   viewMode = "unviewed",
   bookmarkedMCQs,
   wrongMCQs,
+  onBookmarkChange,
 }: {
   phase: any;
   examSerial?: number;
   viewMode?: "unviewed" | "bookmarked" | "wrong";
   bookmarkedMCQs?: Set<number>;
   wrongMCQs?: Set<number>;
+  onBookmarkChange?: () => void;
 }) {
    const { width } = useWindowDimensions();
   const isWeb = width >= 1024;
@@ -120,6 +122,10 @@ export function PracticeCard({
 
               const newState = data?.is_bookmark ?? !isBookmarked;
               setIsBookmarked(newState);
+
+              if (onBookmarkChange) {
+                onBookmarkChange();
+              }
             }}
           >
             <Bookmark
