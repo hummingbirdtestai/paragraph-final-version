@@ -80,7 +80,7 @@ export default function PracticeScreen() {
       const isMCQ = phase.phase_type === "mcq";
       const isConcept = phase.phase_type === "concept";
       const isBookmarkedMCQ = isMCQ && bookmarkedMCQs.has(phase.react_order_final);
-      const isAssociatedConcept = isConcept && bookmarkedMCQs.has(phase.react_order_final + 1);
+      const isAssociatedConcept = isConcept && bookmarkedMCQs.has(phase.react_order_final);
       return isBookmarkedMCQ || isAssociatedConcept;
     }
 
@@ -88,7 +88,7 @@ export default function PracticeScreen() {
       const isMCQ = phase.phase_type === "mcq";
       const isConcept = phase.phase_type === "concept";
       const isWrongMCQ = isMCQ && wrongMCQs.has(phase.react_order_final);
-      const isAssociatedConcept = isConcept && wrongMCQs.has(phase.react_order_final + 1);
+      const isAssociatedConcept = isConcept && wrongMCQs.has(phase.react_order_final);
       return isWrongMCQ || isAssociatedConcept;
     }
 

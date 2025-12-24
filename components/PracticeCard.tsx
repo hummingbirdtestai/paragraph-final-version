@@ -40,18 +40,6 @@ export function PracticeCard({
   const [revealed, setRevealed] = useState(false);
   const confettiRef = useRef<any>(null);
 
-  const isBookmarkedMCQ =
-    isMCQ && bookmarkedMCQs?.has(phase.react_order_final);
-
-  const isAssociatedConceptForBookmark =
-    isConcept && bookmarkedMCQs?.has(phase.react_order_final + 1);
-
-  const isWrongMCQ =
-    isMCQ && wrongMCQs?.has(phase.react_order_final);
-
-  const isAssociatedConceptForWrong =
-    isConcept && wrongMCQs?.has(phase.react_order_final + 1);
-
   const handleReviewAnswer = (answer: string, isCorrect: boolean) => {
     if (revealed) return;
 
