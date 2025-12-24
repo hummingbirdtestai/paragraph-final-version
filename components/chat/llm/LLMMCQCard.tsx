@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   feedbackText: {
     fontSize: 15,
     lineHeight: 22,
-    color: "#e1e1e1",
+    color: "#FFFFFF",
   },
 
   learningGapCard: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   learningGapText: {
     fontSize: 14,
     lineHeight: 21,
-    color: "#b0b0b0",
+    color: "#FFFFFF",
   },
 
   correctAnswerCard: {
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     color: "#25D366",
   },
 
-  bold: { fontWeight: "700" },
+  bold: { fontWeight: "700", color: "#FFD700" },
   italic: { fontStyle: "italic" },
-  boldItalic: { fontWeight: "700", fontStyle: "italic" },
+  boldItalic: { fontWeight: "700", fontStyle: "italic", color: "#FFD700" },
 });

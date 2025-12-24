@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bold: {
-    color: '#ffffff',
+    color: '#FFD700',
     fontWeight: '700',
   },
   italic: {
