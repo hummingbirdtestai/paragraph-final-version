@@ -234,18 +234,20 @@ export default function CelebrationPopup({
           </View>
         </TouchableWithoutFeedback>
 
-        <View style={styles.confettiContainer} pointerEvents="none">
-          <ConfettiCannon
-            ref={confettiRef}
-            count={150}
-            origin={{ x: SCREEN_WIDTH / 2, y: -10 }}
-            autoStart={false}
-            fadeOut={true}
-            fallSpeed={3000}
-            explosionSpeed={350}
-            colors={['#25D366', '#FFFFFF', '#FFD700', '#FF6B6B', '#4ECDC4']}
-          />
-        </View>
+        {visible && (
+          <View style={styles.confettiContainer} pointerEvents="none">
+            <ConfettiCannon
+              ref={confettiRef}
+              count={150}
+              origin={{ x: SCREEN_WIDTH / 2, y: -10 }}
+              autoStart={false}
+              fadeOut={true}
+              fallSpeed={3000}
+              explosionSpeed={350}
+              colors={['#25D366', '#FFFFFF', '#FFD700', '#FF6B6B', '#4ECDC4']}
+            />
+          </View>
+        )}
       </View>
     </Modal>
   );
