@@ -59,7 +59,7 @@ export function useMockPracticeData(
       setLoading(true);
 
       const { data, error } = await supabase.rpc(
-        "get_mock_test_feed_v2",
+        "get_mock_test_feed_v3",
         {
           p_student_id: userId,
           p_exam_serial: examSerial,
@@ -67,7 +67,7 @@ export function useMockPracticeData(
       );
 
       if (error) {
-        console.error("❌ get_mock_test_feed_v2 error", error);
+        console.error("❌ get_mock_test_feed_v3 error", error);
         setRows([]);
       } else {
         setRows(normalizeMockRows(data || []));
