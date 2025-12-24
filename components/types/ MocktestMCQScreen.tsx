@@ -43,6 +43,8 @@ export default function MCQChatScreen({
   phaseUniqueId,
   practicecardId,
   subject,
+  onAnswerSelected,
+  interactiveReview = false,
 }: {
   item: MCQData;
   onNext?: () => void;
@@ -60,6 +62,8 @@ export default function MCQChatScreen({
   phaseUniqueId?: string;
   practicecardId?: string;
   subject?: string;
+  onAnswerSelected?: (answer: string) => void;
+  interactiveReview?: boolean;
 }) {
   const mcqData = item?.phase_json?.[0] ?? item?.phase_json ?? item;
 
@@ -67,9 +71,11 @@ export default function MCQChatScreen({
   const scrollViewRef = useRef<ScrollView>(null);
 
   const handleOptionSelect = (option: string) => {
-    if (selectedOption || reviewMode) return;
+    if (selectedOption) return;
+    if (reviewMode && !interactiveReview) return;
     setSelectedOption(option);
     onAnswered?.();
+    onAnswerSelected?.(option);
   };
 
   const isCorrect = selectedOption === mcqData.correct_answer;
@@ -82,13 +88,13 @@ export default function MCQChatScreen({
 
         <OptionsGrid
           options={mcqData.options}
-          selectedOption={reviewMode ? studentSelected : selectedOption}
+          selectedOption={interactiveReview ? selectedOption : (reviewMode ? studentSelected : selectedOption)}
           correctAnswer={mcqData.correct_answer}
           onSelect={handleOptionSelect}
-          reviewMode={reviewMode}
+          reviewMode={interactiveReview ? false : reviewMode}
         />
 
-        {(reviewMode || selectedOption) && (
+        {((reviewMode && !interactiveReview) || selectedOption) && (
           <FeedbackSection
             learningGap={mcqData.learning_gap}
             highYieldFacts={mcqData.high_yield_facts}

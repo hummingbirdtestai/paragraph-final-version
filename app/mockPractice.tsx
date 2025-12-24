@@ -55,9 +55,15 @@ export default function PracticeScreen() {
     }
   }, [subjects.length]);
 
-  const visibleRows = selectedSubject
+  let visibleRows = selectedSubject
     ? subjectBuckets[selectedSubject] ?? []
     : rows;
+
+  if (selectedCategory === "wrong") {
+    visibleRows = visibleRows.filter((row) => row.is_wrong === true);
+  } else if (selectedCategory === "bookmarked") {
+    visibleRows = visibleRows.filter((row) => row.is_bookmarked === true);
+  }
 
   useEffect(() => {
     if (listRef.current) {

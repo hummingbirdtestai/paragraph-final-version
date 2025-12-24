@@ -1,10 +1,11 @@
 //practicecard.tsx
-import React from "react";
+import React, { useState, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
 import MocktestMCQScreen from "@/components/types/ MocktestMCQScreen";
 import ZoomableImage from "@/components/common/ZoomableImage";
+import ConfettiCannon from "react-native-confetti-cannon";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
@@ -12,16 +13,32 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 
-export function PracticeCard({ phase }) {
+export function PracticeCard({ phase }: { phase: any }) {
    const { width } = useWindowDimensions();   // ✅ ADD
   const isWeb = width >= 1024;               // ✅ ADD
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const { user } = useAuth();
   const router = useRouter();
-  // Local bookmark state (like FlashcardCard)
-const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
+  const [isBookmarked, setIsBookmarked] = useState(phase.is_bookmarked);
+  const [reviewAnswer, setReviewAnswer] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const confettiRef = useRef<any>(null);
+
+  const handleReviewAnswer = (answer: string) => {
+    setReviewAnswer(answer);
+    setRevealed(true);
+
+    const correctAnswer = phase.phase_json?.correct_answer || phase.correct_answer;
+    const isCorrect = answer === correctAnswer;
+
+    if (isCorrect && confettiRef.current) {
+      setTimeout(() => {
+        confettiRef.current?.start();
+      }, 100);
+    }
+  };
 
   // 🔵 DEBUG: Log concept/mcq IDs when card loads
   React.useEffect(() => {
@@ -106,8 +123,10 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
   <View style={isWeb ? styles.webConstrained : undefined}>
     <MocktestMCQScreen
       item={phase}
-      studentSelected={phase.student_answer || null}
+      studentSelected={null}
       reviewMode={true}
+      interactiveReview={true}
+      onAnswerSelected={handleReviewAnswer}
     />
 
     {phase.is_mcq_image_type === true &&
@@ -126,6 +145,14 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
     />
   </View>
 )}
+
+      <ConfettiCannon
+        ref={confettiRef}
+        count={150}
+        origin={{ x: width / 2, y: 0 }}
+        autoStart={false}
+        fadeOut={true}
+      />
 
     </View>
   );
