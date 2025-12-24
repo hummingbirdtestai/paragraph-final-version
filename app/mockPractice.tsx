@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { Eye, EyeOff, Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
+import { Bookmark, XCircle, ArrowUp, ArrowDown, Filter } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
 import { PracticeCard } from "@/components/PracticeCard";
 import { useMockPracticeData } from "@/hooks/useMockPracticeData";
@@ -28,7 +28,7 @@ export default function PracticeScreen() {
 
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] =
-    useState<"unviewed" | "viewed" | "bookmarked" | "wrong">("unviewed");
+    useState<"bookmarked" | "wrong">("bookmarked");
   const [userId, setUserId] = useState<string | null>(null);
   const [showScrollControls, setShowScrollControls] = useState(false);
   const listRef = React.useRef<FlatList>(null);
@@ -90,26 +90,6 @@ export default function PracticeScreen() {
             </ScrollView>
 
             <View style={styles.categoryContainer}>
-              <TouchableOpacity
-                style={[styles.categoryIcon, selectedCategory === "unviewed" && styles.categoryIconSelected]}
-                onPress={() => setSelectedCategory("unviewed")}
-              >
-                <EyeOff
-                  size={20}
-                  color={selectedCategory === "unviewed" ? "#fff" : "#10b981"}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.categoryIcon, selectedCategory === "viewed" && styles.categoryIconSelected]}
-                onPress={() => setSelectedCategory("viewed")}
-              >
-                <Eye
-                  size={20}
-                  color={selectedCategory === "viewed" ? "#fff" : "#10b981"}
-                />
-              </TouchableOpacity>
-
               <TouchableOpacity
                 style={[styles.categoryIcon, selectedCategory === "bookmarked" && styles.categoryIconSelected]}
                 onPress={() => setSelectedCategory("bookmarked")}
