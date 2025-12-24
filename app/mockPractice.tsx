@@ -62,13 +62,13 @@ export default function PracticeScreen() {
   const bookmarkedMCQs = new Set(
     rows
       .filter(r => r.phase_type === "mcq" && r.is_bookmarked === true)
-      .map(r => r.react_order)
+      .map(r => r.react_order_final)
   );
 
   const wrongMCQs = new Set(
     rows
       .filter(r => r.phase_type === "mcq" && r.is_wrong === true)
-      .map(r => r.react_order)
+      .map(r => r.react_order_final)
   );
 
   useEffect(() => {

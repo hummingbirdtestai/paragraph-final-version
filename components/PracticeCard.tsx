@@ -39,18 +39,21 @@ export function PracticeCard({
   const confettiRef = useRef<any>(null);
 
   const isBookmarkedMCQ =
-    isMCQ && bookmarkedMCQs?.has(phase.react_order);
+    isMCQ && bookmarkedMCQs?.has(phase.react_order_final);
 
-  const isAssociatedConcept =
-    isConcept && bookmarkedMCQs?.has(phase.react_order + 1);
+  const isAssociatedConceptForBookmark =
+    isConcept && bookmarkedMCQs?.has(phase.react_order_final + 1);
 
   const isWrongMCQ =
-    isMCQ && wrongMCQs?.has(phase.react_order);
+    isMCQ && wrongMCQs?.has(phase.react_order_final);
+
+  const isAssociatedConceptForWrong =
+    isConcept && wrongMCQs?.has(phase.react_order_final + 1);
 
   const shouldHighlight =
     viewMode === "unviewed" ||
-    (viewMode === "bookmarked" && (isBookmarkedMCQ || isAssociatedConcept)) ||
-    (viewMode === "wrong" && isWrongMCQ);
+    (viewMode === "bookmarked" && (isBookmarkedMCQ || isAssociatedConceptForBookmark)) ||
+    (viewMode === "wrong" && (isWrongMCQ || isAssociatedConceptForWrong));
 
   const shouldDim = !shouldHighlight && viewMode !== "unviewed";
 
