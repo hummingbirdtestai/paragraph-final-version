@@ -74,25 +74,22 @@ export default function MCQChatScreen({
   };
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [hasAnswered, setHasAnswered] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  useEffect(() => {
-    if (reviewMode && studentSelected) {
-      setSelectedOption(studentSelected);
-    }
-  }, [reviewMode, studentSelected]);
-
   const handleOptionSelect = (option: string) => {
-    if (selectedOption) return;
-    if (reviewMode && !interactiveReview) return;
+    if (hasAnswered) return;
+
     setSelectedOption(option);
+    setHasAnswered(true);
 
     const isCorrect = option === mcqData.correct_answer;
     onAnswerSelected?.(option, isCorrect);
     onAnswered?.();
   };
 
-  const shouldRevealFeedback = reviewMode || selectedOption !== null;
+  const visualSelectedOption = reviewMode ? studentSelected : selectedOption;
+  const shouldRevealFeedback = hasAnswered;
 
   return (
     <View style={styles.container}>
@@ -102,10 +99,10 @@ export default function MCQChatScreen({
 
         <OptionsGrid
           options={mcqData.options}
-          selectedOption={interactiveReview ? selectedOption : (reviewMode ? studentSelected : selectedOption)}
+          selectedOption={visualSelectedOption}
           correctAnswer={mcqData.correct_answer}
           onSelect={handleOptionSelect}
-          reviewMode={interactiveReview ? false : reviewMode}
+          reviewMode={reviewMode}
         />
 
         {shouldRevealFeedback && (
@@ -201,7 +198,7 @@ function OptionsGrid({
             isCorrect={isCorrect}
             isWrong={isWrong}
             disabled={isDisabled}
-            onPress={() => !reviewMode && onSelect(key)}
+            onPress={() => onSelect(key)}
           />
         );
       })}
