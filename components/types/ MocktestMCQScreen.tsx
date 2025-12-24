@@ -88,7 +88,6 @@ export default function MCQChatScreen({
     onAnswered?.();
   };
 
-  const visualSelectedOption = reviewMode ? studentSelected : selectedOption;
   const shouldRevealFeedback = hasAnswered;
 
   return (
@@ -99,10 +98,10 @@ export default function MCQChatScreen({
 
         <OptionsGrid
           options={mcqData.options}
-          selectedOption={visualSelectedOption}
+          selectedOption={selectedOption}
           correctAnswer={mcqData.correct_answer}
           onSelect={handleOptionSelect}
-          reviewMode={reviewMode}
+          reviewMode={hasAnswered}
         />
 
         {shouldRevealFeedback && (
