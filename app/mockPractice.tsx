@@ -64,7 +64,23 @@ export default function PracticeScreen() {
       (row) => row.is_wrong === true
     );
   } else if (selectedCategory === "bookmarked") {
-    visibleRows = visibleRows.filter((row) => row.is_bookmarked === true);
+    const bookmarkedMCQs = new Set(
+      visibleRows
+        .filter((row) => row.phase_type === "mcq" && row.is_bookmarked === true)
+        .map((row) => row.react_order_final)
+    );
+
+    visibleRows = visibleRows.filter((row) => {
+      if (row.phase_type === "mcq") {
+        return row.is_bookmarked === true;
+      }
+
+      if (row.phase_type === "concept") {
+        return bookmarkedMCQs.has(row.react_order_final + 1);
+      }
+
+      return false;
+    });
   } else if (selectedCategory === "unviewed") {
     visibleRows = visibleRows.filter((row) =>
       row.phase_type === "mcq"
