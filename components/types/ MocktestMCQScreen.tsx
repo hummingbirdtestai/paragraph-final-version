@@ -21,6 +21,7 @@ interface MCQData {
   learning_gap?: string;
   high_yield_facts?: string;
   correct_answer?: string;
+  image_description?: string;
   phase_json?: any;
   is_mcq_image_type?: boolean;
   mcq_image?: string;
@@ -91,7 +92,7 @@ export default function MCQChatScreen({
     onAnswered?.();
   };
 
-  const isCorrect = selectedOption === mcqData.correct_answer;
+  const shouldRevealFeedback = reviewMode || selectedOption !== null;
 
   return (
     <View style={styles.container}>
@@ -107,19 +108,12 @@ export default function MCQChatScreen({
           reviewMode={interactiveReview ? false : reviewMode}
         />
 
-        {(reviewMode && !interactiveReview) && (
+        {shouldRevealFeedback && (
           <FeedbackSection
             learningGap={mcqData.learning_gap}
             highYieldFacts={mcqData.high_yield_facts}
             correctAnswer={mcqData.correct_answer}
-          />
-        )}
-
-        {!reviewMode && selectedOption && (
-          <FeedbackSection
-            learningGap={mcqData.learning_gap}
-            highYieldFacts={mcqData.high_yield_facts}
-            correctAnswer={mcqData.correct_answer}
+            imageDescription={mcqData.image_description}
           />
         )}
       </ScrollView>
@@ -278,10 +272,12 @@ export function FeedbackSection({
   learningGap,
   highYieldFacts,
   correctAnswer,
+  imageDescription,
 }: {
   learningGap?: string;
   highYieldFacts?: string;
   correctAnswer?: string;
+  imageDescription?: string;
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -289,11 +285,20 @@ export function FeedbackSection({
     Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 300, useNativeDriver: true }).start();
   }, []);
 
-  const hasContent = learningGap || highYieldFacts || correctAnswer;
+  const hasContent = learningGap || highYieldFacts || correctAnswer || imageDescription;
   if (!hasContent) return null;
 
   return (
     <Animated.View style={[styles.feedbackContainer, { opacity: fadeAnim }]}>
+      {correctAnswer && (
+        <View style={styles.correctAnswerCard}>
+          <Text style={styles.correctAnswerText}>
+            Correct Answer:{" "}
+            <Text style={styles.correctAnswerBold}>{correctAnswer}</Text>
+          </Text>
+        </View>
+      )}
+
       {learningGap && (
         <View style={styles.learningGapCard}>
           <Text style={styles.learningGapTitle}>Learning Gap</Text>
@@ -308,12 +313,10 @@ export function FeedbackSection({
         </View>
       )}
 
-      {correctAnswer && (
-        <View style={styles.correctAnswerCard}>
-          <Text style={styles.correctAnswerText}>
-            Correct Answer:{" "}
-            <Text style={styles.correctAnswerBold}>{correctAnswer}</Text>
-          </Text>
+      {imageDescription && (
+        <View style={styles.learningGapCard}>
+          <Text style={styles.learningGapTitle}>Image Description</Text>
+          {renderMarkupText(imageDescription, styles.learningGapText)}
         </View>
       )}
     </Animated.View>
