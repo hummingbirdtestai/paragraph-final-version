@@ -14,11 +14,7 @@ function normalizeMockRows(rows: any[]) {
         phase_json: row.concept_json,
         react_order_final: row.react_order,
         total_count: rows.length,
-        is_viewed: true,
-        is_wrong: false,
         is_bookmarked: false,
-        student_answer: null,
-        correct_answer: null,
       });
     }
 
@@ -63,7 +59,7 @@ export function useMockPracticeData(
       setLoading(true);
 
       const { data, error } = await supabase.rpc(
-        "get_mock_test_feed_v3",
+        "get_mock_test_feed_v2",
         {
           p_student_id: userId,
           p_exam_serial: examSerial,
@@ -71,7 +67,7 @@ export function useMockPracticeData(
       );
 
       if (error) {
-        console.error("❌ get_mock_test_feed_v3 error", error);
+        console.error("❌ get_mock_test_feed_v2 error", error);
         setRows([]);
       } else {
         setRows(normalizeMockRows(data || []));

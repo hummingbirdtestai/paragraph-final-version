@@ -61,7 +61,7 @@ export default function PracticeScreen() {
 
   if (selectedCategory === "wrong") {
     visibleRows = visibleRows.filter(
-      (row) => row.phase_type === "mcq" && row.is_wrong === true
+      (row) => row.phase_type === "mcq" && row.is_correct === false
     );
   } else if (selectedCategory === "bookmarked") {
     visibleRows = visibleRows.filter((row) => row.is_bookmarked === true);
@@ -69,7 +69,7 @@ export default function PracticeScreen() {
     visibleRows = visibleRows.filter(
       (row) =>
         row.phase_type === "mcq" &&
-        row.is_wrong !== true &&
+        row.is_correct !== false &&
         row.is_bookmarked !== true
     );
   }
