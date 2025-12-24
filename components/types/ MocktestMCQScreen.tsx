@@ -62,15 +62,10 @@ export default function MCQChatScreen({
   phaseUniqueId?: string;
   practicecardId?: string;
   subject?: string;
-  onAnswerSelected?: (answer: string, isCorrect: boolean) => void;
+  onAnswerSelected?: (answer: string) => void;
   interactiveReview?: boolean;
 }) {
-  const baseMcqData = item?.phase_json?.[0] ?? item?.phase_json ?? item;
-  const mcqData = {
-    ...baseMcqData,
-    is_mcq_image_type: item?.is_mcq_image_type ?? baseMcqData?.is_mcq_image_type,
-    mcq_image: item?.mcq_image ?? baseMcqData?.mcq_image,
-  };
+  const mcqData = item?.phase_json?.[0] ?? item?.phase_json ?? item;
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -79,10 +74,8 @@ export default function MCQChatScreen({
     if (selectedOption) return;
     if (reviewMode && !interactiveReview) return;
     setSelectedOption(option);
-
-    const isCorrect = option === mcqData.correct_answer;
-    onAnswerSelected?.(option, isCorrect);
     onAnswered?.();
+    onAnswerSelected?.(option);
   };
 
   const isCorrect = selectedOption === mcqData.correct_answer;
@@ -101,15 +94,7 @@ export default function MCQChatScreen({
           reviewMode={interactiveReview ? false : reviewMode}
         />
 
-        {(reviewMode && !interactiveReview) && (
-          <FeedbackSection
-            learningGap={mcqData.learning_gap}
-            highYieldFacts={mcqData.high_yield_facts}
-            correctAnswer={mcqData.correct_answer}
-          />
-        )}
-
-        {!reviewMode && selectedOption && (
+        {((reviewMode && !interactiveReview) || selectedOption) && (
           <FeedbackSection
             learningGap={mcqData.learning_gap}
             highYieldFacts={mcqData.high_yield_facts}
@@ -268,7 +253,7 @@ function OptionButton({
   );
 }
 
-export function FeedbackSection({
+function FeedbackSection({
   learningGap,
   highYieldFacts,
   correctAnswer,
