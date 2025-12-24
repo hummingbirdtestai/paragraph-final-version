@@ -150,7 +150,7 @@ export default function PracticeScreen() {
   ref={listRef}
   data={visibleRows}
   keyExtractor={(item) => item.id}
-  renderItem={({ item }) => <PracticeCard phase={item} />}
+  renderItem={({ item }) => <PracticeCard phase={item} examSerial={Number(exam_serial)} />}
   contentContainerStyle={styles.cardsWrapper}
   onScroll={(e) => {
     const offsetY = e.nativeEvent.contentOffset.y;
