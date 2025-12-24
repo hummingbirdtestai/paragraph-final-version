@@ -55,39 +55,21 @@ export default function PracticeScreen() {
     }
   }, [subjects.length]);
 
-  let visibleRows = selectedSubject
+  const baseRows = selectedSubject
     ? subjectBuckets[selectedSubject] ?? []
     : rows;
 
-  if (selectedCategory === "wrong") {
-    visibleRows = visibleRows.filter(
-      (row) => row.is_wrong === true
-    );
-  } else if (selectedCategory === "bookmarked") {
-    const bookmarkedMCQs = new Set(
-      rows
-        .filter(r => r.phase_type === "mcq" && r.is_bookmarked === true)
-        .map(r => r.react_order)
-    );
+  const bookmarkedMCQs = new Set(
+    rows
+      .filter(r => r.phase_type === "mcq" && r.is_bookmarked === true)
+      .map(r => r.react_order)
+  );
 
-    visibleRows = visibleRows.filter((row) => {
-      if (row.phase_type === "mcq") {
-        return row.is_bookmarked === true;
-      }
-
-      if (row.phase_type === "concept") {
-        return bookmarkedMCQs.has(row.react_order + 1);
-      }
-
-      return false;
-    });
-  } else if (selectedCategory === "unviewed") {
-    visibleRows = visibleRows.filter((row) =>
-      row.phase_type === "mcq"
-        ? row.is_correct_latest == null && !row.is_bookmarked
-        : !row.is_bookmarked
-    );
-  }
+  const wrongMCQs = new Set(
+    rows
+      .filter(r => r.phase_type === "mcq" && r.is_wrong === true)
+      .map(r => r.react_order)
+  );
 
   useEffect(() => {
     if (listRef.current) {
@@ -164,9 +146,17 @@ export default function PracticeScreen() {
         ) : (
    <FlatList
   ref={listRef}
-  data={visibleRows}
+  data={baseRows}
   keyExtractor={(item) => item.id}
-  renderItem={({ item }) => <PracticeCard phase={item} examSerial={Number(exam_serial)} />}
+  renderItem={({ item }) => (
+    <PracticeCard
+      phase={item}
+      examSerial={Number(exam_serial)}
+      viewMode={selectedCategory}
+      bookmarkedMCQs={bookmarkedMCQs}
+      wrongMCQs={wrongMCQs}
+    />
+  )}
   contentContainerStyle={styles.cardsWrapper}
   onScroll={(e) => {
     const offsetY = e.nativeEvent.contentOffset.y;

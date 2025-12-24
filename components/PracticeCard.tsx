@@ -13,7 +13,19 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 
-export function PracticeCard({ phase, examSerial }: { phase: any; examSerial?: number }) {
+export function PracticeCard({
+  phase,
+  examSerial,
+  viewMode = "unviewed",
+  bookmarkedMCQs,
+  wrongMCQs,
+}: {
+  phase: any;
+  examSerial?: number;
+  viewMode?: "unviewed" | "bookmarked" | "wrong";
+  bookmarkedMCQs?: Set<number>;
+  wrongMCQs?: Set<number>;
+}) {
    const { width } = useWindowDimensions();
   const isWeb = width >= 1024;
   const isConcept = phase.phase_type === "concept";
@@ -25,6 +37,22 @@ export function PracticeCard({ phase, examSerial }: { phase: any; examSerial?: n
   const [reviewAnswer, setReviewAnswer] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
   const confettiRef = useRef<any>(null);
+
+  const isBookmarkedMCQ =
+    isMCQ && bookmarkedMCQs?.has(phase.react_order);
+
+  const isAssociatedConcept =
+    isConcept && bookmarkedMCQs?.has(phase.react_order + 1);
+
+  const isWrongMCQ =
+    isMCQ && wrongMCQs?.has(phase.react_order);
+
+  const shouldHighlight =
+    viewMode === "unviewed" ||
+    (viewMode === "bookmarked" && (isBookmarkedMCQ || isAssociatedConcept)) ||
+    (viewMode === "wrong" && isWrongMCQ);
+
+  const shouldDim = !shouldHighlight && viewMode !== "unviewed";
 
   const handleReviewAnswer = (answer: string, isCorrect: boolean) => {
     if (revealed) return;
@@ -57,7 +85,14 @@ export function PracticeCard({ phase, examSerial }: { phase: any; examSerial?: n
   }, [phase]);
 
   return (
-    <View style={[styles.card, isConcept && styles.cardConcept]}>
+    <View
+      style={[
+        styles.card,
+        isConcept && styles.cardConcept,
+        shouldHighlight && styles.cardHighlighted,
+        shouldDim && styles.cardDimmed,
+      ]}
+    >
       {/* SUBJECT NAME */}
       <Text style={[styles.subject, isConcept && styles.subjectConcept]}>{phase.subject}</Text>
 
@@ -254,6 +289,14 @@ const styles = StyleSheet.create({
   },
   cardConcept: {
     paddingHorizontal: 0,
+  },
+  cardHighlighted: {
+    borderWidth: 2,
+    borderColor: "#10b981",
+    backgroundColor: "#0d2017",
+  },
+  cardDimmed: {
+    opacity: 0.3,
   },
   subject: {
     color: "#25D366",
