@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
   },
-  feedbackText: { fontSize: 15, lineHeight: 22, color: "#FFFFFF" },
+  feedbackText: { fontSize: 15, lineHeight: 22, color: "#e1e1e1" },
   learningGapCard: {
     backgroundColor: "#1a1a1a",
     borderRadius: 12,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
-  learningGapText: { fontSize: 14, lineHeight: 21, color: "#FFFFFF" },
+  learningGapText: { fontSize: 14, lineHeight: 21, color: "#b0b0b0" },
   correctAnswerCard: {
     backgroundColor: "#1a2a1a",
     borderRadius: 12,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#25D366",
   },
-  bold: { fontWeight: "700", color: "#FFD700" },
+  bold: { fontWeight: "700" },
   italic: { fontStyle: "italic" },
-  boldItalic: { fontWeight: "700", fontStyle: "italic", color: "#FFD700" },
+  boldItalic: { fontWeight: "700", fontStyle: "italic" },
 });

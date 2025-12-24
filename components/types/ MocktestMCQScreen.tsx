@@ -489,8 +489,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#25D366",
   },
-  bold: { fontWeight: "700", color: "#FFD700" },
+  bold: { fontWeight: "700" },
   italic: { fontStyle: "italic" },
-  boldItalic: { fontWeight: "700", fontStyle: "italic", color: "#FFD700" },
+  boldItalic: { fontWeight: "700", fontStyle: "italic" },
 });
 
