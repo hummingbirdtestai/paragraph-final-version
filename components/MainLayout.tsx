@@ -97,10 +97,14 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
   // DRAWER
   const openDrawer = () => setDrawerVisible(true);
   const closeDrawer = () => setDrawerVisible(false);
-  const onOpenAuth = () => setShowLoginModal(true);
+  const onOpenAuth = (mode?: "login" | "signup") => {
+    setShowLoginModal(true);
+  };
 
   // Inject auth into child components
-  const injectedChild = children;
+  const injectedChild = React.isValidElement(children)
+    ? React.cloneElement(children as React.ReactElement<any>, { onOpenAuth })
+    : children;
 
   // OTP HANDLERS
   const handleSendOTP = async (phone) => {
