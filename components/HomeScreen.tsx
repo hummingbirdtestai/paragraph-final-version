@@ -496,7 +496,7 @@ const Section8Mobile = memo(() => {
   return (
     <View style={styles.mobileSection}>
       <View style={styles.mobilePadding}>
-        <Text style={styles.mobileHeading}>Your 1,150-Hour Plan to a Top 1000 Rank</Text>
+        <Text style={styles.mobileHeading}>Your 1000-Hour Plan to a Top 1000 Rank</Text>
         <View style={styles.planItem}>
           <Text style={styles.planText}>10,000 High-Yield Concepts</Text>
           <Text style={styles.planHours}>150 hours</Text>
@@ -514,7 +514,7 @@ const Section8Mobile = memo(() => {
           <Text style={styles.planHours}>400 hours</Text>
         </View>
         <View style={styles.planTotal}>
-          <Text style={styles.planTotalText}>Your Total: 1,000 hours</Text>
+          <Text style={styles.planTotalText}>Your Total: 1000 hours</Text>
           <Text style={styles.planSubtext}>A complete NEETPG journey.</Text>
         </View>
         <Text style={[styles.mobileBody, styles.emphasis]}>
@@ -530,7 +530,7 @@ const Section8Web = memo(() => {
   return (
     <View style={styles.webSection}>
       <View style={styles.webPlanContent}>
-        <Text style={styles.webHeading}>Your 1,150-Hour Plan to a Top 1000 Rank</Text>
+        <Text style={styles.webHeading}>Your 1000-Hour Plan to a Top 1000 Rank</Text>
         <View style={styles.webPlanGrid}>
           <View style={styles.webPlanCard}>
             <Text style={styles.webPlanNumber}>10,000</Text>
@@ -554,7 +554,7 @@ const Section8Web = memo(() => {
           </View>
         </View>
         <View style={styles.webPlanTotal}>
-          <Text style={styles.webPlanTotalText}>Your Total: 1,000 hours</Text>
+          <Text style={styles.webPlanTotalText}>Your Total: 1000 hours</Text>
           <Text style={styles.webPlanSubtext}>A complete NEETPG journey.</Text>
         </View>
         <Text style={[styles.webBody, styles.emphasis]}>
