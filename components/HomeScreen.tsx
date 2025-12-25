@@ -20,6 +20,11 @@ interface HomeScreenProps {
     img4: string;
     img5: string;
     img6: string;
+    img7: string;
+    img8: string;
+    img9: string;
+    img10: string;
+    img11: string;
   };
 }
 export default function HomeScreen(
@@ -67,6 +72,11 @@ function MobileLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Section4Mobile image={images.img4} />
       <Section3Mobile image={images.img3} />
       <Section6Mobile image={images.img6} />
+      <Block1Mobile image={images.img7} />
+      <Block2Mobile image={images.img8} />
+      <Block3Mobile image={images.img9} />
+      <Block4Mobile image={images.img10} />
+      <Block5Mobile image={images.img11} />
       <Section9Mobile onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
       <Footer />
     </ScrollView>
@@ -88,6 +98,11 @@ function WebLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Section4Web image={images.img4} />
       <Section3Web image={images.img3} />
       <Section6Web image={images.img6} />
+      <Block1Web image={images.img7} />
+      <Block2Web image={images.img8} />
+      <Block3Web image={images.img9} />
+      <Block4Web image={images.img10} />
+      <Block5Web image={images.img11} />
       <Section9Web onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
       <Footer />
     </ScrollView>
@@ -560,6 +575,246 @@ const Section8Web = memo(() => {
         <Text style={[styles.webBody, styles.emphasis]}>
           No noise. No overwhelm. Just dependable progress — every single day.
         </Text>
+      </View>
+    </View>
+  );
+});
+
+const Block1Mobile = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.mobileSection}>
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>Everything You Study Is Exam-Critical</Text>
+        <Text style={styles.mobileBody}>
+          10,000 NEET-PG PYQs mapped to concepts & mistakes
+        </Text>
+        <Text style={styles.mobileBody}>
+          10,000 high-yield concepts (no duplication, no fluff)
+        </Text>
+        <Text style={styles.mobileBody}>
+          45,000 flashcards for rapid recall & long-term memory
+        </Text>
+        <Text style={[styles.mobileBody, styles.emphasis]}>
+          You don't study more. You study exactly what matters.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const Block1Web = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webHero}>
+        <View style={styles.webTextBlock}>
+          <Text style={styles.webHeading}>Everything You Study Is Exam-Critical</Text>
+          <Text style={styles.webBody}>
+            10,000 NEET-PG PYQs mapped to concepts & mistakes
+          </Text>
+          <Text style={styles.webBody}>
+            10,000 high-yield concepts (no duplication, no fluff)
+          </Text>
+          <Text style={styles.webBody}>
+            45,000 flashcards for rapid recall & long-term memory
+          </Text>
+          <Text style={[styles.webBody, styles.emphasis]}>
+            You don't study more. You study exactly what matters.
+          </Text>
+        </View>
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+      </View>
+    </View>
+  );
+});
+
+const Block2Mobile = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.mobileSection}>
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>Daily Progress. Zero Burnout.</Text>
+        <Text style={styles.mobileBody}>
+          Short, personalised quizzes every day
+        </Text>
+        <Text style={styles.mobileBody}>
+          Daily group quizzes (15 live battles, 450 MCQs/day)
+        </Text>
+        <Text style={styles.mobileBody}>
+          Instant feedback and rankings to build exam temperament
+        </Text>
+        <Text style={[styles.mobileBody, styles.emphasis]}>
+          Consistency beats motivation. We engineer consistency.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const Block2Web = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webReverse}>
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <View style={styles.webTextBlock}>
+          <Text style={styles.webHeading}>Daily Progress. Zero Burnout.</Text>
+          <Text style={styles.webBody}>
+            Short, personalised quizzes every day
+          </Text>
+          <Text style={styles.webBody}>
+            Daily group quizzes (15 live battles, 450 MCQs/day)
+          </Text>
+          <Text style={styles.webBody}>
+            Instant feedback and rankings to build exam temperament
+          </Text>
+          <Text style={[styles.webBody, styles.emphasis]}>
+            Consistency beats motivation. We engineer consistency.
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+});
+
+const Block3Mobile = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.mobileSection}>
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>Learn Faster With Visual Memory</Text>
+        <Text style={styles.mobileBody}>
+          3-minute revision videos (6,000 short reels)
+        </Text>
+        <Text style={styles.mobileBody}>
+          Daily image-based learning with clinical cases
+        </Text>
+        <Text style={styles.mobileBody}>
+          60,000 high-yield facts reinforced visually
+        </Text>
+        <Text style={[styles.mobileBody, styles.emphasis]}>
+          Built for attention spans of 2026 — fast, sharp, unforgettable.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const Block3Web = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webHero}>
+        <View style={styles.webTextBlock}>
+          <Text style={styles.webHeading}>Learn Faster With Visual Memory</Text>
+          <Text style={styles.webBody}>
+            3-minute revision videos (6,000 short reels)
+          </Text>
+          <Text style={styles.webBody}>
+            Daily image-based learning with clinical cases
+          </Text>
+          <Text style={styles.webBody}>
+            60,000 high-yield facts reinforced visually
+          </Text>
+          <Text style={[styles.webBody, styles.emphasis]}>
+            Built for attention spans of 2026 — fast, sharp, unforgettable.
+          </Text>
+        </View>
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+      </View>
+    </View>
+  );
+});
+
+const Block4Mobile = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.mobileSection}>
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>Practice Under Real Exam Pressure</Text>
+        <Text style={styles.mobileBody}>
+          100 full-length NEET-PG level grand tests
+        </Text>
+        <Text style={styles.mobileBody}>
+          Bi-weekly exam-standard mock tests
+        </Text>
+        <Text style={styles.mobileBody}>
+          Rank prediction and deep performance analysis
+        </Text>
+        <Text style={[styles.mobileBody, styles.emphasis]}>
+          Confidence comes from knowing where you stand.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const Block4Web = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webReverse}>
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <View style={styles.webTextBlock}>
+          <Text style={styles.webHeading}>Practice Under Real Exam Pressure</Text>
+          <Text style={styles.webBody}>
+            100 full-length NEET-PG level grand tests
+          </Text>
+          <Text style={styles.webBody}>
+            Bi-weekly exam-standard mock tests
+          </Text>
+          <Text style={styles.webBody}>
+            Rank prediction and deep performance analysis
+          </Text>
+          <Text style={[styles.webBody, styles.emphasis]}>
+            Confidence comes from knowing where you stand.
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+});
+
+const Block5Mobile = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.mobileSection}>
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>A System That Adapts To You</Text>
+        <Text style={styles.mobileBody}>
+          AI-driven adaptive learning based on mistakes and speed
+        </Text>
+        <Text style={styles.mobileBody}>
+          24×7 AI doubt-clearing chat
+        </Text>
+        <Text style={styles.mobileBody}>
+          Automatic revision and gap-closing without planning stress
+        </Text>
+        <Text style={[styles.mobileBody, styles.emphasis]}>
+          Feels like a personal mentor — because it behaves like one.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const Block5Web = memo(({ image }: { image: string }) => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webHero}>
+        <View style={styles.webTextBlock}>
+          <Text style={styles.webHeading}>A System That Adapts To You</Text>
+          <Text style={styles.webBody}>
+            AI-driven adaptive learning based on mistakes and speed
+          </Text>
+          <Text style={styles.webBody}>
+            24×7 AI doubt-clearing chat
+          </Text>
+          <Text style={styles.webBody}>
+            Automatic revision and gap-closing without planning stress
+          </Text>
+          <Text style={[styles.webBody, styles.emphasis]}>
+            Feels like a personal mentor — because it behaves like one.
+          </Text>
+        </View>
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
       </View>
     </View>
   );
