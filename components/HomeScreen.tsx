@@ -499,11 +499,11 @@ const Section8Mobile = memo(() => {
         <Text style={styles.mobileHeading}>Your 1,150-Hour Plan to a Top 1000 Rank</Text>
         <View style={styles.planItem}>
           <Text style={styles.planText}>10,000 High-Yield Concepts</Text>
-          <Text style={styles.planHours}>300 hours</Text>
+          <Text style={styles.planHours}>150 hours</Text>
         </View>
         <View style={styles.planItem}>
           <Text style={styles.planText}>10,000 PYQs</Text>
-          <Text style={styles.planHours}>166 hours</Text>
+          <Text style={styles.planHours}>150 hours</Text>
         </View>
         <View style={styles.planItem}>
           <Text style={styles.planText}>50 Grand Tests</Text>
@@ -514,7 +514,7 @@ const Section8Mobile = memo(() => {
           <Text style={styles.planHours}>400 hours</Text>
         </View>
         <View style={styles.planTotal}>
-          <Text style={styles.planTotalText}>Your Total: 1,150 hours</Text>
+          <Text style={styles.planTotalText}>Your Total: 1,000 hours</Text>
           <Text style={styles.planSubtext}>A complete NEETPG journey.</Text>
         </View>
         <Text style={[styles.mobileBody, styles.emphasis]}>
@@ -535,12 +535,12 @@ const Section8Web = memo(() => {
           <View style={styles.webPlanCard}>
             <Text style={styles.webPlanNumber}>10,000</Text>
             <Text style={styles.webPlanLabel}>High-Yield Concepts</Text>
-            <Text style={styles.webPlanHours}>300 hours</Text>
+            <Text style={styles.webPlanHours}>150 hours</Text>
           </View>
           <View style={styles.webPlanCard}>
             <Text style={styles.webPlanNumber}>10,000</Text>
             <Text style={styles.webPlanLabel}>PYQs</Text>
-            <Text style={styles.webPlanHours}>166 hours</Text>
+            <Text style={styles.webPlanHours}>150 hours</Text>
           </View>
           <View style={styles.webPlanCard}>
             <Text style={styles.webPlanNumber}>50</Text>
@@ -554,7 +554,7 @@ const Section8Web = memo(() => {
           </View>
         </View>
         <View style={styles.webPlanTotal}>
-          <Text style={styles.webPlanTotalText}>Your Total: 1,150 hours</Text>
+          <Text style={styles.webPlanTotalText}>Your Total: 1,000 hours</Text>
           <Text style={styles.webPlanSubtext}>A complete NEETPG journey.</Text>
         </View>
         <Text style={[styles.webBody, styles.emphasis]}>
