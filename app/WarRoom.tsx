@@ -525,9 +525,12 @@ console.log(
   // 5️⃣ Cleanup for WarRoom - PROPERLY UNSUBSCRIBE
   // -----------------------------------------
   return () => {
-    existingChannel.off("broadcast", broadcastHandler);
+    if (battleChannelRef.current) {
+      supabase.removeChannel(battleChannelRef.current);
+      battleChannelRef.current = null;
+    }
     clearTimeout(lateJoinTimeout);
-    console.log(`🧹 WarRoom detached listeners properly`);
+    console.log("🧹 WarRoom channel removed cleanly");
   };
 }, [battleId]);
 
