@@ -89,8 +89,6 @@ export default function WarroomScreen() {
   const [isAnswerLocked, setIsAnswerLocked] = useState(false);
   const [answerResults, setAnswerResults] = useState<AnswerResults | null>(null);
   const [leaderboard, setLeaderboard] = useState<PlayerScore[]>([]);
-  const [myScore, setMyScore] = useState(0);
-  const [myCorrectAnswers, setMyCorrectAnswers] = useState(0);
   const [questionNumber, setQuestionNumber] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [playerEmoji, setPlayerEmoji] = useState('🧠');
@@ -255,6 +253,7 @@ if (state.question_payload) {
     score: row.total_score || row.o_total_score || 0,
     scoreChange: row.present_score || row.o_present_score || 0,
     rank: row.present_rank || row.o_present_rank || 0,
+    correctAnswers: row.correct_count || row.o_correct_count || 0,
     emoji: "🔥",
   }));
 
@@ -426,6 +425,7 @@ console.log(
       score: row.total_score || row.o_total_score || 0,
       scoreChange: row.present_score || row.o_present_score || 0,
       rank: row.present_rank || row.o_present_rank || 0,
+      correctAnswers: row.correct_count || row.o_correct_count || 0,
       emoji: "🔥",
     }))
   );
@@ -579,6 +579,7 @@ const fetchLeaderboard = async () => {
         score: row.total_score || row.o_total_score || 0,
         scoreChange: row.present_score || row.o_present_score || 0,
         rank: row.present_rank || row.o_present_rank || 0,
+        correctAnswers: row.correct_count || row.o_correct_count || 0,
         emoji: "🔥",
       }))
     );
@@ -666,8 +667,6 @@ const handleOptionSelect = async (option: string) => {
   const handlePlayAgain = () => {
     setPhase('lobby');
     setQuestionNumber(0);
-    setMyScore(0);
-    setMyCorrectAnswers(0);
     setSelectedOption(null);
     setAnswerResults(null);
     setCurrentQuestion(null);
@@ -982,8 +981,13 @@ const handleOptionSelect = async (option: string) => {
   };
 
   const renderEnded = () => {
-    const myRank = leaderboard.findIndex((p) => p.userId === user?.id) + 1;
+    const me = leaderboard.find((p) => p.userId === user?.id);
+
+    const myRank = me?.rank ?? leaderboard.findIndex((p) => p.userId === user?.id) + 1;
+    const myScore = me?.score ?? 0;
+    const myCorrectAnswers = me?.correctAnswers ?? Math.max(0, Math.round(myScore / 4));
     const accuracy = totalQuestions > 0 ? ((myCorrectAnswers / totalQuestions) * 100).toFixed(1) : '0';
+
     const topThree = leaderboard.slice(0, 3);
 
     return (
