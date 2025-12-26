@@ -155,6 +155,18 @@ const playApplause = async () => {
   }
 };
 
+const stopApplause = async () => {
+  if (applauseSoundRef.current) {
+    try {
+      await applauseSoundRef.current.stopAsync();
+      await applauseSoundRef.current.unloadAsync();
+    } catch (e) {
+      // ignore safely
+    } finally {
+      applauseSoundRef.current = null;
+    }
+  }
+};
 
   // -------------------------
   // 🧠 KEEP REFS IN SYNC
@@ -549,9 +561,10 @@ console.log(
   // 🎉 CONFETTI TRIGGER
   // -------------------------
   useEffect(() => {
-    if (phase === "leaderboard" && !confettiFiredRef.current && leaderboardConfettiRef.current) {
+    if (phase === "leaderboard" && !confettiFiredRef.current) {
       confettiFiredRef.current = true;
       playApplause();
+
       setTimeout(() => {
         leaderboardConfettiRef.current?.start();
       }, 120);
@@ -559,6 +572,7 @@ console.log(
 
     if (phase !== "leaderboard") {
       confettiFiredRef.current = false;
+      stopApplause();
     }
   }, [phase]);
 
