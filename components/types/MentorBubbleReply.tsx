@@ -10,7 +10,15 @@ interface MentorBubbleProps {
 }
 
 export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
-  const cleanedText = markdownText
+  // 🔒 RUNTIME SAFETY: normalize to string
+  const rawText =
+    typeof markdownText === 'string'
+      ? markdownText
+      : markdownText == null
+      ? ''
+      : String(markdownText);
+
+  const cleanedText = rawText
     .replace(/\[STUDENT_REPLY_REQUIRED\]/g, '')
     .replace(/\[FEEDBACK_CORRECT\]/g, '')
     .replace(/\[FEEDBACK_WRONG\]/g, '')
@@ -22,7 +30,7 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
     .replace(/\[MCQ.*?\]/g, '')
     .trim();
 
-  const isTyping = markdownText.startsWith('💬');
+  const isTyping = rawText.startsWith('💬');
 
   if (isTyping) {
     return (
