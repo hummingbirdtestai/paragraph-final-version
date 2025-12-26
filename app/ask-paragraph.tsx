@@ -42,6 +42,7 @@ export default function AskParagraphScreen() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isReplyRequired, setIsReplyRequired] = useState(false);
   
 // 1️⃣ Parse MCQ JSON from router
 useEffect(() => {
@@ -89,11 +90,17 @@ useEffect(() => {
 
       const data = await res.json();
       const dialogs = data.dialogs || [];
-      
+
       setConversation(dialogs);
-      
-     
-   
+
+      // Check if last mentor message requires reply
+      const lastMessage = dialogs[dialogs.length - 1];
+      if (lastMessage && lastMessage.role === 'mentor' && lastMessage.content.includes('[STUDENT_REPLY_REQUIRED]')) {
+        setIsReplyRequired(true);
+      } else {
+        setIsReplyRequired(false);
+      }
+
     } catch (e) {
       console.error("Failed to load session", e);
     } finally {
@@ -110,6 +117,17 @@ useEffect(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 100);
   }, [conversation, isTyping]);
+
+  useEffect(() => {
+    if (conversation.length === 0) return;
+
+    const lastMessage = conversation[conversation.length - 1];
+    if (lastMessage && lastMessage.role === 'mentor' && lastMessage.content.includes('[STUDENT_REPLY_REQUIRED]')) {
+      setIsReplyRequired(true);
+    } else {
+      setIsReplyRequired(false);
+    }
+  }, [conversation]);
 
   const handleSendMessage = async (message: string) => {
   if (!message.trim() || !sessionId || isTyping) return;
@@ -236,9 +254,15 @@ useEffect(() => {
         </ScrollView>
 
         <View style={styles.inputContainer}>
+          {isReplyRequired && (
+            <Text style={styles.replyRequiredText}>
+              Answer the mentor's question to continue
+            </Text>
+          )}
           <MessageInput
             onSend={handleSendMessage}
             placeholder="Ask your doubt about this MCQ..."
+            disabled={isReplyRequired || isTyping}
           />
         </View>
       </KeyboardAvoidingView>
@@ -307,5 +331,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
     paddingBottom: Platform.OS === 'ios' ? theme.spacing.xl : theme.spacing.md,
+  },
+  replyRequiredText: {
+    fontSize: 13,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    paddingBottom: theme.spacing.sm,
   },
 });
