@@ -95,7 +95,14 @@ useEffect(() => {
 
       // Check if last mentor message requires reply
       const lastMessage = dialogs[dialogs.length - 1];
-      if (lastMessage && lastMessage.role === 'mentor' && lastMessage.content.includes('[STUDENT_REPLY_REQUIRED]')) {
+      const content = lastMessage?.content?.trim() || '';
+      if (
+        lastMessage &&
+        lastMessage.role === 'mentor' &&
+        content.length > 0 &&
+        !content.includes('is typing') &&
+        content.includes('[STUDENT_REPLY_REQUIRED]')
+      ) {
         setIsReplyRequired(true);
       } else {
         setIsReplyRequired(false);
@@ -122,7 +129,13 @@ useEffect(() => {
     if (conversation.length === 0) return;
 
     const lastMessage = conversation[conversation.length - 1];
-    if (lastMessage && lastMessage.role === 'mentor' && lastMessage.content.includes('[STUDENT_REPLY_REQUIRED]')) {
+    if (
+      lastMessage &&
+      lastMessage.role === 'mentor' &&
+      lastMessage.content.length > 0 &&
+      !lastMessage.content.includes('is typing') &&
+      lastMessage.content.includes('[STUDENT_REPLY_REQUIRED]')
+    ) {
       setIsReplyRequired(true);
     } else {
       setIsReplyRequired(false);
@@ -131,6 +144,8 @@ useEffect(() => {
 
   const handleSendMessage = async (message: string) => {
   if (!message.trim() || !sessionId || isTyping) return;
+
+  setIsReplyRequired(false);
 
   // 1️⃣ Immediately append student message
   setConversation(prev => [
@@ -260,7 +275,10 @@ useEffect(() => {
             </Text>
           )}
           <MessageInput
-            onSend={handleSendMessage}
+            onSend={(message) => {
+              if (isReplyRequired || isTyping) return;
+              handleSendMessage(message);
+            }}
             placeholder="Ask your doubt about this MCQ..."
             disabled={isReplyRequired || isTyping}
           />
