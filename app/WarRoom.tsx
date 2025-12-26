@@ -133,23 +133,28 @@ export default function WarroomScreen() {
   // -------------------------
   // 🎵 APPLAUSE AUDIO
   // -------------------------
-  const playApplause = async () => {
-    try {
-      if (applauseSoundRef.current) {
-        await applauseSoundRef.current.unloadAsync();
-        applauseSoundRef.current = null;
-      }
-
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: APPLAUSE_URLS[0] },
-        { shouldPlay: true, volume: 1.0 }
-      );
-
-      applauseSoundRef.current = sound;
-    } catch (err) {
-      console.warn('Applause audio failed:', err);
+const playApplause = async () => {
+  try {
+    if (applauseSoundRef.current) {
+      await applauseSoundRef.current.unloadAsync();
+      applauseSoundRef.current = null;
     }
-  };
+
+    // ✅ PICK RANDOM APPLAUSE FILE
+    const randomUrl =
+      APPLAUSE_URLS[Math.floor(Math.random() * APPLAUSE_URLS.length)];
+
+    const { sound } = await Audio.Sound.createAsync(
+      { uri: randomUrl },
+      { shouldPlay: true, volume: 1.0 }
+    );
+
+    applauseSoundRef.current = sound;
+  } catch (err) {
+    console.warn('Applause audio failed:', err);
+  }
+};
+
 
   // -------------------------
   // 🧠 KEEP REFS IN SYNC
