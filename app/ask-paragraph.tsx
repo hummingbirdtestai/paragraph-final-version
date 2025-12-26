@@ -290,14 +290,27 @@ useEffect(() => {
               Answer the mentor's question to continue
             </Text>
           )}
-         <MessageInput
-  onSend={(message) => {
-    if (!isReplyRequired || isTyping) return;
-    handleSendMessage(message);
-  }}
-  placeholder="Answer the mentor's question..."
-  disabled={!isReplyRequired || isTyping}
-/>
+          {(() => {
+            const canStudentReply =
+              !isTyping &&
+              (
+                isReplyRequired ||
+                conversation.length === 0 ||
+                (conversation.length > 0 &&
+                 conversation[conversation.length - 1]?.role === "mentor")
+              );
+
+            return (
+              <MessageInput
+                onSend={(message) => {
+                  if (!canStudentReply) return;
+                  handleSendMessage(message);
+                }}
+                placeholder="Answer the mentor's question..."
+                disabled={!canStudentReply}
+              />
+            );
+          })()}
 
         </View>
       </KeyboardAvoidingView>
