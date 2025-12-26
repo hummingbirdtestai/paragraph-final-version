@@ -42,7 +42,6 @@ export default function AskParagraphScreen() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isReplyRequired, setIsReplyRequired] = useState(false);
   const [nextSuggestions, setNextSuggestions] = useState<any[]>([]);
   
 // 1️⃣ Parse MCQ JSON from router
@@ -96,21 +95,6 @@ useEffect(() => {
       setConversation(dialogs);
       setNextSuggestions(suggestions);
 
-      // Check if last mentor message requires reply
-      const lastMessage = dialogs[dialogs.length - 1];
-      const content = lastMessage?.content?.trim() || '';
-      if (
-        lastMessage &&
-        lastMessage.role === 'mentor' &&
-        content.length > 0 &&
-        !content.includes('is typing') &&
-        content.includes('[STUDENT_REPLY_REQUIRED]')
-      ) {
-        setIsReplyRequired(true);
-      } else {
-        setIsReplyRequired(false);
-      }
-
     } catch (e) {
       console.error("Failed to load session", e);
     } finally {
@@ -128,27 +112,8 @@ useEffect(() => {
     }, 100);
   }, [conversation, isTyping]);
 
-  useEffect(() => {
-    if (conversation.length === 0) return;
-
-    const lastMessage = conversation[conversation.length - 1];
-    if (
-      lastMessage &&
-      lastMessage.role === 'mentor' &&
-      lastMessage.content.length > 0 &&
-      !lastMessage.content.includes('is typing') &&
-      lastMessage.content.includes('[STUDENT_REPLY_REQUIRED]')
-    ) {
-      setIsReplyRequired(true);
-    } else {
-      setIsReplyRequired(false);
-    }
-  }, [conversation]);
-
   const handleSendMessage = async (message: string) => {
   if (!message.trim() || !sessionId || isTyping) return;
-
-  setIsReplyRequired(false);
 
   // 1️⃣ Immediately append student message
   setConversation(prev => [
@@ -285,32 +250,14 @@ useEffect(() => {
         </ScrollView>
 
         <View style={styles.inputContainer}>
-          {isReplyRequired && (
-            <Text style={styles.replyRequiredText}>
-              Answer the mentor's question to continue
-            </Text>
-          )}
-          {(() => {
-            const canStudentReply =
-              !isTyping &&
-              (
-                isReplyRequired ||
-                conversation.length === 0 ||
-                (conversation.length > 0 &&
-                 conversation[conversation.length - 1]?.role === "mentor")
-              );
-
-            return (
-              <MessageInput
-                onSend={(message) => {
-                  if (!canStudentReply) return;
-                  handleSendMessage(message);
-                }}
-                placeholder="Answer the mentor's question..."
-                disabled={!canStudentReply}
-              />
-            );
-          })()}
+          <MessageInput
+            onSend={(message) => {
+              if (isTyping) return;
+              handleSendMessage(message);
+            }}
+            placeholder="Answer or ask anything…"
+            disabled={isTyping}
+          />
 
         </View>
       </KeyboardAvoidingView>
@@ -379,12 +326,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
     paddingBottom: Platform.OS === 'ios' ? theme.spacing.xl : theme.spacing.md,
-  },
-  replyRequiredText: {
-    fontSize: 13,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    paddingBottom: theme.spacing.sm,
   },
   suggestionRow: {
     flexDirection: 'row',
