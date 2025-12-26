@@ -14,6 +14,7 @@ import {
 import { MotiView, MotiText, AnimatePresence } from 'moti';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { Audio } from 'expo-av';
 import { Users, Clock, Trophy } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -23,6 +24,11 @@ import Markdown from "react-native-markdown-display";
 import { ArrowLeft } from 'lucide-react-native';
 
 const API_BASE_URL = "https://battlemcqs-production.up.railway.app";
+
+const APPLAUSE_URLS = [
+  'https://paragraph.b-cdn.net/battle/applause/applause_01.mp3',
+  'https://paragraph.b-cdn.net/battle/applause/6.mp3',
+];
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -105,6 +111,7 @@ export default function WarroomScreen() {
   const confettiRef = useRef<any>(null);
   const leaderboardConfettiRef = useRef<any>(null);
   const confettiFiredRef = useRef(false);
+  const applauseSoundRef = useRef<Audio.Sound | null>(null);
 
   // -------------------------
   // ⏱️ START TIMER
@@ -121,6 +128,27 @@ export default function WarroomScreen() {
 
       if (remaining <= 0) clearInterval(timerRef.current!);
     }, 1000);
+  };
+
+  // -------------------------
+  // 🎵 APPLAUSE AUDIO
+  // -------------------------
+  const playApplause = async () => {
+    try {
+      if (applauseSoundRef.current) {
+        await applauseSoundRef.current.unloadAsync();
+        applauseSoundRef.current = null;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: APPLAUSE_URLS[0] },
+        { shouldPlay: true, volume: 1.0 }
+      );
+
+      applauseSoundRef.current = sound;
+    } catch (err) {
+      console.warn('Applause audio failed:', err);
+    }
   };
 
   // -------------------------
@@ -508,6 +536,7 @@ console.log(
   useEffect(() => {
     if (phase === "leaderboard" && !confettiFiredRef.current && leaderboardConfettiRef.current) {
       confettiFiredRef.current = true;
+      playApplause();
       setTimeout(() => {
         leaderboardConfettiRef.current?.start();
       }, 120);
@@ -518,8 +547,17 @@ console.log(
     }
   }, [phase]);
 
-
-
+  // -------------------------
+  // 🧹 CLEANUP APPLAUSE AUDIO
+  // -------------------------
+  useEffect(() => {
+    return () => {
+      if (applauseSoundRef.current) {
+        applauseSoundRef.current.unloadAsync();
+        applauseSoundRef.current = null;
+      }
+    };
+  }, []);
 
 const handleJoinLeave = async () => {
   if (!battleId || !user) return;
