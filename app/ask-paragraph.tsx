@@ -43,6 +43,7 @@ export default function AskParagraphScreen() {
   const [conversation, setConversation] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isReplyRequired, setIsReplyRequired] = useState(false);
+  const [nextSuggestions, setNextSuggestions] = useState<any[]>([]);
   
 // 1️⃣ Parse MCQ JSON from router
 useEffect(() => {
@@ -90,8 +91,10 @@ useEffect(() => {
 
       const data = await res.json();
       const dialogs = data.dialogs || [];
+      const suggestions = data.next_suggestions || [];
 
       setConversation(dialogs);
+      setNextSuggestions(suggestions);
 
       // Check if last mentor message requires reply
       const lastMessage = dialogs[dialogs.length - 1];
@@ -261,7 +264,20 @@ useEffect(() => {
 
 
             {isTyping && (
-              <MentorBubbleReply markdownText="💬 *Dr. Murali Bharadwaj is typing…*" />
+              <MentorBubbleReply markdownText="💬 *Paragraph Mentor is typing…*" />
+            )}
+
+            {nextSuggestions?.length > 0 && (
+              <View style={styles.suggestionRow}>
+                {nextSuggestions.map((s, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    style={styles.suggestionChip}
+                  >
+                    <Text style={styles.suggestionText}>{s.label || s}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             )}
           </View>
 
@@ -309,11 +325,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    paddingTop: Platform.OS === 'ios' ? 60 : theme.spacing.xl,
+    paddingVertical: theme.spacing.sm,
+    paddingTop: Platform.OS === 'ios' ? 56 : theme.spacing.lg,
     backgroundColor: theme.colors.mentorBubble,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   backButton: {
     padding: theme.spacing.xs,
@@ -355,5 +371,24 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     textAlign: 'center',
     paddingBottom: theme.spacing.sm,
+  },
+  suggestionRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 12,
+    paddingHorizontal: 16,
+  },
+  suggestionChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.backgroundSecondary,
+  },
+  suggestionText: {
+    fontSize: 13,
+    color: theme.colors.text,
   },
 });

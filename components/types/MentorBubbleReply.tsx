@@ -10,19 +10,33 @@ interface MentorBubbleProps {
 }
 
 export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
+  const cleanedText = markdownText
+    .replace(/\[STUDENT_REPLY_REQUIRED\]/g, '')
+    .replace(/\[FEEDBACK_CORRECT\]/g, '')
+    .replace(/\[FEEDBACK_WRONG\]/g, '')
+    .replace(/\[CLARIFICATION\]/g, '')
+    .replace(/\[RECHECK_MCQ.*?\]/g, '')
+    .replace(/\[FINAL_ANSWER\]/g, '')
+    .replace(/\[TAKEAWAYS\]/g, '')
+    .replace(/\[CONCEPT.*?\]/g, '')
+    .replace(/\[MCQ.*?\]/g, '')
+    .trim();
+
+  const isTyping = cleanedText.includes('is typing');
+
   let blocks = [];
 
   try {
-    blocks = parseLLMBlocks(markdownText);
+    blocks = parseLLMBlocks(cleanedText);
   } catch (e) {
     console.log("🔥 LLM block parse failed", e);
-    blocks = [{ type: 'TEXT', text: markdownText }];
+    blocks = [{ type: 'TEXT', text: cleanedText }];
   }
 
   return (
     <Animated.View entering={FadeInLeft.duration(400)} style={styles.container}>
       <View style={styles.tail} />
-      <View style={styles.bubble}>
+      <View style={[styles.bubble, isTyping && styles.typingBubble]}>
         {blocks.map((block, idx) => {
           switch (block.type) {
             case 'CONCEPT':
@@ -77,7 +91,10 @@ const styles = StyleSheet.create({
     borderRightColor: '#25D366',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    maxWidth: '85%',
+    maxWidth: '80%',
     marginLeft: 8,
+  },
+  typingBubble: {
+    opacity: 0.6,
   },
 });
