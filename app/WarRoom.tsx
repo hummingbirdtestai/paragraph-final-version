@@ -304,11 +304,8 @@ const lateJoinTimeout = setTimeout(() => {
   // -----------------------------------------
   // 4️⃣ Attach listener ONLY
   // -----------------------------------------
-  existingChannel.on(
-    "broadcast",
-    { event: "*" },
-    (payload) => {
-      console.log(
+  const broadcastHandler = (payload: any) => {
+    console.log(
   "📡 [BROADCAST]",
   "\nEvent:", payload.payload?.type,
   "\nRaw Payload:", payload.payload,
@@ -316,14 +313,14 @@ const lateJoinTimeout = setTimeout(() => {
 );
 
 
-      clearTimeout(lateJoinTimeout);
-      if (!payload) return;
+    clearTimeout(lateJoinTimeout);
+    if (!payload) return;
 
-      const eventType = payload.payload?.type;
-      const message = payload.payload?.data || {};
+    const eventType = payload.payload?.type;
+    const message = payload.payload?.data || {};
 
-      switch (eventType) {
-        case "new_question": {
+    switch (eventType) {
+      case "new_question": {
   const mcq = message;
 
   const normalized = {
@@ -381,21 +378,21 @@ const lateJoinTimeout = setTimeout(() => {
 }
 
 
-        case "show_stats": {
-          if (timerRef.current) clearInterval(timerRef.current);
-          const graph = Array.isArray(message) ? message[0] : message;
+      case "show_stats": {
+        if (timerRef.current) clearInterval(timerRef.current);
+        const graph = Array.isArray(message) ? message[0] : message;
 
-          setAnswerResults({
-            A: graph?.option_a_count || 0,
-            B: graph?.option_b_count || 0,
-            C: graph?.option_c_count || 0,
-            D: graph?.option_d_count || 0,
-            correct: currentQuestionRef.current?.correct_answer || "A",
-            correctCount:
-              graph?.[
-                `option_${currentQuestionRef.current?.correct_answer?.toLowerCase() || "a"}_count`
-              ] || 0,
-          });
+        setAnswerResults({
+          A: graph?.option_a_count || 0,
+          B: graph?.option_b_count || 0,
+          C: graph?.option_c_count || 0,
+          D: graph?.option_d_count || 0,
+          correct: currentQuestionRef.current?.correct_answer || "A",
+          correctCount:
+            graph?.[
+              `option_${currentQuestionRef.current?.correct_answer?.toLowerCase() || "a"}_count`
+            ] || 0,
+        });
 console.log(
   "🟠 SHOW_STATS RECEIVED",
   "\nGraph Raw:", graph,
@@ -408,9 +405,9 @@ console.log(
   }
 );
 
-          setPhase("results");
-          break;
-        }
+        setPhase("results");
+        break;
+      }
 
     case "update_leaderboard": {
   if (timerRef.current) clearInterval(timerRef.current);
@@ -450,30 +447,32 @@ console.log(
 
 
 
-        case "timer_sync": {
-          setTimeRemaining(message.seconds_left || 0);
-          console.log("⏱️ TIMER_SYNC:", message.seconds_left);
-          if ((message.seconds_left || 0) <= 0) setIsAnswerLocked(true);
-          break;
-        }
-
-        case "battle_end": {
-          setPhase("ended");
-          break;
-        }
-
-        default:
-          console.log("⚪ Unrecognized event:", eventType);
+      case "timer_sync": {
+        setTimeRemaining(message.seconds_left || 0);
+        console.log("⏱️ TIMER_SYNC:", message.seconds_left);
+        if ((message.seconds_left || 0) <= 0) setIsAnswerLocked(true);
+        break;
       }
+
+      case "battle_end": {
+        setPhase("ended");
+        break;
+      }
+
+      default:
+        console.log("⚪ Unrecognized event:", eventType);
     }
-  );
+  };
+
+  existingChannel.on("broadcast", { event: "*" }, broadcastHandler);
 
   // -----------------------------------------
-  // 5️⃣ Cleanup for WarRoom (NO CHANNEL REMOVAL)
+  // 5️⃣ Cleanup for WarRoom - PROPERLY UNSUBSCRIBE
   // -----------------------------------------
   return () => {
+    existingChannel.off("broadcast", broadcastHandler);
     clearTimeout(lateJoinTimeout);
-    console.log(`🧹 WarRoom detached listeners, channel stays alive`);
+    console.log(`🧹 WarRoom detached listeners properly`);
   };
 }, [battleId]);
 
@@ -930,9 +929,7 @@ const handleOptionSelect = async (option: string) => {
             return (
 <MotiView
   key={player.userId}
-  from={{ opacity: 0, translateY: 10 }}
   animate={{ opacity: 1, translateY: 0 }}
-  transition={{ type: 'timing', duration: 300, delay: index * 80 }}
   style={[
     styles.lbCard,
     isMe && styles.lbCardMe,
@@ -991,14 +988,6 @@ const handleOptionSelect = async (option: string) => {
 
     return (
       <View style={styles.phaseContainer}>
-        <ConfettiCannon
-          count={200}
-          origin={{ x: screenWidth / 2, y: 0 }}
-          autoStart={false}
-          ref={confettiRef}
-          fadeOut
-        />
-
         <MotiView
           from={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
