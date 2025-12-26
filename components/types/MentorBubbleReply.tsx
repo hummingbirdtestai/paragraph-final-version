@@ -24,6 +24,17 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
 
   const isTyping = cleanedText.includes('is typing');
 
+  if (isTyping) {
+    return (
+      <Animated.View entering={FadeInLeft.duration(400)} style={styles.container}>
+        <View style={styles.tail} />
+        <View style={styles.bubble}>
+          <Text style={styles.typingText}>{cleanedText}</Text>
+        </View>
+      </Animated.View>
+    );
+  }
+
   let blocks = [];
 
   try {
@@ -36,7 +47,7 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
   return (
     <Animated.View entering={FadeInLeft.duration(400)} style={styles.container}>
       <View style={styles.tail} />
-      <View style={[styles.bubble, isTyping && styles.typingBubble]}>
+      <View style={styles.bubble}>
         {blocks.map((block, idx) => {
           switch (block.type) {
             case 'CONCEPT':
@@ -94,7 +105,10 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
     marginLeft: 8,
   },
-  typingBubble: {
+  typingText: {
+    color: '#e1e1e1',
+    fontSize: 13,
+    fontStyle: 'italic',
     opacity: 0.6,
   },
 });
