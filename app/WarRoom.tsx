@@ -96,6 +96,7 @@ export default function WarroomScreen() {
   const [playerEmoji, setPlayerEmoji] = useState('🧠');
   const [hasJoined, setHasJoined] = useState(false);
   const [participants, setParticipants] = useState<any[]>([]);
+  const [myRank, setMyRank] = useState(0);
 
   // -------------------------
   // 🧩 REFS (KEEP ONLY ONE COPY)
@@ -105,6 +106,7 @@ export default function WarroomScreen() {
   const currentQuestionRef = useRef<MCQ | null>(null);
   const questionNumberRef = useRef(0);
   const confettiRef = useRef<any>(null);
+  const confettiFiredRef = useRef(false);
 
   // -------------------------
   // ⏱️ START TIMER
@@ -500,6 +502,48 @@ console.log(
 
     return () => supabase.removeChannel(channel);
   }, [battleId]);
+
+  // -------------------------
+  // 🏆 DERIVE MY RANK FROM LEADERBOARD
+  // -------------------------
+  useEffect(() => {
+    if (!user?.id || leaderboard.length === 0) {
+      setMyRank(0);
+      return;
+    }
+
+    const myIndex = leaderboard.findIndex((p) => p.userId === user.id);
+    setMyRank(myIndex >= 0 ? myIndex + 1 : 0);
+  }, [leaderboard, user?.id]);
+
+  // -------------------------
+  // 🎉 FIRE CONFETTI ON LEADERBOARD ENTRY (TOP-3 ONLY)
+  // -------------------------
+  useEffect(() => {
+    if (phase === "leaderboard") {
+      if (myRank > 0 && myRank <= 3 && !confettiFiredRef.current && confettiRef.current) {
+        confettiFiredRef.current = true;
+
+        setTimeout(() => {
+          if (confettiRef.current) {
+            confettiRef.current.start();
+          }
+        }, 100);
+      }
+    } else if (phase === "ended") {
+      if (!confettiFiredRef.current && confettiRef.current) {
+        confettiFiredRef.current = true;
+
+        setTimeout(() => {
+          if (confettiRef.current) {
+            confettiRef.current.start();
+          }
+        }, 300);
+      }
+    } else {
+      confettiFiredRef.current = false;
+    }
+  }, [phase, myRank]);
 
 
 
@@ -970,20 +1014,12 @@ const handleOptionSelect = async (option: string) => {
   };
 
   const renderEnded = () => {
-    const myRank = leaderboard.findIndex((p) => p.userId === user?.id) + 1;
+    const myRankLocal = leaderboard.findIndex((p) => p.userId === user?.id) + 1;
     const accuracy = totalQuestions > 0 ? ((myCorrectAnswers / totalQuestions) * 100).toFixed(1) : '0';
     const topThree = leaderboard.slice(0, 3);
 
     return (
       <View style={styles.phaseContainer}>
-        <ConfettiCannon
-          count={200}
-          origin={{ x: screenWidth / 2, y: 0 }}
-          autoStart={false}
-          ref={confettiRef}
-          fadeOut
-        />
-
         <MotiView
           from={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -1019,7 +1055,7 @@ const handleOptionSelect = async (option: string) => {
             <View style={styles.myStatsRow}>
               <View style={styles.myStatItem}>
                 <Text style={styles.myStatLabel}>Rank</Text>
-                <Text style={styles.myStatValue}>#{myRank}</Text>
+                <Text style={styles.myStatValue}>#{myRankLocal}</Text>
               </View>
               <View style={styles.myStatItem}>
                 <Text style={styles.myStatLabel}>Score</Text>
@@ -1075,7 +1111,17 @@ const handleOptionSelect = async (option: string) => {
 
 
   return (
-    <View style={styles.container}> 
+    <View style={styles.container}>
+      {/* 🎉 Global Confetti Cannon */}
+      <ConfettiCannon
+        count={myRank === 1 ? 240 : myRank === 2 ? 150 : myRank === 3 ? 90 : 200}
+        origin={{ x: screenWidth / 2, y: 0 }}
+        autoStart={false}
+        ref={confettiRef}
+        fadeOut
+        colors={myRank === 1 ? ['#FFD93D', '#FFC300', '#FFB700', '#FFA500'] : undefined}
+      />
+
       {/* 🔙 Small Top-Left Back Button */}
 {/* 🔙 Simple Back Button */}
 {/* 🔙 Icon Back Button (Lucide) */}
