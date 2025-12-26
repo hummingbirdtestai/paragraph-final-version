@@ -529,6 +529,14 @@ console.log(
             confettiRef.current.start();
           }
         }, 100);
+      } else if (myRank > 3 && !confettiFiredRef.current && confettiRef.current) {
+        confettiFiredRef.current = true;
+
+        setTimeout(() => {
+          if (confettiRef.current) {
+            confettiRef.current.start();
+          }
+        }, 120);
       }
     } else if (phase === "ended") {
       if (!confettiFiredRef.current && confettiRef.current) {
@@ -1114,12 +1122,25 @@ const handleOptionSelect = async (option: string) => {
     <View style={styles.container}>
       {/* 🎉 Global Confetti Cannon */}
       <ConfettiCannon
-        count={myRank === 1 ? 240 : myRank === 2 ? 150 : myRank === 3 ? 90 : 200}
-        origin={{ x: screenWidth / 2, y: 0 }}
+        count={
+          myRank === 1 ? 240 :
+          myRank === 2 ? 150 :
+          myRank === 3 ? 90 :
+          myRank > 3 ? 40 : 200
+        }
+        origin={{
+          x: screenWidth / 2,
+          y: myRank > 3 ? -20 : 0
+        }}
         autoStart={false}
         ref={confettiRef}
         fadeOut
-        colors={myRank === 1 ? ['#FFD93D', '#FFC300', '#FFB700', '#FFA500'] : undefined}
+        colors={
+          myRank === 1 ? ['#FFD93D', '#FFC300', '#FFB700', '#FFA500'] :
+          myRank > 3 ? ['#E5E7EB', '#9CA3AF', '#93C5FD'] :
+          undefined
+        }
+        fallSpeed={myRank > 3 ? 4200 : undefined}
       />
 
       {/* 🔙 Small Top-Left Back Button */}
