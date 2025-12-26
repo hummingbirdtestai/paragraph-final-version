@@ -22,7 +22,7 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
     .replace(/\[MCQ.*?\]/g, '')
     .trim();
 
-  const isTyping = cleanedText.includes('is typing');
+  const isTyping = markdownText.startsWith('💬');
 
   if (isTyping) {
     return (
