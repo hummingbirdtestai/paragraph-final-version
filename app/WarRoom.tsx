@@ -163,6 +163,16 @@ export default function WarroomScreen() {
   }, [questionNumber]);
 
   // -------------------------
+  // 🔊 AUDIO MODE SETUP
+  // -------------------------
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+    });
+  }, []);
+
+  // -------------------------
   // ✨ HAPTIC
   // -------------------------
   const triggerHaptic = () => {
