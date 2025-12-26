@@ -175,8 +175,11 @@ console.log(
       // Set question number (index is 0-based)
       setQuestionNumber((state.current_question_index || 0) + 1);
 
+      // Normalize backend phase "stats" → UI phase "results"
+      const normalizedPhase = state.phase === "stats" ? "results" : state.phase;
+
       // Restore phase
-      setPhase(state.phase as GamePhase);
+      setPhase(normalizedPhase as GamePhase);
 
       // Total questions from payload if available
       if (state.question_payload?.total_mcqs) {
@@ -222,7 +225,7 @@ if (state.question_payload) {
 
 
       // Restore stats
-      if ((state.phase === "stats" || state.phase === "results") && state.stats_payload){
+      if (normalizedPhase === "results" && state.stats_payload){
         const s = state.stats_payload;
 
         setAnswerResults({
@@ -632,6 +635,7 @@ const handleOptionSelect = async (option: string) => {
   try {
     await supabase.rpc('submit_answer_battle', {
       student_id_input: user?.id,
+      battle_id_input: battleId,
       mcq_id_input: currentQuestion?.id,
       student_answer_input: option,
       is_correct_input: isCorrect,
@@ -655,10 +659,6 @@ const handleOptionSelect = async (option: string) => {
   };
 
   const handleExit = () => {
-    if (socketRef.current) {
-   socketRef.current.close();
- }
-  
     // ✅ Go back to the Battle tab
     router.replace('/battle');
   };
