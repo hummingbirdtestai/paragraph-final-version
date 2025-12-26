@@ -258,7 +258,7 @@ if (state.question_payload) {
 
         
   console.log("♻️ Restoring Leaderboard from STATE:", restoredLB);
-        setPhase("results"); 
+    setPhase("leaderboard");
   setLeaderboard(restoredLB);
 }
 
@@ -550,6 +550,7 @@ const fetchLeaderboard = async () => {
   try {
     const { data, error } = await supabase.rpc("get_leader_board", {
       battle_id_input: battleId,
+      mcq_id_input: currentQuestionRef.current?.id,
     });
 
     if (error) throw error;
