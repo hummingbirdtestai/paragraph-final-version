@@ -290,14 +290,15 @@ useEffect(() => {
               Answer the mentor's question to continue
             </Text>
           )}
-          <MessageInput
-            onSend={(message) => {
-              if (isReplyRequired || isTyping) return;
-              handleSendMessage(message);
-            }}
-            placeholder="Ask your doubt about this MCQ..."
-            disabled={isReplyRequired || isTyping}
-          />
+         <MessageInput
+  onSend={(message) => {
+    if (!isReplyRequired || isTyping) return;
+    handleSendMessage(message);
+  }}
+  placeholder="Answer the mentor's question..."
+  disabled={!isReplyRequired || isTyping}
+/>
+
         </View>
       </KeyboardAvoidingView>
     </View>
