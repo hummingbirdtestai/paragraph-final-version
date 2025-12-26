@@ -105,6 +105,7 @@ export default function WarroomScreen() {
   const currentQuestionRef = useRef<MCQ | null>(null);
   const questionNumberRef = useRef(0);
   const confettiRef = useRef<any>(null);
+  const confettiFiredRef = useRef(false);
 
   // -------------------------
   // ⏱️ START TIMER
@@ -501,7 +502,21 @@ console.log(
     return () => supabase.removeChannel(channel);
   }, [battleId]);
 
+  // -------------------------
+  // 🎉 CONFETTI TRIGGER
+  // -------------------------
+  useEffect(() => {
+    if (phase === "leaderboard" && !confettiFiredRef.current && confettiRef.current) {
+      confettiFiredRef.current = true;
+      setTimeout(() => {
+        confettiRef.current?.start();
+      }, 120);
+    }
 
+    if (phase !== "leaderboard") {
+      confettiFiredRef.current = false;
+    }
+  }, [phase]);
 
 
 
@@ -1074,7 +1089,15 @@ const handleOptionSelect = async (option: string) => {
 
 
   return (
-    <View style={styles.container}> 
+    <View style={styles.container}>
+      <ConfettiCannon
+        ref={confettiRef}
+        count={220}
+        origin={{ x: screenWidth / 2, y: 0 }}
+        autoStart={false}
+        fadeOut
+        colors={['#FFD93D', '#4ADE80', '#60A5FA', '#F472B6', '#A78BFA']}
+      />
       {/* 🔙 Small Top-Left Back Button */}
 {/* 🔙 Simple Back Button */}
 {/* 🔙 Icon Back Button (Lucide) */}
