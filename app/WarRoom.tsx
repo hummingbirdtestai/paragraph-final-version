@@ -47,9 +47,8 @@ interface PlayerScore {
   userId: string;
   username: string;
   score: number;
-  correctAnswers: number;
+  rank: number;
   emoji: string;
-  scoreChange?: number;
 }
 
 interface AnswerResults {
@@ -476,11 +475,8 @@ console.log(
     leaderboardData.map((row: any) => ({
       userId: row.student_id || row.o_student_id,
       username: row.username || row.o_username || row.o_student_id?.slice(0, 6) || "Player",
-      avatarUrl: row.avatar_url || row.o_avatar_url || "",
       score: row.total_score || row.o_total_score || 0,
-      scoreChange: row.present_score || row.o_present_score || 0,
       rank: row.present_rank || row.o_present_rank || 0,
-      correctAnswers: row.correct_count || row.o_correct_count || 0,
       emoji: "🔥",
     }))
   );
@@ -1019,26 +1015,9 @@ const handleOptionSelect = async (option: string) => {
     </Text>
   </View>
 
-  {/* Right Cluster: Present Score → Total Score */}
+  {/* Right Cluster: Score */}
   <View style={styles.lbRightCluster}>
-    <Text
-      style={[
-        styles.lbPresent,
-        {
-          color:
-            player.scoreChange > 0
-              ? '#4ade80'
-              : player.scoreChange < 0
-              ? '#ef4444'
-              : '#9CA3AF',
-        },
-      ]}
-    >
-      {player.scoreChange > 0
-        ? `+${player.scoreChange}`
-        : player.scoreChange}
-    </Text>
-    <Text style={styles.lbTotal}>{player.score}p</Text>
+    <Text style={styles.lbTotal}>{player.score} pts</Text>
   </View>
 </MotiView>
 
@@ -1055,8 +1034,6 @@ const handleOptionSelect = async (option: string) => {
 
     const myRank = me?.rank ?? leaderboard.findIndex((p) => p.userId === user?.id) + 1;
     const myScore = me?.score ?? 0;
-    const myCorrectAnswers = me?.correctAnswers ?? Math.max(0, Math.round(myScore / 4));
-    const accuracy = totalQuestions > 0 ? ((myCorrectAnswers / totalQuestions) * 100).toFixed(1) : '0';
 
     const topThree = leaderboard.slice(0, 3);
 
@@ -1101,17 +1078,7 @@ const handleOptionSelect = async (option: string) => {
               </View>
               <View style={styles.myStatItem}>
                 <Text style={styles.myStatLabel}>Score</Text>
-                <Text style={styles.myStatValue}>{myScore}p</Text>
-              </View>
-              <View style={styles.myStatItem}>
-                <Text style={styles.myStatLabel}>Correct</Text>
-                <Text style={styles.myStatValue}>
-                  {myCorrectAnswers}/{totalQuestions}
-                </Text>
-              </View>
-              <View style={styles.myStatItem}>
-                <Text style={styles.myStatLabel}>Accuracy</Text>
-                <Text style={styles.myStatValue}>{accuracy}%</Text>
+                <Text style={styles.myStatValue}>{myScore} pts</Text>
               </View>
             </View>
           </View>
