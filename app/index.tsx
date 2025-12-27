@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import HomeScreenStatic from "@/components/HomeScreenStatic";
+
+import { LoginModal } from "@/components/auth/LoginModal";
+import { OTPModal } from "@/components/auth/OTPModal";
+import { RegistrationModal } from "@/components/auth/RegistrationModal";
 
 export default function Index() {
   const images = {
@@ -16,5 +20,46 @@ export default function Index() {
     img11: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img11.webp",
   };
 
-  return <HomeScreenStatic images={images} />;
+  // 🔑 AUTH STATE (THIS WAS MISSING)
+  const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+
+  return (
+    <>
+      <HomeScreenStatic
+        images={images}
+        onOpenAuth={(mode) => {
+          setAuthMode(mode);
+          setShowLoginModal(true);
+        }}
+      />
+
+      {/* AUTH MODALS */}
+      <LoginModal
+        visible={showLoginModal}
+        defaultMode={authMode}
+        onClose={() => setShowLoginModal(false)}
+        onSendOTP={() => {
+          setShowLoginModal(false);
+          setShowOTPModal(true);
+        }}
+      />
+
+      <OTPModal
+        visible={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerified={() => {
+          setShowOTPModal(false);
+          setShowRegistrationModal(true);
+        }}
+      />
+
+      <RegistrationModal
+        visible={showRegistrationModal}
+        onClose={() => setShowRegistrationModal(false)}
+      />
+    </>
+  );
 }
