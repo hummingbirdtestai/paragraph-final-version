@@ -44,6 +44,7 @@ export default function HomeScreenStatic({ images, isLoggedIn, onOpenAuth }: Hom
 function MobileLayout({ images, isLoggedIn, onOpenAuth }: HomeScreenStaticProps) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.mobileContent}>
+      <LogoHeader isLoggedIn={isLoggedIn} onOpenAuth={onOpenAuth} />
       <Section1Mobile image={images.img1} />
       <Section5Mobile image={images.img5} />
       <Section8Mobile />
@@ -66,6 +67,7 @@ function MobileLayout({ images, isLoggedIn, onOpenAuth }: HomeScreenStaticProps)
 function WebLayout({ images, isLoggedIn, onOpenAuth }: HomeScreenStaticProps) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.webContent}>
+      <LogoHeader isLoggedIn={isLoggedIn} onOpenAuth={onOpenAuth} />
       <Section1Web image={images.img1} />
       <Section5Web image={images.img5} />
       <Section8Web />
@@ -84,6 +86,41 @@ function WebLayout({ images, isLoggedIn, onOpenAuth }: HomeScreenStaticProps) {
     </ScrollView>
   );
 }
+
+const LogoHeader = memo(({ isLoggedIn, onOpenAuth }: { isLoggedIn?: boolean; onOpenAuth?: (mode: "login" | "signup") => void }) => {
+  return (
+    <View style={styles.logoHeaderContainer}>
+      <View style={styles.logoHeaderContent}>
+        <View style={styles.logoSection}>
+          <Image
+            source={{ uri: 'https://paragraph.b-cdn.net/battle/Home%20page%20images/logo.webp' }}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.logoTagline}>100% AI-Driven NEETPG Self Prep Platform</Text>
+        </View>
+
+        {!isLoggedIn && (
+          <View style={styles.authButtonsContainer}>
+            <Pressable
+              style={styles.headerLoginButton}
+              onPress={() => onOpenAuth?.('login')}
+            >
+              <Text style={styles.headerLoginText}>Login</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.headerSignupButton}
+              onPress={() => onOpenAuth?.('signup')}
+            >
+              <Text style={styles.headerSignupText}>Sign Up</Text>
+            </Pressable>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+});
 
 const Section1Mobile = memo(({ image }: { image: string }) => {
   return (
@@ -1384,5 +1421,61 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#f0f6fc',
+  },
+
+  logoHeaderContainer: {
+    backgroundColor: '#0D0D0D',
+    borderBottomWidth: 1,
+    borderBottomColor: '#1F1F1F',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginBottom: 0,
+  },
+  logoHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    maxWidth: 1400,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  logoSection: {
+    flex: 1,
+  },
+  logoImage: {
+    width: 150,
+    height: 45,
+  },
+  logoTagline: {
+    fontSize: 13.6,
+    fontWeight: '500',
+    color: '#FFFBED',
+    letterSpacing: 0.3,
+    marginTop: 2,
+  },
+  authButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerLoginButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 12,
+  },
+  headerLoginText: {
+    fontSize: 14,
+    color: '#E5E5E5',
+    fontWeight: '500',
+  },
+  headerSignupButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#25D366',
+    borderRadius: 6,
+  },
+  headerSignupText: {
+    fontSize: 14,
+    color: '#0D0D0D',
+    fontWeight: '600',
   },
 });

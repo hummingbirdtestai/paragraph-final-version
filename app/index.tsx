@@ -48,7 +48,7 @@ export default function Index() {
     <>
       <HomeScreenStatic
         images={images}
-        onOpenAuth={() => setAuthStep("login")}
+        onOpenAuth={(mode) => setAuthStep(mode)}
       />
 
       <LoginModal
