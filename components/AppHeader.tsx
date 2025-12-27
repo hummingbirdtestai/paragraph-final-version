@@ -28,7 +28,7 @@ export default function AppHeader({ onMenuPress, onOpenAuth }: AppHeaderProps) {
             <Link href="/" asChild>
               <Pressable style={styles.logoSection}>
                 <Image
-                  source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
+                  source={{ uri: 'https://paragraph.b-cdn.net/battle/Home%20page%20images/logo.webp' }}
                   style={styles.logo}
                   resizeMode="contain"
                 />
