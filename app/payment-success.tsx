@@ -58,7 +58,6 @@ export default function PaymentSuccessScreen() {
   const [status, setStatus] = useState<SubscriptionStatus>('checking');
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const [orderStatus, setOrderStatus] = useState<PaymentOrderStatus>(null);
   const [failureReason, setFailureReason] = useState<FailureReason | null>(null);
 
@@ -127,8 +126,7 @@ const verifyOrderStatus = async () => {
     const data = await fetchUserSubscription();
 
     if (!data) {
-      setFailureReason('UNKNOWN');
-      setStatus('failed');
+      setStatus('processing');
       return;
     }
 
@@ -155,9 +153,14 @@ const verifyOrderStatus = async () => {
   };
 
   useEffect(() => {
-    if (!user) return; // ⛔ wait silently
+    if (!user) return;
+
+    setRetryCount(0);
+    setFailureReason(null);
+    setStatus('checking');
+
     checkSubscription();
-  }, [user]);
+  }, [user, params?.order_id]);
 
   const handleContinue = () => {
     router.replace('/');
