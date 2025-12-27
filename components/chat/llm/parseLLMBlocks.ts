@@ -47,11 +47,27 @@ export function parseLLMBlocks(input: string): LLMBlock[] {
 
       blocks.push({ type: 'CONCEPT_TABLE', rows });
     } else {
-      blocks.push({
-        type: blockType as any,
-        title,
-        text: content,
-      });
+      const contentWithTables = processTextWithTables(content);
+
+      if (contentWithTables.length === 1 && contentWithTables[0].type === 'TEXT') {
+        blocks.push({
+          type: blockType as any,
+          title,
+          text: content,
+        });
+      } else {
+        for (const subBlock of contentWithTables) {
+          if (subBlock.type === 'MARKDOWN_TABLE') {
+            blocks.push(subBlock);
+          } else {
+            blocks.push({
+              type: blockType as any,
+              title,
+              text: subBlock.text,
+            });
+          }
+        }
+      }
     }
 
     lastIndex = end;

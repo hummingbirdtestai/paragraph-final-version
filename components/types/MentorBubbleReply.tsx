@@ -39,7 +39,6 @@ export default function MentorBubbleReply({ markdownText, streaming = false }: M
 
   try {
     blocks = parseLLMBlocks(rawText);
-    console.log("📊 Parsed blocks:", JSON.stringify(blocks, null, 2));
   } catch (e) {
     console.log("🔥 LLM block parse failed", e);
     blocks = [{ type: 'TEXT', text: rawText }];
@@ -65,10 +64,24 @@ export default function MentorBubbleReply({ markdownText, streaming = false }: M
 
             case 'MARKDOWN_TABLE':
               return (
-                <MarkdownTable
-                  key={idx}
-                  parsed={{ headers: block.headers, rows: block.rows }}
-                />
+                <View key={idx}>
+                  <MarkdownTable
+                    parsed={{ headers: block.headers, rows: block.rows }}
+                  />
+                </View>
+              );
+
+            case 'MENTOR':
+            case 'FEEDBACK_CORRECT':
+            case 'FEEDBACK_WRONG':
+            case 'CLARIFICATION':
+            case 'RECHECK_MCQ':
+            case 'FINAL_ANSWER':
+            case 'TAKEAWAYS':
+              return (
+                <MarkdownText key={idx}>
+                  {'text' in block ? block.text.replace(CLEANUP_REGEX, '') : ''}
+                </MarkdownText>
               );
 
             default:
