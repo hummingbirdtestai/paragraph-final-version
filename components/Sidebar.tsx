@@ -130,7 +130,7 @@ export default function Sidebar({
         ) : (
           <View style={styles.logoSection}>
             <Image
-              source={{ uri: 'hhttps://paragraph.b-cdn.net/battle/Home%20page%20images/logo.webp' }}
+              source={{ uri: 'https://paragraph.b-cdn.net/battle/Home%20page%20images/logo.webp' }}
               style={styles.logoImage}
               resizeMode="contain"
             />
