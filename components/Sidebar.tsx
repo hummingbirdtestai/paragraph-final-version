@@ -121,7 +121,7 @@ export default function Sidebar({
         {onClose ? (
           <Pressable onPress={onClose} style={styles.logoSection}>
             <Image
-              source={{ uri: 'https://qyhbwuqnedkizvvsyfyx.supabase.co/storage/v1/object/public/medical-images/Paragraph%20Logo.webp' }}
+              source={{ uri: 'https://paragraph.b-cdn.net/battle/Home%20page%20images/logo.webp' }}
               style={styles.logoImage}
               resizeMode="contain"
             />
