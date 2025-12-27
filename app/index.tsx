@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import HomeScreenStatic from "@/components/HomeScreenStatic";
-
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
+  const { loginWithOTP, verifyOTP, registerUser } = useAuth();
+
+  const [authStep, setAuthStep] = useState<
+    null | "login" | "otp" | "register"
+  >(null);
+
+  const [phone, setPhone] = useState("");
+
   const images = {
     img1: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp",
     img2: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img2.webp",
@@ -20,45 +28,45 @@ export default function Index() {
     img11: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img11.webp",
   };
 
-  // 🔑 AUTH STATE (THIS WAS MISSING)
-  const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showOTPModal, setShowOTPModal] = useState(false);
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-
   return (
     <>
       <HomeScreenStatic
         images={images}
-        onOpenAuth={(mode) => {
-          setAuthMode(mode);
-          setShowLoginModal(true);
-        }}
+        onOpenAuth={() => setAuthStep("login")}
       />
 
-      {/* AUTH MODALS */}
       <LoginModal
-        visible={showLoginModal}
-        defaultMode={authMode}
-        onClose={() => setShowLoginModal(false)}
-        onSendOTP={() => {
-          setShowLoginModal(false);
-          setShowOTPModal(true);
+        visible={authStep === "login"}
+        onClose={() => setAuthStep(null)}
+        onSendOTP={async (phone) => {
+          await loginWithOTP(phone);
+          setPhone(phone);
+          setAuthStep("otp");
         }}
       />
 
       <OTPModal
-        visible={showOTPModal}
-        onClose={() => setShowOTPModal(false)}
-        onVerified={() => {
-          setShowOTPModal(false);
-          setShowRegistrationModal(true);
+        visible={authStep === "otp"}
+        phoneNumber={phone}
+        onClose={() => setAuthStep(null)}
+        onVerify={async (otp) => {
+          const res = await verifyOTP(phone, otp);
+          if (res?.isNewUser) {
+            setAuthStep("register");
+          } else {
+            setAuthStep(null);
+          }
         }}
+        onResend={() => loginWithOTP(phone)}
       />
 
       <RegistrationModal
-        visible={showRegistrationModal}
-        onClose={() => setShowRegistrationModal(false)}
+        visible={authStep === "register"}
+        onClose={() => {}}
+        onRegister={async (name) => {
+          await registerUser(name, phone);
+          setAuthStep(null);
+        }}
       />
     </>
   );

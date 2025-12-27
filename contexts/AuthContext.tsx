@@ -103,11 +103,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const loginWithOTP = async (phone: string) => {
     const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
-    const { data, error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithOtp({
       phone: formattedPhone,
     });
-    if (error) throw error;
-    return data;
+
+    if (error) {
+      console.error("OTP send failed:", error.message);
+      throw error;
+    }
+
+    return true;
   };
 
   const verifyOTP = async (phone: string, token: string) => {
@@ -118,6 +123,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       type: "sms",
     });
     if (error) throw error;
+
+    if (data?.user?.id) {
+      const { data: existingUser } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      return {
+        ...data,
+        isNewUser: !existingUser,
+      };
+    }
+
     return data;
   };
 
