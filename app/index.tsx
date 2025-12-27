@@ -30,17 +30,7 @@ export default function Index() {
     img11: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img11.webp",
   };
 
-  useEffect(() => {
-    if (!loading && user) {
-      router.replace("/practice");
-    }
-  }, [loading, user, router]);
-
   if (loading) {
-    return null;
-  }
-
-  if (user) {
     return null;
   }
 
@@ -48,6 +38,7 @@ export default function Index() {
     <>
       <HomeScreenStatic
         images={images}
+        isLoggedIn={!!user}
         onOpenAuth={(mode) => setAuthStep(mode)}
       />
 
