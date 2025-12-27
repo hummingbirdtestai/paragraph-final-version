@@ -39,6 +39,7 @@ export default function MentorBubbleReply({ markdownText, streaming = false }: M
 
   try {
     blocks = parseLLMBlocks(rawText);
+    console.log("📊 Parsed blocks:", JSON.stringify(blocks, null, 2));
   } catch (e) {
     console.log("🔥 LLM block parse failed", e);
     blocks = [{ type: 'TEXT', text: rawText }];

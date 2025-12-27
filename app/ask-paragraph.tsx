@@ -162,6 +162,10 @@ useEffect(() => {
             content: updated[lastIndex].content + chunk,
           };
 
+          if (done) {
+            console.log("📩 Final mentor content:", updated[lastIndex].content);
+          }
+
           return updated;
         });
       }

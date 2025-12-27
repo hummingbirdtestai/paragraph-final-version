@@ -20,11 +20,15 @@ export function isMarkdownTable(text: string): boolean {
 export function parseTableString(tableString: string): ParsedTable | null {
   try {
     const lines = tableString.trim().split('\n').filter(line => line.trim());
+    console.log("🔍 Table lines:", lines);
 
     if (lines.length < 3) return null;
 
     const headerLine = lines[0];
     const separatorLine = lines[1];
+
+    console.log("📋 Header line:", headerLine);
+    console.log("➖ Separator line:", separatorLine);
 
     if (!headerLine.includes('|') || !separatorLine.includes('---')) {
       return null;
@@ -43,6 +47,9 @@ export function parseTableString(tableString: string): ParsedTable | null {
 
     const headers = parseRow(headerLine);
     const rows = lines.slice(2).map(line => parseRow(line));
+
+    console.log("✅ Parsed headers:", headers);
+    console.log("✅ Parsed rows:", rows);
 
     return { headers, rows };
   } catch (e) {
