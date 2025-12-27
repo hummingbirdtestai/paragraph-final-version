@@ -85,10 +85,9 @@ function WebLayout({ images }: HomeScreenStaticProps) {
 }
 
 const Section1Mobile = memo(({ image }: { image: string }) => {
-  console.log('Section1Mobile mounted');
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImageSection1} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImageSection1} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>NEETPG Prep Became Complicated. You Didn't</Text>
         <Text style={styles.mobileBody}>
@@ -109,7 +108,6 @@ const Section1Mobile = memo(({ image }: { image: string }) => {
 });
 
 const Section1Web = memo(({ image }: { image: string }) => {
-  console.log('Section1Web mounted');
   return (
     <View style={styles.webSection}>
       <View style={styles.webHero}>
@@ -145,7 +143,7 @@ const Section1Web = memo(({ image }: { image: string }) => {
             }}
           />
         ) : (
-          <Image source={{ uri: image }} style={styles.webHeroImage} resizeMode="contain" progressiveRenderingEnabled />
+          <Image source={{ uri: image }} style={styles.webHeroImage} resizeMode="contain" />
         )}
       </View>
     </View>
@@ -153,10 +151,9 @@ const Section1Web = memo(({ image }: { image: string }) => {
 });
 
 const Section2Mobile = memo(({ image }: { image: string }) => {
-  console.log('Section2Mobile mounted');
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>NEETPG Prep That Actually Works</Text>
         <Text style={styles.mobileBody}>
@@ -175,11 +172,10 @@ const Section2Mobile = memo(({ image }: { image: string }) => {
 });
 
 const Section2Web = memo(({ image }: { image: string }) => {
-  console.log('Section2Web mounted');
   return (
     <View style={styles.webSection}>
       <View style={styles.webReverse}>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
         <View style={styles.webTextBlock}>
           <Text style={styles.webHeading}>But NEETPG was never meant to feel like torture.</Text>
           <Text style={styles.webBody}>
@@ -201,10 +197,9 @@ const Section2Web = memo(({ image }: { image: string }) => {
 });
 
 const Section3Mobile = memo(({ image }: { image: string }) => {
-  console.log('Section3Mobile mounted');
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>Daily Support, Not Daily Stress</Text>
         <Text style={styles.mobileBody}>
@@ -228,7 +223,6 @@ const Section3Mobile = memo(({ image }: { image: string }) => {
 });
 
 const Section3Web = memo(({ image }: { image: string }) => {
-  console.log('Section3Web mounted');
   return (
     <View style={styles.webSection}>
       <View style={styles.webHero}>
@@ -255,17 +249,16 @@ const Section3Web = memo(({ image }: { image: string }) => {
             This isn't an app. It's a daily coaching system that keeps you moving.
           </Text>
         </View>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
       </View>
     </View>
   );
 });
 
 const Section4Mobile = memo(({ image }: { image: string }) => {
-  console.log('Section4Mobile mounted');
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>From Mistakes to Mastery</Text>
         <Text style={styles.mobileBody}>
@@ -286,11 +279,10 @@ const Section4Mobile = memo(({ image }: { image: string }) => {
 });
 
 const Section4Web = memo(({ image }: { image: string }) => {
-  console.log('Section4Web mounted');
   return (
     <View style={styles.webSection}>
       <View style={styles.webReverse}>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
         <View style={styles.webTextBlock}>
           <Text style={styles.webHeading}>From Mistakes to Mastery</Text>
           <Text style={styles.webSubheading}>
@@ -314,10 +306,9 @@ const Section4Web = memo(({ image }: { image: string }) => {
 });
 
 const Section5Mobile = memo(({ image }: { image: string }) => {
-  console.log('Section5Mobile mounted');
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>Your 10,000-Concepts based on NEETPG PYQs journey, Simplified</Text>
         <Text style={styles.mobileBody}>
@@ -344,7 +335,6 @@ const Section5Mobile = memo(({ image }: { image: string }) => {
 });
 
 const Section5Web = memo(({ image }: { image: string }) => {
-  console.log('Section5Web mounted');
   return (
     <View style={styles.webSection}>
       <View style={styles.webHero}>
@@ -382,17 +372,16 @@ const Section5Web = memo(({ image }: { image: string }) => {
             This is your 10,000-concept path — made simple, structured, achievable.
           </Text>
         </View>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
       </View>
     </View>
   );
 });
 
 const Section6Mobile = memo(({ image }: { image: string }) => {
-  console.log('Section6Mobile mounted');
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImageSection6} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImageSection6} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>You Are Never Alone</Text>
         <Text style={styles.mobileBody}>
@@ -417,11 +406,10 @@ const Section6Mobile = memo(({ image }: { image: string }) => {
 });
 
 const Section6Web = memo(({ image }: { image: string }) => {
-  console.log('Section6Web mounted');
   return (
     <View style={styles.webSection}>
       <View style={styles.webReverse}>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
         <View style={styles.webTextBlock}>
           <Text style={styles.webHeading}>You Are Never Alone</Text>
           <Text style={styles.webBody}>
@@ -446,7 +434,6 @@ const Section6Web = memo(({ image }: { image: string }) => {
 });
 
 const Section7Mobile = memo(() => {
-  console.log('Section7Mobile mounted');
   return (
     <View style={styles.mobileQuoteSection}>
       <Text style={styles.mobileQuoteHeading}>The Real NEETPG Strategy</Text>
@@ -469,7 +456,6 @@ const Section7Mobile = memo(() => {
 });
 
 const Section7Web = memo(() => {
-  console.log('Section7Web mounted');
   return (
     <View style={styles.webQuoteSection}>
       <View style={styles.webQuoteContent}>
@@ -498,7 +484,6 @@ const Section7Web = memo(() => {
 });
 
 const Section8Mobile = memo(() => {
-  console.log('Section8Mobile mounted');
   return (
     <View style={styles.mobileSection}>
       <View style={styles.mobilePadding}>
@@ -532,7 +517,6 @@ const Section8Mobile = memo(() => {
 });
 
 const Section8Web = memo(() => {
-  console.log('Section8Web mounted');
   return (
     <View style={styles.webSection}>
       <View style={styles.webPlanContent}>
@@ -574,7 +558,7 @@ const Section8Web = memo(() => {
 const Block1Mobile = memo(({ image }: { image: string }) => {
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>Everything You Study Is Exam-Critical</Text>
         <Text style={styles.mobileBody}>
@@ -613,7 +597,7 @@ const Block1Web = memo(({ image }: { image: string }) => {
             You don't study more. You study exactly what matters.
           </Text>
         </View>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
       </View>
     </View>
   );
@@ -622,7 +606,7 @@ const Block1Web = memo(({ image }: { image: string }) => {
 const Block2Mobile = memo(({ image }: { image: string }) => {
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>Daily Progress. Zero Burnout.</Text>
         <Text style={styles.mobileBody}>
@@ -646,7 +630,7 @@ const Block2Web = memo(({ image }: { image: string }) => {
   return (
     <View style={styles.webSection}>
       <View style={styles.webReverse}>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
         <View style={styles.webTextBlock}>
           <Text style={styles.webHeading}>Daily Progress. Zero Burnout.</Text>
           <Text style={styles.webBody}>
@@ -670,7 +654,7 @@ const Block2Web = memo(({ image }: { image: string }) => {
 const Block3Mobile = memo(({ image }: { image: string }) => {
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>Learn Faster With Visual Memory</Text>
         <Text style={styles.mobileBody}>
@@ -709,7 +693,7 @@ const Block3Web = memo(({ image }: { image: string }) => {
             Built for attention spans of 2026 — fast, sharp, unforgettable.
           </Text>
         </View>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
       </View>
     </View>
   );
@@ -718,7 +702,7 @@ const Block3Web = memo(({ image }: { image: string }) => {
 const Block4Mobile = memo(({ image }: { image: string }) => {
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>Practice Under Real Exam Pressure</Text>
         <Text style={styles.mobileBody}>
@@ -742,7 +726,7 @@ const Block4Web = memo(({ image }: { image: string }) => {
   return (
     <View style={styles.webSection}>
       <View style={styles.webReverse}>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
         <View style={styles.webTextBlock}>
           <Text style={styles.webHeading}>Practice Under Real Exam Pressure</Text>
           <Text style={styles.webBody}>
@@ -766,7 +750,7 @@ const Block4Web = memo(({ image }: { image: string }) => {
 const Block5Mobile = memo(({ image }: { image: string }) => {
   return (
     <View style={styles.mobileSection}>
-      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" progressiveRenderingEnabled />
+      <Image source={{ uri: image }} style={styles.mobileImage} resizeMode="cover" />
       <View style={styles.mobilePadding}>
         <Text style={styles.mobileHeading}>A System That Adapts To You</Text>
         <Text style={styles.mobileBody}>
@@ -805,7 +789,7 @@ const Block5Web = memo(({ image }: { image: string }) => {
             Feels like a personal mentor — because it behaves like one.
           </Text>
         </View>
-        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" progressiveRenderingEnabled />
+        <Image source={{ uri: image }} style={styles.webSideImage} resizeMode="contain" />
       </View>
     </View>
   );
@@ -1159,7 +1143,7 @@ const styles = StyleSheet.create({
   },
   webCheck: {
     fontSize: 18,
-    color: '#3b950',
+    color: '#3fb950',
     lineHeight: 28,
     marginBottom: 10,
   },
