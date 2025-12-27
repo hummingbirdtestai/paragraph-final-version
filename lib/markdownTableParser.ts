@@ -56,10 +56,9 @@ export function splitIntoBlocks(text: string): ContentBlock[] {
   const lines = text.split('\n');
 
   let currentBlock = '';
-  let inTable = false;
-  let tableLines: string[] = [];
+  let i = 0;
 
-  for (let i = 0; i < lines.length; i++) {
+  while (i < lines.length) {
     const line = lines[i];
     const nextLine = lines[i + 1];
 
@@ -69,41 +68,31 @@ export function splitIntoBlocks(text: string): ContentBlock[] {
       nextLine.includes('---') &&
       nextLine.includes('|');
 
-    if (isTableStart && !inTable) {
+    if (isTableStart) {
       if (currentBlock.trim()) {
         blocks.push({ type: 'markdown', content: currentBlock.trim() });
         currentBlock = '';
       }
-      inTable = true;
-      tableLines = [line];
-    } else if (inTable) {
-      tableLines.push(line);
 
-      const isTableEnd = !line.includes('|') || i === lines.length - 1;
+      const tableLines: string[] = [line];
+      i++;
 
-      if (isTableEnd) {
-        if (!line.includes('|')) {
-          tableLines.pop();
-        }
+      while (i < lines.length && lines[i].includes('|')) {
+        tableLines.push(lines[i]);
+        i++;
+      }
 
-        const tableString = tableLines.join('\n');
-        const parsed = parseTableString(tableString);
+      const tableString = tableLines.join('\n');
+      const parsed = parseTableString(tableString);
 
-        if (parsed) {
-          blocks.push({ type: 'table', content: tableString, parsed });
-        } else {
-          blocks.push({ type: 'markdown', content: tableString });
-        }
-
-        tableLines = [];
-        inTable = false;
-
-        if (!line.includes('|')) {
-          currentBlock = line + '\n';
-        }
+      if (parsed) {
+        blocks.push({ type: 'table', content: tableString, parsed });
+      } else {
+        blocks.push({ type: 'markdown', content: tableString });
       }
     } else {
       currentBlock += line + '\n';
+      i++;
     }
   }
 

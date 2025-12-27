@@ -8,10 +8,12 @@ import { MarkdownTable } from '@/components/common/MarkdownTable';
 
 interface MentorBubbleProps {
   markdownText: string;
+  streaming?: boolean;
 }
 
-export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
-  // 🔒 RUNTIME SAFETY: normalize to string
+const CLEANUP_REGEX = /\[STUDENT_REPLY_REQUIRED\]|\[FEEDBACK_CORRECT\]|\[FEEDBACK_WRONG\]|\[CLARIFICATION\]|\[RECHECK_MCQ.*?\]|\[FINAL_ANSWER\]|\[TAKEAWAYS\]|\[CONCEPT.*?\]|\[MCQ.*?\]/g;
+
+export default function MentorBubbleReply({ markdownText, streaming = false }: MentorBubbleProps) {
   const rawText =
     typeof markdownText === 'string'
       ? markdownText
@@ -19,26 +21,15 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
       ? ''
       : String(markdownText);
 
-  const cleanedText = rawText
-    .replace(/\[STUDENT_REPLY_REQUIRED\]/g, '')
-    .replace(/\[FEEDBACK_CORRECT\]/g, '')
-    .replace(/\[FEEDBACK_WRONG\]/g, '')
-    .replace(/\[CLARIFICATION\]/g, '')
-    .replace(/\[RECHECK_MCQ.*?\]/g, '')
-    .replace(/\[FINAL_ANSWER\]/g, '')
-    .replace(/\[TAKEAWAYS\]/g, '')
-    .replace(/\[CONCEPT.*?\]/g, '')
-    .replace(/\[MCQ.*?\]/g, '')
-    .trim();
-
   const isTyping = rawText.startsWith('💬');
 
-  if (isTyping) {
+  if (isTyping || streaming) {
+    const cleanedText = rawText.replace(CLEANUP_REGEX, '').trim();
     return (
       <Animated.View entering={FadeInLeft.duration(400)} style={styles.container}>
         <View style={styles.tail} />
         <View style={styles.bubble}>
-          <Text style={styles.typingText}>{cleanedText}</Text>
+          <MarkdownText>{cleanedText}</MarkdownText>
         </View>
       </Animated.View>
     );
@@ -47,10 +38,10 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
   let blocks = [];
 
   try {
-    blocks = parseLLMBlocks(cleanedText);
+    blocks = parseLLMBlocks(rawText);
   } catch (e) {
     console.log("🔥 LLM block parse failed", e);
-    blocks = [{ type: 'TEXT', text: cleanedText }];
+    blocks = [{ type: 'TEXT', text: rawText }];
   }
 
   return (
@@ -82,7 +73,7 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
             default:
               return (
                 <MarkdownText key={idx}>
-                  {'text' in block ? block.text : ''}
+                  {'text' in block ? block.text.replace(CLEANUP_REGEX, '') : ''}
                 </MarkdownText>
               );
           }

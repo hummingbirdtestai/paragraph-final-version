@@ -21,6 +21,7 @@ import LLMMCQCard from '@/components/chat/llm/LLMMCQCard';
 interface Dialog {
   role: 'student' | 'mentor';
   content: string;
+  streaming?: boolean;
 }
 
 interface MCQData {
@@ -119,7 +120,7 @@ useEffect(() => {
   setConversation(prev => [
     ...prev,
     { role: "student", content: message },
-    { role: "mentor", content: "" } // placeholder for streaming
+    { role: "mentor", content: "", streaming: true }
   ]);
 
   setIsTyping(true);
@@ -159,6 +160,7 @@ useEffect(() => {
           updated[lastIndex] = {
             ...updated[lastIndex],
             content: updated[lastIndex].content + chunk,
+            streaming: !doneReading,
           };
 
           return updated;
@@ -215,7 +217,11 @@ useEffect(() => {
   msg.role === 'student' ? (
     <StudentBubble key={index} text={msg.content} />
   ) : (
-    <MentorBubbleReply key={index} markdownText={msg.content} />
+    <MentorBubbleReply
+      key={index}
+      markdownText={msg.content}
+      streaming={msg.streaming}
+    />
   )
 )}
 
