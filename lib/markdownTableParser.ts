@@ -68,8 +68,14 @@ export function parseTableString(tableString: string): ParsedTable | null {
 }
 
 export function splitIntoBlocks(text: string): ContentBlock[] {
+  console.log("🔪 splitIntoBlocks called");
+  console.log("🔪 Full text length:", text.length);
+  console.log("🔪 First 500 chars:", text.substring(0, 500));
+
   const blocks: ContentBlock[] = [];
   const lines = text.split('\n');
+
+  console.log("🔪 Total lines:", lines.length);
 
   let currentBlock = '';
   let i = 0;
@@ -84,7 +90,16 @@ export function splitIntoBlocks(text: string): ContentBlock[] {
       nextLine.includes('---') &&
       nextLine.includes('|');
 
+    if (line.includes('|')) {
+      console.log(`Line ${i} has pipe:`, line.substring(0, 100));
+      if (nextLine) {
+        console.log(`  Next line:`, nextLine.substring(0, 100));
+        console.log(`  Next has ---:`, nextLine.includes('---'));
+      }
+    }
+
     if (isTableStart) {
+      console.log("✅ TABLE START DETECTED at line", i);
       if (currentBlock.trim()) {
         blocks.push({ type: 'markdown', content: currentBlock.trim() });
         currentBlock = '';
