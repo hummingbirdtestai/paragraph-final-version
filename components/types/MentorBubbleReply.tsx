@@ -4,6 +4,7 @@ import MarkdownText from './MarkdownText';
 import { parseLLMBlocks } from '@/components/chat/llm/parseLLMBlocks';
 import { ConceptCard } from '@/components/chat/llm/ConceptCard';
 import { TableCard } from '@/components/chat/llm/TableCard';
+import { MarkdownTable } from '@/components/common/MarkdownTable';
 
 interface MentorBubbleProps {
   markdownText: string;
@@ -69,6 +70,14 @@ export default function MentorBubbleReply({ markdownText }: MentorBubbleProps) {
 
             case 'CONCEPT_TABLE':
               return <TableCard key={idx} rows={block.rows} />;
+
+            case 'MARKDOWN_TABLE':
+              return (
+                <MarkdownTable
+                  key={idx}
+                  parsed={{ headers: block.headers, rows: block.rows }}
+                />
+              );
 
             default:
               return (
