@@ -20,27 +20,18 @@ export function isMarkdownTable(text: string): boolean {
 export function parseTableString(tableString: string): ParsedTable | null {
   try {
     const lines = tableString.trim().split('\n').filter(line => line.trim());
-    console.log("🔍 Table parsing - Total lines:", lines.length);
-    console.log("🔍 All lines:", lines);
 
-    if (lines.length < 3) {
-      console.log("❌ Not enough lines for a table");
-      return null;
-    }
+    if (lines.length < 3) return null;
 
     const headerLine = lines[0];
     const separatorLine = lines[1];
 
-    console.log("📋 Header line:", headerLine);
-    console.log("➖ Separator line:", separatorLine);
-
     if (!headerLine.includes('|') || !separatorLine.includes('---')) {
-      console.log("❌ Missing pipe or separator");
       return null;
     }
 
     const parseRow = (line: string): string[] => {
-      const cells = line
+      return line
         .split('|')
         .map(cell => cell.trim())
         .filter((cell, index, arr) => {
@@ -48,17 +39,10 @@ export function parseTableString(tableString: string): ParsedTable | null {
           if (index === arr.length - 1 && cell === '') return false;
           return true;
         });
-      console.log("  Row cells:", cells);
-      return cells;
     };
 
-    console.log("Parsing header:");
     const headers = parseRow(headerLine);
-    console.log("Parsing data rows:");
     const rows = lines.slice(2).map(line => parseRow(line));
-
-    console.log("✅ Final parsed headers:", headers);
-    console.log("✅ Final parsed rows:", rows);
 
     return { headers, rows };
   } catch (e) {
@@ -68,14 +52,8 @@ export function parseTableString(tableString: string): ParsedTable | null {
 }
 
 export function splitIntoBlocks(text: string): ContentBlock[] {
-  console.log("🔪 splitIntoBlocks called");
-  console.log("🔪 Full text length:", text.length);
-  console.log("🔪 First 500 chars:", text.substring(0, 500));
-
   const blocks: ContentBlock[] = [];
   const lines = text.split('\n');
-
-  console.log("🔪 Total lines:", lines.length);
 
   let currentBlock = '';
   let i = 0;
@@ -90,16 +68,7 @@ export function splitIntoBlocks(text: string): ContentBlock[] {
       nextLine.includes('---') &&
       nextLine.includes('|');
 
-    if (line.includes('|')) {
-      console.log(`Line ${i} has pipe:`, line.substring(0, 100));
-      if (nextLine) {
-        console.log(`  Next line:`, nextLine.substring(0, 100));
-        console.log(`  Next has ---:`, nextLine.includes('---'));
-      }
-    }
-
     if (isTableStart) {
-      console.log("✅ TABLE START DETECTED at line", i);
       if (currentBlock.trim()) {
         blocks.push({ type: 'markdown', content: currentBlock.trim() });
         currentBlock = '';
