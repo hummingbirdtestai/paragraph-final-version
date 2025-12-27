@@ -17,8 +17,27 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 
 const { width, height } = Dimensions.get('window');
 
-type SubscriptionStatus = 'loading' | 'success' | 'pending' | 'error';
+type SubscriptionStatus = 'checking' | 'success' | 'processing' | 'failed';
 type PaymentOrderStatus = 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'PENDING' | null;
+type FailureReason = 'CANCELLED' | 'FAILED' | 'UNKNOWN';
+
+const FAILURE_COPY: Record<FailureReason, { title: string; message: string }> = {
+  CANCELLED: {
+    title: 'Payment Cancelled',
+    message:
+      'You cancelled the payment process. No amount has been charged to your account.',
+  },
+  FAILED: {
+    title: 'Payment Failed',
+    message:
+      'The payment could not be completed. If any amount was deducted, it will be refunded automatically by your bank.',
+  },
+  UNKNOWN: {
+    title: 'Unable to Verify Payment',
+    message:
+      'We could not verify the payment status at this moment. Please try again later.',
+  },
+};
 
 interface UserSubscription {
   is_active: boolean;
@@ -36,12 +55,12 @@ export default function PaymentSuccessScreen() {
   const { user } = useAuth();
   const confettiRef = useRef<any>(null);
 
-  const [status, setStatus] = useState<SubscriptionStatus>('loading');
+  const [status, setStatus] = useState<SubscriptionStatus>('checking');
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [orderStatus, setOrderStatus] = useState<PaymentOrderStatus>(null);
-  const [isCancelled, setIsCancelled] = useState(false);
+  const [failureReason, setFailureReason] = useState<FailureReason | null>(null);
 
   const MAX_RETRIES = 2;
   const RETRY_DELAY = 2000;
@@ -80,66 +99,59 @@ const verifyOrderStatus = async () => {
   
   const checkSubscription = async (isRetry = false) => {
     const paymentStatus = await verifyOrderStatus();
-  
-    if (paymentStatus === 'CANCELLED') {
-        setIsCancelled(true);
-        setStatus('error');
-        setErrorMessage(
-          'Payment cancelled. No amount has been deducted from your bank account.'
-        );
-        return;
-      }
-      
-      if (paymentStatus === 'FAILED') {
-        setStatus('error');
-        setErrorMessage(
-          'Payment failed. If money was deducted, it will be refunded automatically.'
-        );
-        return;
-      }
 
-  
+    if (paymentStatus === 'CANCELLED') {
+      setFailureReason('CANCELLED');
+      setStatus('failed');
+      return;
+    }
+
+    if (paymentStatus === 'FAILED') {
+      setFailureReason('FAILED');
+      setStatus('failed');
+      return;
+    }
+
     if (paymentStatus === 'PENDING') {
       if (retryCount < MAX_RETRIES && !isRetry) {
-        setStatus('pending');
+        setStatus('processing');
         setRetryCount((prev) => prev + 1);
         setTimeout(() => checkSubscription(true), RETRY_DELAY);
         return;
       }
-    
-      setStatus('error');
-      setErrorMessage(
-        'Payment verification is taking longer than expected. If money was deducted, it will be updated shortly.'
-      );
+
+      setStatus('processing');
       return;
     }
 
-  
     const data = await fetchUserSubscription();
 
     if (!data) {
-      setStatus('error');
-      setErrorMessage('Unable to verify subscription. Please contact support.');
+      setFailureReason('UNKNOWN');
+      setStatus('failed');
       return;
     }
 
     setSubscription(data);
 
-    if (data.is_active && data.is_paid) {
+    if (paymentStatus === 'SUCCESS' && data.is_paid && data.is_active) {
       setStatus('success');
       confettiRef.current?.start();
-    } else {
+      return;
+    }
+
+    if (paymentStatus === 'SUCCESS' && (!data.is_paid || !data.is_active)) {
       if (retryCount < MAX_RETRIES && !isRetry) {
-        setStatus('pending');
+        setStatus('processing');
         setRetryCount((prev) => prev + 1);
         setTimeout(() => checkSubscription(true), RETRY_DELAY);
       } else {
-        setStatus('error');
-        setErrorMessage(
-          'Payment received, but subscription is still being activated. Please refresh this page in a moment.'
-        );
+        setStatus('processing');
       }
+      return;
     }
+
+    setStatus('processing');
   };
 
   useEffect(() => {
@@ -174,7 +186,7 @@ const verifyOrderStatus = async () => {
     return packageName;
   };
 
-  if (status === 'loading') {
+  if (status === 'checking') {
     return (
       <View style={styles.container}>
         <View style={styles.centerContent}>
@@ -185,19 +197,33 @@ const verifyOrderStatus = async () => {
     );
   }
 
-  if (status === 'pending') {
+  if (status === 'processing') {
     return (
       <View style={styles.container}>
         <View style={styles.centerContent}>
           <Loader2 size={48} color="#fbbf24" strokeWidth={2} />
-          <Text style={styles.loadingText}>Verifying payment status...</Text>
-          <Text style={styles.subText}>This usually takes a few seconds</Text>
+          <Text style={styles.title}>Payment Verification In Progress</Text>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>
+              We are confirming the final payment status with the payment provider.
+              This may take a few minutes.
+            </Text>
+            <Text style={[styles.infoText, { marginTop: 12 }]}>
+              You do not need to retry the payment.
+              If it completes successfully, your subscription will activate automatically.
+            </Text>
+          </View>
+          <Pressable style={styles.primaryButton} onPress={handleContinue}>
+            <Text style={styles.primaryButtonText}>Go to Home</Text>
+          </Pressable>
         </View>
       </View>
     );
   }
 
-  if (status === 'error') {
+  if (status === 'failed') {
+    const copy = FAILURE_COPY[failureReason ?? 'UNKNOWN'];
+
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -205,20 +231,8 @@ const verifyOrderStatus = async () => {
             <AlertCircle size={80} color="#ef4444" strokeWidth={1.5} />
           </View>
 
-          <Text style={styles.title}>
-            {isCancelled ? 'Payment Cancelled' : 'Payment Processing'}
-          </Text>
-          <Text style={styles.errorText}>{errorMessage}</Text>
-
-          {!isCancelled && (
-            <View style={styles.infoBox}>
-              <Text style={styles.infoText}>
-                If your payment was successful, your subscription will be activated shortly.
-                Please refresh this page or contact support if the issue persists.
-              </Text>
-            </View>
-          )}
-
+          <Text style={styles.title}>{copy.title}</Text>
+          <Text style={styles.errorText}>{copy.message}</Text>
 
           <Pressable style={styles.primaryButton} onPress={handleContinue}>
             <Text style={styles.primaryButtonText}>Go to Home</Text>
