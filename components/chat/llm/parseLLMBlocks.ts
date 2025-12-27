@@ -85,11 +85,16 @@ export function parseLLMBlocks(input: string): LLMBlock[] {
 }
 
 function processTextWithTables(text: string): LLMBlock[] {
+  console.log("🔄 Processing text with tables:", text.substring(0, 100) + "...");
   const contentBlocks = splitIntoBlocks(text);
+  console.log("🔄 Split into", contentBlocks.length, "blocks");
   const result: LLMBlock[] = [];
 
   for (const block of contentBlocks) {
     if (block.type === 'table') {
+      console.log("✅ Found table block!");
+      console.log("  Headers:", block.parsed.headers);
+      console.log("  Rows:", block.parsed.rows);
       result.push({
         type: 'MARKDOWN_TABLE',
         tableString: block.content,
@@ -97,6 +102,7 @@ function processTextWithTables(text: string): LLMBlock[] {
         rows: block.parsed.rows,
       });
     } else {
+      console.log("📝 Found text block");
       result.push({ type: 'TEXT', text: block.content });
     }
   }

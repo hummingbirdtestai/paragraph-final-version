@@ -20,18 +20,27 @@ export function isMarkdownTable(text: string): boolean {
 export function parseTableString(tableString: string): ParsedTable | null {
   try {
     const lines = tableString.trim().split('\n').filter(line => line.trim());
+    console.log("🔍 Table parsing - Total lines:", lines.length);
+    console.log("🔍 All lines:", lines);
 
-    if (lines.length < 3) return null;
+    if (lines.length < 3) {
+      console.log("❌ Not enough lines for a table");
+      return null;
+    }
 
     const headerLine = lines[0];
     const separatorLine = lines[1];
 
+    console.log("📋 Header line:", headerLine);
+    console.log("➖ Separator line:", separatorLine);
+
     if (!headerLine.includes('|') || !separatorLine.includes('---')) {
+      console.log("❌ Missing pipe or separator");
       return null;
     }
 
     const parseRow = (line: string): string[] => {
-      return line
+      const cells = line
         .split('|')
         .map(cell => cell.trim())
         .filter((cell, index, arr) => {
@@ -39,10 +48,17 @@ export function parseTableString(tableString: string): ParsedTable | null {
           if (index === arr.length - 1 && cell === '') return false;
           return true;
         });
+      console.log("  Row cells:", cells);
+      return cells;
     };
 
+    console.log("Parsing header:");
     const headers = parseRow(headerLine);
+    console.log("Parsing data rows:");
     const rows = lines.slice(2).map(line => parseRow(line));
+
+    console.log("✅ Final parsed headers:", headers);
+    console.log("✅ Final parsed rows:", rows);
 
     return { headers, rows };
   } catch (e) {

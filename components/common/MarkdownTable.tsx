@@ -10,7 +10,16 @@ interface MarkdownTableProps {
 export function MarkdownTable({ parsed }: MarkdownTableProps) {
   const { headers, rows } = parsed;
 
-  if (!headers.length || !rows.length) return null;
+  console.log("🎨 MarkdownTable rendering");
+  console.log("  Headers:", headers);
+  console.log("  Rows:", rows);
+  console.log("  Headers length:", headers.length);
+  console.log("  Rows length:", rows.length);
+
+  if (!headers.length || !rows.length) {
+    console.log("❌ Table empty, not rendering");
+    return null;
+  }
 
   return (
     <ScrollView
