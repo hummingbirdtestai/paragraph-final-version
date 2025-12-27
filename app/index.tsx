@@ -1,7 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import HomeScreen from '@/components/HomeScreen';
-import MainLayout from '@/components/MainLayout';
+import React from "react";
+import HomeScreenStatic from "@/components/HomeScreenStatic";
 
 export default function Index() {
   const images = {
@@ -18,16 +16,5 @@ export default function Index() {
     img11: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img11.webp",
   };
 
-  return (
-    <MainLayout>
-  <HomeScreen images={images} />
-</MainLayout>
-
-  );
+  return <HomeScreenStatic images={images} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
