@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
-import MocktestMCQScreen from "@/components/types/ MocktestMCQScreen";
+import MCQChatScreen from "@/components/types/MCQScreen";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
@@ -103,10 +103,17 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
 {isMCQ && (
   <View style={isWeb ? styles.webConstrained : undefined}>
-    <MocktestMCQScreen
-      item={phase}
-      studentSelected={phase.student_answer || null}
-      reviewMode={true}
+    <MCQChatScreen
+      item={phase.phase_json}
+      studentId={user?.id}
+      mcqId={phase.id}
+      correctAnswer={phase.phase_json?.correct_answer}
+      reactOrderFinal={phase.react_order_final}
+      phaseUniqueId={phase.id}
+      subject={phase.subject}
+      isBookmarked={isBookmarked}
+      reviewMode={false}
+      mode="practice"
     />
 
     <AskParagraphButton
