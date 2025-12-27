@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import HomeScreenStatic from "@/components/HomeScreenStatic";
+import HomeScreen from "@/components/HomeScreen";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { useAuth } from "@/contexts/AuthContext";
+import MainLayout from "@/components/MainLayout";
 
 export default function Index() {
-  const router = useRouter();
   const { loginWithOTP, verifyOTP, registerUser, user, loading } = useAuth();
 
   const [authStep, setAuthStep] = useState<
@@ -34,11 +34,19 @@ export default function Index() {
     return null;
   }
 
+  if (user) {
+    return (
+      <MainLayout>
+        <HomeScreen images={images} />
+      </MainLayout>
+    );
+  }
+
   return (
     <>
       <HomeScreenStatic
         images={images}
-        isLoggedIn={!!user}
+        isLoggedIn={false}
         onOpenAuth={(mode) => setAuthStep(mode)}
       />
 
