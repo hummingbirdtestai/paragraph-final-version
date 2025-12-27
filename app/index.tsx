@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import HomeScreen from "@/components/HomeScreen";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "expo-router";
 import HomeScreenStatic from "@/components/HomeScreenStatic";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
@@ -7,6 +7,7 @@ import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
+  const router = useRouter();
   const { loginWithOTP, verifyOTP, registerUser, user, loading } = useAuth();
 
   const [authStep, setAuthStep] = useState<
@@ -29,12 +30,18 @@ export default function Index() {
     img11: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img11.webp",
   };
 
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/practice");
+    }
+  }, [loading, user, router]);
+
   if (loading) {
     return null;
   }
 
   if (user) {
-    return <HomeScreen images={images} />;
+    return null;
   }
 
   return (
