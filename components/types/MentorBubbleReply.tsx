@@ -23,7 +23,7 @@ export default function MentorBubbleReply({ markdownText, streaming = false }: M
 
   const isTyping = rawText.startsWith('💬');
 
-  if (isTyping || streaming) {
+  if (isTyping) {
     const cleanedText = rawText.replace(CLEANUP_REGEX, '').trim();
     return (
       <Animated.View entering={FadeInLeft.duration(400)} style={styles.container}>

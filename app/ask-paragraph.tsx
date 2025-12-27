@@ -120,7 +120,7 @@ useEffect(() => {
   setConversation(prev => [
     ...prev,
     { role: "student", content: message },
-    { role: "mentor", content: "", streaming: true }
+    { role: "mentor", content: "" }
   ]);
 
   setIsTyping(true);
@@ -160,7 +160,6 @@ useEffect(() => {
           updated[lastIndex] = {
             ...updated[lastIndex],
             content: updated[lastIndex].content + chunk,
-            streaming: !doneReading,
           };
 
           return updated;
@@ -220,7 +219,6 @@ useEffect(() => {
     <MentorBubbleReply
       key={index}
       markdownText={msg.content}
-      streaming={msg.streaming}
     />
   )
 )}
