@@ -9,7 +9,6 @@ import {
   useWindowDimensions,
   Pressable,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import Footer from './Footer';
 
 interface HomeScreenStaticProps {
@@ -26,21 +25,23 @@ interface HomeScreenStaticProps {
     img10: string;
     img11: string;
   };
+  isLoggedIn?: boolean;
+  onOpenAuth?: (mode: "login" | "signup") => void;
 }
 
-export default function HomeScreenStatic({ images }: HomeScreenStaticProps) {
+export default function HomeScreenStatic({ images, isLoggedIn, onOpenAuth }: HomeScreenStaticProps) {
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isMobile = !isWeb || width < 768;
 
   if (isMobile) {
-    return <MobileLayout images={images} />;
+    return <MobileLayout images={images} isLoggedIn={isLoggedIn} onOpenAuth={onOpenAuth} />;
   }
 
-  return <WebLayout images={images} />;
+  return <WebLayout images={images} isLoggedIn={isLoggedIn} onOpenAuth={onOpenAuth} />;
 }
 
-function MobileLayout({ images }: HomeScreenStaticProps) {
+function MobileLayout({ images, isLoggedIn, onOpenAuth }: HomeScreenStaticProps) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.mobileContent}>
       <Section1Mobile image={images.img1} />
@@ -56,13 +57,13 @@ function MobileLayout({ images }: HomeScreenStaticProps) {
       <Block3Mobile image={images.img9} />
       <Block4Mobile image={images.img10} />
       <Block5Mobile image={images.img11} />
-      <Section9Mobile />
+      <Section9Mobile isLoggedIn={isLoggedIn} onOpenAuth={onOpenAuth} />
       <Footer />
     </ScrollView>
   );
 }
 
-function WebLayout({ images }: HomeScreenStaticProps) {
+function WebLayout({ images, isLoggedIn, onOpenAuth }: HomeScreenStaticProps) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.webContent}>
       <Section1Web image={images.img1} />
@@ -78,7 +79,7 @@ function WebLayout({ images }: HomeScreenStaticProps) {
       <Block3Web image={images.img9} />
       <Block4Web image={images.img10} />
       <Block5Web image={images.img11} />
-      <Section9Web />
+      <Section9Web isLoggedIn={isLoggedIn} onOpenAuth={onOpenAuth} />
       <Footer />
     </ScrollView>
   );
@@ -795,8 +796,8 @@ const Block5Web = memo(({ image }: { image: string }) => {
   );
 });
 
-const Section9Mobile = memo(() => {
-  const router = useRouter();
+const Section9Mobile = memo(({ isLoggedIn, onOpenAuth }: { isLoggedIn?: boolean; onOpenAuth?: (mode: "login" | "signup") => void }) => {
+  if (isLoggedIn) return null;
 
   return (
     <View style={styles.mobileCTASection}>
@@ -808,7 +809,7 @@ const Section9Mobile = memo(() => {
 
       <Pressable
         style={styles.mobileCTAButton}
-        onPress={() => router.push("/signup")}
+        onPress={() => onOpenAuth?.("signup")}
       >
         <Text style={styles.mobileCTAButtonText}>Sign Up Now</Text>
       </Pressable>
@@ -816,8 +817,8 @@ const Section9Mobile = memo(() => {
   );
 });
 
-const Section9Web = memo(() => {
-  const router = useRouter();
+const Section9Web = memo(({ isLoggedIn, onOpenAuth }: { isLoggedIn?: boolean; onOpenAuth?: (mode: "login" | "signup") => void }) => {
+  if (isLoggedIn) return null;
 
   return (
     <View style={styles.webCTASection}>
@@ -826,7 +827,7 @@ const Section9Web = memo(() => {
 
         <Pressable
           style={styles.webCTAButton}
-          onPress={() => router.push("/signup")}
+          onPress={() => onOpenAuth?.("signup")}
         >
           <Text style={styles.webCTAButtonText}>Sign Up Now</Text>
         </Pressable>
