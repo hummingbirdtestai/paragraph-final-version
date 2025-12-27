@@ -25,10 +25,83 @@ import { ArrowLeft } from 'lucide-react-native';
 
 const API_BASE_URL = "https://battlemcqs-production.up.railway.app";
 
-const APPLAUSE_URLS = [
-  'https://paragraph.b-cdn.net/battle/applause/applause_01.mp3',
-  'https://paragraph.b-cdn.net/battle/applause/6.mp3',
+export const APPLAUSE_SOUNDS = [
+  "https://paragraph.b-cdn.net/battle/applause/1.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/2.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/3.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/4.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/5.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/6.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/7.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/8.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/9.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/10.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/11.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/12.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/13.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/14.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/15.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/16.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/17.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/18.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/19.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/20.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/21.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/22.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/23.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/24.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/25.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/26.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/27.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/28.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/29.mp3",
+  "https://paragraph.b-cdn.net/battle/applause/30.mp3",
 ];
+
+export const QUESTION_MUSIC = [
+  "https://paragraph.b-cdn.net/battle/question_music/QM1.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM2.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM3.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM4.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM5.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM6.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM7.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM8.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM9.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM10.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM11.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM12.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM13.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM14.mp3",
+  "https://paragraph.b-cdn.net/battle/question_music/QM15.mp3",
+];
+
+export const WOOSH_SOUNDS = [
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 1.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 2.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 3.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 4.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 5.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 6.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 7.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 8.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 9.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 10.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 11.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 12.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 13.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 14.mp3",
+  "https://paragraph.b-cdn.net/battle/woosh/Woosh 15.mp3",
+];
+
+const hashStringToNumber = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -111,6 +184,10 @@ export default function WarroomScreen() {
   const leaderboardConfettiRef = useRef<any>(null);
   const confettiFiredRef = useRef(false);
   const applauseSoundRef = useRef<Audio.Sound | null>(null);
+  const questionMusicRef = useRef<Audio.Sound | null>(null);
+  const wooshSoundRef = useRef<Audio.Sound | null>(null);
+  const selectedQuestionMusicUrlRef = useRef<string | null>(null);
+  const selectedWooshUrlRef = useRef<string | null>(null);
 
   // -------------------------
   // ⏱️ START TIMER
@@ -130,42 +207,105 @@ export default function WarroomScreen() {
   };
 
   // -------------------------
-  // 🎵 APPLAUSE AUDIO
+  // 🎵 AUDIO HELPERS
   // -------------------------
-const playApplause = async () => {
-  try {
-    if (applauseSoundRef.current) {
-      await applauseSoundRef.current.unloadAsync();
-      applauseSoundRef.current = null;
-    }
+  const playQuestionMusic = async () => {
+    if (!selectedQuestionMusicUrlRef.current) return;
 
-    // ✅ PICK RANDOM APPLAUSE FILE
-    const randomUrl =
-      APPLAUSE_URLS[Math.floor(Math.random() * APPLAUSE_URLS.length)];
-
-    const { sound } = await Audio.Sound.createAsync(
-      { uri: randomUrl },
-      { shouldPlay: true, volume: 1.0 }
-    );
-
-    applauseSoundRef.current = sound;
-  } catch (err) {
-    console.warn('Applause audio failed:', err);
-  }
-};
-
-const stopApplause = async () => {
-  if (applauseSoundRef.current) {
     try {
-      await applauseSoundRef.current.stopAsync();
-      await applauseSoundRef.current.unloadAsync();
-    } catch (e) {
-      // ignore safely
-    } finally {
-      applauseSoundRef.current = null;
+      if (questionMusicRef.current) {
+        await questionMusicRef.current.unloadAsync();
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: selectedQuestionMusicUrlRef.current },
+        { shouldPlay: true, isLooping: true, volume: 0.6 }
+      );
+
+      questionMusicRef.current = sound;
+    } catch (err) {
+      console.warn('Question music failed:', err);
     }
-  }
-};
+  };
+
+  const stopQuestionMusic = async () => {
+    if (questionMusicRef.current) {
+      try {
+        await questionMusicRef.current.stopAsync();
+        await questionMusicRef.current.unloadAsync();
+      } catch (e) {
+        // ignore safely
+      } finally {
+        questionMusicRef.current = null;
+      }
+    }
+  };
+
+  const playWoosh = async () => {
+    if (!selectedWooshUrlRef.current) return;
+
+    try {
+      if (wooshSoundRef.current) {
+        await wooshSoundRef.current.unloadAsync();
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: selectedWooshUrlRef.current },
+        { shouldPlay: true, volume: 0.8 }
+      );
+
+      wooshSoundRef.current = sound;
+    } catch (err) {
+      console.warn('Woosh sound failed:', err);
+    }
+  };
+
+  const stopWoosh = async () => {
+    if (wooshSoundRef.current) {
+      try {
+        await wooshSoundRef.current.stopAsync();
+        await wooshSoundRef.current.unloadAsync();
+      } catch (e) {
+        // ignore safely
+      } finally {
+        wooshSoundRef.current = null;
+      }
+    }
+  };
+
+  const playApplause = async () => {
+    try {
+      if (applauseSoundRef.current) {
+        await applauseSoundRef.current.unloadAsync();
+        applauseSoundRef.current = null;
+      }
+
+      const randomUrl =
+        APPLAUSE_SOUNDS[Math.floor(Math.random() * APPLAUSE_SOUNDS.length)];
+
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: randomUrl },
+        { shouldPlay: true, volume: 1.0 }
+      );
+
+      applauseSoundRef.current = sound;
+    } catch (err) {
+      console.warn('Applause audio failed:', err);
+    }
+  };
+
+  const stopApplause = async () => {
+    if (applauseSoundRef.current) {
+      try {
+        await applauseSoundRef.current.stopAsync();
+        await applauseSoundRef.current.unloadAsync();
+      } catch (e) {
+        // ignore safely
+      } finally {
+        applauseSoundRef.current = null;
+      }
+    }
+  };
 
   // -------------------------
   // 🧠 KEEP REFS IN SYNC
@@ -187,6 +327,36 @@ const stopApplause = async () => {
       staysActiveInBackground: false,
     });
   }, []);
+
+  // -------------------------
+  // 🎯 SELECT AUDIO ONCE PER QUIZ
+  // -------------------------
+  useEffect(() => {
+    if (!battleId) return;
+
+    const hash = hashStringToNumber(battleId);
+
+    selectedQuestionMusicUrlRef.current =
+      QUESTION_MUSIC[hash % QUESTION_MUSIC.length];
+
+    selectedWooshUrlRef.current =
+      WOOSH_SOUNDS[hash % WOOSH_SOUNDS.length];
+
+  }, [battleId]);
+
+  // -------------------------
+  // 🎮 PHASE-BASED AUDIO CONTROL
+  // -------------------------
+  useEffect(() => {
+    if (phase === "question") playQuestionMusic();
+    else stopQuestionMusic();
+
+    if (phase === "results") playWoosh();
+    else stopWoosh();
+
+    if (phase === "leaderboard") playApplause();
+    else stopApplause();
+  }, [phase]);
 
   // -------------------------
   // ✨ HAPTIC
@@ -562,7 +732,6 @@ console.log(
   useEffect(() => {
     if (phase === "leaderboard" && !confettiFiredRef.current) {
       confettiFiredRef.current = true;
-      playApplause();
 
       setTimeout(() => {
         leaderboardConfettiRef.current?.start();
@@ -571,19 +740,19 @@ console.log(
 
     if (phase !== "leaderboard") {
       confettiFiredRef.current = false;
-      stopApplause();
     }
   }, [phase]);
 
   // -------------------------
-  // 🧹 CLEANUP APPLAUSE AUDIO
+  // 🧹 CLEANUP ALL AUDIO ON UNMOUNT
   // -------------------------
   useEffect(() => {
     return () => {
-      if (applauseSoundRef.current) {
-        applauseSoundRef.current.unloadAsync();
-        applauseSoundRef.current = null;
-      }
+      (async () => {
+        await stopQuestionMusic();
+        await stopWoosh();
+        await stopApplause();
+      })();
     };
   }, []);
 
