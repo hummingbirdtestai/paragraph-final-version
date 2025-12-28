@@ -850,5 +850,21 @@
     <p class="copyright-text">© 2025 Paragraph. All rights reserved.</p>
   </footer>
 
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            navigator.serviceWorker.register('/sw.js');
+          });
+        } else {
+          setTimeout(() => {
+            navigator.serviceWorker.register('/sw.js');
+          }, 2000);
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>

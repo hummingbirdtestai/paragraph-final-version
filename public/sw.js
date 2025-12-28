@@ -34,13 +34,6 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
 
   if (
-    request.destination === 'image' &&
-    url.pathname.includes('img1.webp')
-  ) {
-    return;
-  }
-
-  if (
     request.method !== 'GET' ||
     url.pathname.startsWith('/app') ||
     url.pathname.includes('auth') ||
