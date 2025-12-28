@@ -858,23 +858,19 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      console.log("Auth bridge script loaded");
-
       document.body.addEventListener("click", function (e) {
         const btn = e.target.closest("[data-auth]");
         if (!btn) return;
 
         e.preventDefault();
-        e.stopPropagation();
 
         const mode = btn.getAttribute("data-auth");
-        console.log("Auth button clicked:", mode);
 
-        window.dispatchEvent(
-          new CustomEvent("OPEN_AUTH_MODAL", {
-            detail: { mode }
-          })
-        );
+        if (mode === "login") {
+          window.location.href = "/app?auth=login";
+        } else {
+          window.location.href = "/app?auth=signup";
+        }
       });
     });
   </script>

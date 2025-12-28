@@ -1,12 +1,18 @@
-//home index.tsx
-import React from "react";
-import HomeScreenStatic from "@/components/HomeScreenStatic";
+import React, { useEffect } from "react";
+import { useLocalSearchParams } from "expo-router";
 import HomeScreen from "@/components/HomeScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import MainLayout from "@/components/MainLayout";
 
-export default function Index() {
+export default function App() {
   const { user, loading } = useAuth();
+  const params = useLocalSearchParams();
+
+  useEffect(() => {
+    if (params.auth === "login" || params.auth === "signup") {
+      window.dispatchEvent(new CustomEvent("OPEN_AUTH_MODAL"));
+    }
+  }, [params.auth]);
 
   const images = {
     img1: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp",
@@ -26,23 +32,9 @@ export default function Index() {
     return null;
   }
 
-  if (user) {
-    return (
-      <MainLayout>
-        <HomeScreen images={images} />
-      </MainLayout>
-    );
-  }
-
   return (
-    <HomeScreenStatic
-      images={images}
-      isLoggedIn={false}
-      onOpenAuth={(mode) => {
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(new CustomEvent("OPEN_AUTH_MODAL"));
-        }
-      }}
-    />
+    <MainLayout>
+      <HomeScreen images={images} />
+    </MainLayout>
   );
 }

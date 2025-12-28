@@ -1,34 +1,11 @@
 // app/_layout.tsx
-import { Stack, Slot, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
 import { useFrameworkReady } from "@/hooks/useFrameworkReady";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { Helmet } from "react-helmet";
 import AuthModalController from "@/components/auth/AuthModalController";
 import "./global.css";
-
-function AuthGate() {
-  const params = useLocalSearchParams();
-  const router = useRouter();
-  const { user, loading } = useAuth();
-
-  useEffect(() => {
-    if (loading) return;
-
-    if (!user && params.auth) {
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("OPEN_AUTH_MODAL"));
-      }
-    }
-
-    if (user && params.auth) {
-      router.replace("/");
-    }
-  }, [params.auth, user, loading]);
-
-  return <Slot />;
-}
 
 export default function RootLayout() {
   useFrameworkReady();
@@ -45,11 +22,10 @@ export default function RootLayout() {
       </Helmet>
 
       <AuthProvider>
-        <AuthGate />
         <AuthModalController />
 
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
+          <Stack.Screen name="app" />
           <Stack.Screen name="settings" />
           <Stack.Screen name="privacy-policy" />
           <Stack.Screen name="terms" />
