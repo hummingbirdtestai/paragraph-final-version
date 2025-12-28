@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
-import MCQChatScreen from "@/components/types/MocktestMCQScreen";
+import MCQChatScreen from "@/components/types/MCQScreen";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
@@ -11,7 +11,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 
-export function MockPracticeCard({ phase }) {
+export function PracticeCard({ phase }) {
    const { width } = useWindowDimensions();   // ✅ ADD
   const isWeb = width >= 1024;               // ✅ ADD
   const isConcept = phase.phase_type === "concept";
