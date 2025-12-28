@@ -1,3 +1,4 @@
+//home index.tsx
 import React from "react";
 import HomeScreenStatic from "@/components/HomeScreenStatic";
 import HomeScreen from "@/components/HomeScreen";
