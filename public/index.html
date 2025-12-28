@@ -16,12 +16,13 @@
     .mobile-only{display:block}
     .web-only{display:none}
     @media (min-width:768px){.mobile-only{display:none}.web-only{display:block}}
-    .hero-mobile{min-height:760px;display:block}
+    @media (max-width:767px){
+      .mobile-hero-lcp{height:180px;padding:24px 20px;background-color:#161b22;border-radius:16px;margin:16px;box-shadow:0px 4px 8px rgba(0,0,0,0.3)}
+      .mobile-hero-lcp h1{font-size:28px;line-height:36px;margin-bottom:12px;color:#f4e4c1}
+      .mobile-hero-lcp p{font-size:16px;line-height:24px;color:#c9d1d9}
+    }
     .hero-media{height:380px;width:100%;overflow:hidden}
     .hero-media img{width:100%;height:100%;object-fit:cover;display:block}
-    .hero-text{min-height:360px}
-    .hero-text h1{font-size:28px;line-height:36px;min-height:72px;color:#f4e4c1}
-    .hero-text p{min-height:24px}
   </style>
 
   <link rel="preload" href="/styles.css" as="style">
@@ -70,6 +71,13 @@
 
     <!-- Section 1: Hero -->
     <section class="hero-mobile mobile-only">
+      <!-- Block A: LCP Block (Above the Fold) -->
+      <div class="mobile-hero-lcp">
+        <h1 class="mobile-heading">NEETPG Prep Became Complicated. You Didn't</h1>
+        <p class="mobile-body">You're Not Struggling — The System Is Broken.</p>
+      </div>
+
+      <!-- Hero Image -->
       <div class="hero-media">
         <img
           src="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360"
@@ -81,16 +89,15 @@
           sizes="100vw"
           width="360"
           height="380"
-          loading="eager"
-          fetchpriority="high"
+          loading="lazy"
           decoding="async"
           alt="NEETPG Preparation"
         >
       </div>
+
+      <!-- Block B: Rest of Content (Below the Fold) -->
       <div class="hero-text">
         <div class="mobile-padding">
-          <h1 class="mobile-heading">NEETPG Prep Became Complicated. You Didn't</h1>
-          <p class="mobile-body">You're Not Struggling — The System Is Broken.</p>
           <p class="mobile-body">Most students today are stuck in a cycle of:</p>
           <p class="mobile-bullet">• <span class="highlight">Endless video lectures</span> that eat hours but give no clarity</p>
           <p class="mobile-bullet">• <span class="highlight">Crowded classes</span> where no one knows your weaknesses</p>
