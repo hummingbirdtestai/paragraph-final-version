@@ -15,8 +15,18 @@ export default function AuthModalController() {
   const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
-    const handler = () => {
-      setStep("login");
+    console.log("[AUTH MODAL] mounted");
+
+    const handler = (e: any) => {
+      console.log("[AUTH MODAL] OPEN_AUTH_MODAL received");
+      const mode = e.detail;
+      console.log("[AUTH MODAL] mode =", mode);
+
+      if (mode === "signup") {
+        setStep("login");
+      } else {
+        setStep("login");
+      }
     };
 
     window.addEventListener("OPEN_AUTH_MODAL", handler);

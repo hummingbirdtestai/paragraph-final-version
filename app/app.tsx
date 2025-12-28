@@ -9,10 +9,21 @@ export default function App() {
   const params = useLocalSearchParams();
 
   useEffect(() => {
-    if (params.auth === "login" || params.auth === "signup") {
-      window.dispatchEvent(new CustomEvent("OPEN_AUTH_MODAL"));
+    console.log("[APP] params =", params);
+    console.log("[APP] typeof params.auth =", typeof params.auth);
+    console.log("[APP] params.auth =", params.auth);
+
+    const auth = Array.isArray(params.auth) ? params.auth[0] : params.auth;
+
+    console.log("[APP] normalized auth =", auth);
+
+    if (auth === "login" || auth === "signup") {
+      console.log("[APP] Dispatching OPEN_AUTH_MODAL");
+      window.dispatchEvent(
+        new CustomEvent("OPEN_AUTH_MODAL", { detail: auth })
+      );
     }
-  }, [params.auth]);
+  }, [params]);
 
   const images = {
     img1: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp",
