@@ -299,7 +299,7 @@ function OptionsGrid({
         const cleanText = opt.replace(/^([A-D]\)\s*)/, "");
         return [label, cleanText];
       })
-    : Object.entries(options);
+    : options ? Object.entries(options) : [];
 
   return (
     <Animated.View style={[styles.optionsContainer, { opacity: fadeAnim }]}>
