@@ -106,7 +106,7 @@ img {
   padding: 24px 20px;
   background-color: #161b22;
   border-radius: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .mobile-image {
@@ -136,7 +136,6 @@ img {
   object-fit: cover;
 }
 
-/* Typography */
 .mobile-heading {
   font-size: 28px;
   font-weight: 600;
@@ -190,13 +189,12 @@ img {
   font-weight: bold;
 }
 
-/* Doubt Box */
 .doubt-box {
   background-color: #1c2128;
   padding: 16px;
   border-radius: 8px;
   margin: 12px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 .doubt-text {
@@ -211,9 +209,11 @@ img {
 .mobile-quote-section {
   background-color: #161b22;
   padding: 48px 20px;
-  margin: 0 16px 32px 16px;
+  margin-bottom: 32px;
+  margin-left: 16px;
+  margin-right: 16px;
   border-radius: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .mobile-quote-heading {
@@ -284,7 +284,7 @@ img {
   margin: 0 16px;
   border-radius: 16px;
   background-color: #161b22;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
 
@@ -356,33 +356,24 @@ img {
 }
 
 /* ========================================
-   DESKTOP STYLES (RN Web Layout Parity)
+   DESKTOP STYLES (RNW PIXEL-PERFECT TRANSLATION)
    ======================================== */
 
-/* Desktop: Page Width Constraints (768px - 1023px) */
 @media (min-width: 768px) {
+  /* Page Container */
   .page {
-    max-width: 960px;
-    margin: 0 auto;
     padding-bottom: 80px;
   }
-}
 
-/* Desktop: Page Width Constraints (1024px+) */
-@media (min-width: 1024px) {
-  .page {
-    max-width: 1200px;
-  }
-}
-
-/* Desktop: Section Layouts & Spacing (768px+) */
-@media (min-width: 768px) {
-  /* Base Section Styling */
+  /* Section Layout - RNW webSection exact translation */
   .mobile-section {
     max-width: 1200px;
+    width: 100%;
     margin: 24px auto;
     padding: 64px 48px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    background-color: #161b22;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -390,14 +381,19 @@ img {
     flex-wrap: wrap;
   }
 
-  /* Text Content Block */
+  /* Text Content Block - RNW webTextBlock */
   .mobile-padding {
     flex: 1;
     min-width: 300px;
-    margin: 0 20px;
+    margin-right: 20px;
+    margin-left: 20px;
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
   }
 
-  /* Image Sizing - Hero (Section 1) */
+  /* Hero Image - RNW webHeroImage exact translation */
   .mobile-image-section1 {
     width: 40%;
     max-width: 480px;
@@ -405,21 +401,13 @@ img {
     height: auto;
     aspect-ratio: 4 / 3;
     object-fit: contain;
+    border-radius: 16px;
+    background-color: #161b22;
     margin: 0;
   }
 
-  /* Image Sizing - Standard */
-  .mobile-image {
-    width: 40%;
-    max-width: 420px;
-    min-width: 260px;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    object-fit: contain;
-    margin: 0;
-  }
-
-  /* Image Sizing - Section 6 */
+  /* Side Images - RNW webSideImage exact translation */
+  .mobile-image,
   .mobile-image-section6 {
     width: 40%;
     max-width: 420px;
@@ -427,31 +415,37 @@ img {
     height: auto;
     aspect-ratio: 4 / 3;
     object-fit: contain;
+    border-radius: 16px;
+    background-color: #161b22;
     margin: 0;
   }
 
-  /* Typography Scaling */
+  /* Typography - RNW exact values */
   .mobile-heading {
     font-size: 48px;
     font-weight: 600;
-    line-height: 56px;
+    color: #f4e4c1;
     margin-bottom: 24px;
+    line-height: 56px;
   }
 
   .mobile-body {
     font-size: 18px;
+    color: #c9d1d9;
     line-height: 28px;
     margin-bottom: 16px;
   }
 
   .mobile-bullet {
     font-size: 17px;
+    color: #8b949e;
     line-height: 26px;
     margin-bottom: 10px;
   }
 
   .mobile-check {
     font-size: 18px;
+    color: #3fb950;
     line-height: 28px;
     margin-bottom: 10px;
   }
@@ -461,32 +455,58 @@ img {
     line-height: 30px;
   }
 
-  /* Quote Section Desktop */
+  /* Doubt Box - RNW webDoubtBox */
+  .doubt-box {
+    background-color: #1c2128;
+    padding: 24px;
+    border-radius: 12px;
+    margin: 20px 0;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  .doubt-text {
+    font-size: 17px;
+    color: #8b949e;
+    line-height: 26px;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  /* Quote Section - RNW webQuoteSection */
   .mobile-quote-section {
     max-width: 1200px;
+    width: 100%;
     margin: 24px auto;
     padding: 64px 48px;
+    border-radius: 20px;
+    background-color: #161b22;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
   }
 
   .mobile-quote-heading {
     font-size: 52px;
-    line-height: 64px;
+    font-weight: 700;
+    color: #f4e4c1;
     margin-bottom: 48px;
+    text-align: center;
+    line-height: 64px;
   }
 
   .mobile-quote {
     font-size: 18px;
+    color: #c9d1d9;
     line-height: 28px;
     margin-bottom: 12px;
   }
 
   .mobile-quote-check {
     font-size: 18px;
+    color: #3fb950;
     line-height: 28px;
     margin-bottom: 12px;
   }
 
-  /* Plan Section Desktop */
+  /* Plan Section Typography */
   .plan-total-text {
     font-size: 28px;
   }
@@ -495,21 +515,28 @@ img {
     font-size: 16px;
   }
 
-  /* CTA Section Desktop */
+  /* CTA Section - RNW webCTASection */
   .mobile-cta-section {
     max-width: 1200px;
+    width: 100%;
     margin: 24px auto;
     padding: 64px 48px;
+    border-radius: 20px;
+    background-color: #161b22;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
   }
 
   .mobile-cta-heading {
     font-size: 56px;
-    line-height: 68px;
+    font-weight: 700;
+    color: #f4e4c1;
     margin-bottom: 32px;
+    line-height: 68px;
   }
 
   .mobile-cta-text {
     font-size: 20px;
+    color: #c9d1d9;
     line-height: 32px;
     margin-bottom: 20px;
   }
@@ -520,7 +547,7 @@ img {
     font-size: 20px;
   }
 
-  /* Footer Desktop */
+  /* Footer - RNW Desktop Layout */
   .mobile-footer {
     display: flex;
     flex-direction: row;
@@ -534,5 +561,25 @@ img {
   .mobile-links {
     flex-direction: row;
     margin: 0;
+  }
+
+  /* Section Order Fixes - Match RNW webHero vs webReverse */
+  /* Sections where text should appear first (webHero pattern) */
+  .page .mobile-section:nth-child(1) img,
+  .page .mobile-section:nth-child(2) img,
+  .page .mobile-section:nth-child(7) img,
+  .page .mobile-section:nth-child(9) img,
+  .page .mobile-section:nth-child(11) img,
+  .page .mobile-section:nth-child(13) img {
+    order: 2;
+  }
+
+  .page .mobile-section:nth-child(1) .mobile-padding,
+  .page .mobile-section:nth-child(2) .mobile-padding,
+  .page .mobile-section:nth-child(7) .mobile-padding,
+  .page .mobile-section:nth-child(9) .mobile-padding,
+  .page .mobile-section:nth-child(11) .mobile-padding,
+  .page .mobile-section:nth-child(13) .mobile-padding {
+    order: 1;
   }
 }
