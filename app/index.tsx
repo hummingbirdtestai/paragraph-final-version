@@ -40,11 +40,7 @@ export default function Index() {
       isLoggedIn={false}
       onOpenAuth={(mode) => {
         if (typeof window !== "undefined") {
-          window.dispatchEvent(
-            new CustomEvent("open-auth", {
-              detail: mode,
-            })
-          );
+          window.dispatchEvent(new CustomEvent("OPEN_AUTH_MODAL"));
         }
       }}
     />

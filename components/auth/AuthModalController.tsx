@@ -15,13 +15,12 @@ export default function AuthModalController() {
   const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
-    const handler = (e: any) => {
-      if (!e.detail) return;
+    const handler = () => {
       setStep("login");
     };
 
-    window.addEventListener("open-auth", handler);
-    return () => window.removeEventListener("open-auth", handler);
+    window.addEventListener("OPEN_AUTH_MODAL", handler);
+    return () => window.removeEventListener("OPEN_AUTH_MODAL", handler);
   }, []);
 
   const handleSendOTP = async (phoneNumber: string) => {

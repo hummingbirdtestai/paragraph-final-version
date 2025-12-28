@@ -18,11 +18,7 @@ function AuthGate() {
 
     if (!user && params.auth) {
       if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("open-auth", {
-            detail: params.auth,
-          })
-        );
+        window.dispatchEvent(new CustomEvent("OPEN_AUTH_MODAL"));
       }
     }
 
@@ -30,24 +26,6 @@ function AuthGate() {
       router.replace("/");
     }
   }, [params.auth, user, loading]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handler = (e: any) => {
-      const mode = e.detail?.mode;
-      if (!mode) return;
-
-      window.dispatchEvent(
-        new CustomEvent("open-auth", {
-          detail: mode,
-        })
-      );
-    };
-
-    window.addEventListener("OPEN_AUTH_MODAL", handler);
-    return () => window.removeEventListener("OPEN_AUTH_MODAL", handler);
-  }, []);
 
   return <Slot />;
 }
