@@ -33,14 +33,6 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // 🔥 CRITICAL: Bypass Service Worker for LCP hero image
-  if (
-    request.destination === 'image' &&
-    url.pathname.includes('img1.webp')
-  ) {
-    return;
-  }
-
   if (
     request.method !== 'GET' ||
     url.pathname.startsWith('/app') ||
