@@ -20,8 +20,6 @@
     .mobile-heading{font-size:28px;line-height:36px;color:#f4e4c1}
   </style>
 
-  <link rel="preload" as="image" href="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360" imagesrcset="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=320 320w, https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360 360w, https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=420 420w" imagesizes="(max-width: 480px) 360px, 360px" fetchpriority="high">
-
   <link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="/styles.css"></noscript>
 
@@ -51,8 +49,7 @@
           class="logo-image"
           width="150"
           height="45"
-          loading="lazy"
-          fetchpriority="low"
+          loading="eager"
           decoding="async"
         >
         <p class="logo-tagline">100% AI-Driven NEETPG Self Prep Platform</p>
@@ -78,12 +75,11 @@
               https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360 360w,
               https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=420 420w
             "
-            sizes="(max-width: 480px) 360px, 360px"
+            sizes="100vw"
             width="360"
             height="380"
             loading="eager"
             fetchpriority="high"
-            importance="high"
             decoding="async"
             alt="NEETPG Preparation"
             class="mobile-image-section1"
