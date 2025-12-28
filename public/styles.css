@@ -824,3 +824,18 @@ img {
     margin: 0;
   }
 }
+
+/* ========================================
+   MOBILE LCP FIX — DO NOT APPLY TO DESKTOP
+   ======================================== */
+
+@media (max-width: 767px) {
+  .mobile-image-section1 {
+    content-visibility: auto;
+    contain-intrinsic-size: 380px 360px;
+  }
+
+  .mobile-heading {
+    contain: paint;
+  }
+}
