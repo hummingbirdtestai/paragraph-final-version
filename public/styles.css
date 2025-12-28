@@ -88,8 +88,9 @@ img {
   font-weight: 600;
 }
 
-/* Main Container */
-.container {
+/* Main Container / Page Wrapper */
+.page {
+  width: 100%;
   background-color: #0d1117;
   padding-bottom: 40px;
 }
@@ -354,114 +355,82 @@ img {
   font-weight: 400;
 }
 
-/* Desktop Styles (768px+) */
+/* ========================================
+   DESKTOP STYLES (RN Web Layout Parity)
+   ======================================== */
+
+/* Desktop: Page Width Constraints (768px - 1023px) */
 @media (min-width: 768px) {
-  .container {
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
     padding-bottom: 80px;
   }
+}
 
-  /* Web Section */
+/* Desktop: Page Width Constraints (1024px+) */
+@media (min-width: 1024px) {
+  .page {
+    max-width: 1200px;
+  }
+}
+
+/* Desktop: Section Layouts & Spacing (768px+) */
+@media (min-width: 768px) {
+  /* Base Section Styling */
   .mobile-section {
     max-width: 1200px;
     margin: 24px auto;
     padding: 64px 48px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-  }
-
-  .mobile-section:first-of-type,
-  .mobile-section:nth-of-type(2) {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
-  .mobile-section:first-of-type .mobile-padding,
-  .mobile-section:nth-of-type(2) .mobile-padding {
+  /* Text Content Block */
+  .mobile-padding {
     flex: 1;
     min-width: 300px;
     margin: 0 20px;
   }
 
-  .mobile-section:first-of-type .mobile-image-section1,
-  .mobile-section:nth-of-type(2) .mobile-image {
+  /* Image Sizing - Hero (Section 1) */
+  .mobile-image-section1 {
     width: 40%;
     max-width: 480px;
     min-width: 260px;
     height: auto;
     aspect-ratio: 4 / 3;
+    object-fit: contain;
     margin: 0;
   }
 
-  /* Reverse layout for certain sections */
-  .mobile-section:nth-of-type(5),
-  .mobile-section:nth-of-type(7),
-  .mobile-section:nth-of-type(11),
-  .mobile-section:nth-of-type(13) {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .mobile-section:nth-of-type(5) .mobile-padding,
-  .mobile-section:nth-of-type(7) .mobile-padding,
-  .mobile-section:nth-of-type(11) .mobile-padding,
-  .mobile-section:nth-of-type(13) .mobile-padding {
-    flex: 1;
-    min-width: 300px;
-    margin: 0 20px;
-  }
-
-  .mobile-section:nth-of-type(5) .mobile-image,
-  .mobile-section:nth-of-type(7) .mobile-image,
-  .mobile-section:nth-of-type(11) .mobile-image,
-  .mobile-section:nth-of-type(13) .mobile-image {
+  /* Image Sizing - Standard */
+  .mobile-image {
     width: 40%;
     max-width: 420px;
     min-width: 260px;
     height: auto;
     aspect-ratio: 4 / 3;
+    object-fit: contain;
     margin: 0;
   }
 
-  /* Regular layout for other sections */
-  .mobile-section:nth-of-type(6),
-  .mobile-section:nth-of-type(8),
-  .mobile-section:nth-of-type(10),
-  .mobile-section:nth-of-type(12),
-  .mobile-section:nth-of-type(14) {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .mobile-section:nth-of-type(6) .mobile-padding,
-  .mobile-section:nth-of-type(8) .mobile-padding,
-  .mobile-section:nth-of-type(10) .mobile-padding,
-  .mobile-section:nth-of-type(12) .mobile-padding,
-  .mobile-section:nth-of-type(14) .mobile-padding {
-    flex: 1;
-    min-width: 300px;
-    margin: 0 20px;
-  }
-
-  .mobile-section:nth-of-type(6) .mobile-image,
-  .mobile-section:nth-of-type(6) .mobile-image-section6,
-  .mobile-section:nth-of-type(8) .mobile-image,
-  .mobile-section:nth-of-type(10) .mobile-image,
-  .mobile-section:nth-of-type(12) .mobile-image,
-  .mobile-section:nth-of-type(14) .mobile-image {
+  /* Image Sizing - Section 6 */
+  .mobile-image-section6 {
     width: 40%;
     max-width: 420px;
     min-width: 260px;
     height: auto;
     aspect-ratio: 4 / 3;
+    object-fit: contain;
     margin: 0;
   }
 
-  /* Web Typography */
+  /* Typography Scaling */
   .mobile-heading {
     font-size: 48px;
     font-weight: 600;
@@ -487,6 +456,11 @@ img {
     margin-bottom: 10px;
   }
 
+  .mobile-step {
+    font-size: 20px;
+    line-height: 30px;
+  }
+
   /* Quote Section Desktop */
   .mobile-quote-section {
     max-width: 1200px;
@@ -510,6 +484,15 @@ img {
     font-size: 18px;
     line-height: 28px;
     margin-bottom: 12px;
+  }
+
+  /* Plan Section Desktop */
+  .plan-total-text {
+    font-size: 28px;
+  }
+
+  .plan-subtext {
+    font-size: 16px;
   }
 
   /* CTA Section Desktop */
