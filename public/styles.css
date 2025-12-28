@@ -98,6 +98,7 @@ img {
 }
 
 .header-login-button {
+  display: inline-block;
   padding: 8px 16px;
   margin-right: 12px;
   background: transparent;
@@ -107,6 +108,7 @@ img {
 }
 
 .header-signup-button {
+  display: inline-block;
   padding: 8px 16px;
   background-color: #25D366;
   border-radius: 6px;
@@ -334,6 +336,7 @@ img {
 }
 
 .mobile-cta-button {
+  display: inline-block;
   background-color: #238636;
   padding: 16px 48px;
   border-radius: 8px;
@@ -795,6 +798,7 @@ img {
 
   /* webCTAButton - RNW Line 1402 */
   .web-cta-button {
+    display: inline-block;
     background-color: #238636;
     padding: 20px 64px;
     border-radius: 8px;
