@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useFrameworkReady } from "@/hooks/useFrameworkReady";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Helmet } from "react-helmet";
+import AuthModalController from "@/components/auth/AuthModalController";
 import "./global.css";
 
 export default function RootLayout() {
@@ -11,7 +12,6 @@ export default function RootLayout() {
 
   return (
     <>
-      {/* ✅ Cashfree SDK — MUST be loaded once, before any checkout call */}
       <Helmet>
         <script
           id="cashfree-sdk"
@@ -22,6 +22,8 @@ export default function RootLayout() {
       </Helmet>
 
       <AuthProvider>
+        <AuthModalController />
+
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="settings" />
@@ -31,6 +33,7 @@ export default function RootLayout() {
           <Stack.Screen name="help" />
           <Stack.Screen name="+not-found" />
         </Stack>
+
         <StatusBar style="light" />
       </AuthProvider>
     </>
