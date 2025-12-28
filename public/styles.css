@@ -829,11 +829,7 @@ img {
    MOBILE HERO SECTIONS
    ======================================== */
 
-.hero-content {
-  width: 100%;
-}
-
-.hero-content .mobile-padding {
+.hero-text .mobile-padding {
   margin: 16px;
   padding: 24px 20px;
   background-color: #161b22;
