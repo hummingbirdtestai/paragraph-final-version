@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useWindowDimensions } from "react-native";
 import ConceptChatScreen from "@/components/types/Conceptscreen";
-import MCQChatScreen from "@/components/types/MocktestMCQScreen";
+import MCQChatScreen from "@/components/types/MocktestMCQscreen";
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
