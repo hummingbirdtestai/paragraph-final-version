@@ -54,6 +54,14 @@ export default function MocktestMCQScreen({
 }: Props) {
   const baseMcq = item?.phase_json?.[0] ?? item?.phase_json ?? item;
 
+  console.log("🔍 MocktestMCQScreen received:", {
+    hasItem: !!item,
+    hasStem: !!baseMcq?.stem,
+    hasOptions: !!baseMcq?.options,
+    optionsType: Array.isArray(baseMcq?.options) ? 'array' : typeof baseMcq?.options,
+    baseMcq
+  });
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -72,6 +80,16 @@ export default function MocktestMCQScreen({
   };
 
   const hasAnswered = selectedOption !== null;
+
+  if (!baseMcq || !baseMcq.stem) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>MCQ data is missing or malformed</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -151,14 +169,26 @@ function OptionsGrid({
     }).start();
   }, []);
 
-  if (!options || (typeof options === "object" && Object.keys(options).length === 0)) {
-    return null;
+  if (!options) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No options available</Text>
+      </View>
+    );
+  }
+
+  if (typeof options === "object" && !Array.isArray(options) && Object.keys(options).length === 0) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Options are empty</Text>
+      </View>
+    );
   }
 
   const optionEntries = Array.isArray(options)
     ? options.map((opt, i) => {
         const label = String.fromCharCode(65 + i);
-        const cleanText = opt.replace(/^([A-D]\)\s*)/, "");
+        const cleanText = typeof opt === 'string' ? opt.replace(/^([A-D]\)\s*)/, "") : String(opt);
         return [label, cleanText];
       })
     : Object.entries(options);
@@ -314,7 +344,7 @@ function renderMarkupText(
   isExplanation: boolean = false
 ) {
   if (!content || typeof content !== "string") {
-    return null;
+    return <Text style={baseStyle}>(No content)</Text>;
   }
 
   const lines = content.split("\n");
@@ -456,6 +486,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 21,
     color: "#ffffff",
+  },
+  errorContainer: {
+    padding: 20,
+    backgroundColor: "#1a1a1a",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#d32f2f",
+    marginBottom: 16,
+  },
+  errorText: {
+    color: "#d32f2f",
+    fontSize: 14,
+    textAlign: "center",
   },
   bold: { fontWeight: "700" },
   italic: { fontStyle: "italic" },
