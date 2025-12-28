@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Bookmark, XCircle, ArrowUp, ArrowDown, Filter, Eye } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
-import { MockPracticeCard } from "@/components/MockPracticecard";
+import { MockPracticeCard } from "@/components/MockPracticeCard";
 import { useMockPracticeData } from "@/hooks/useMockPracticeData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
