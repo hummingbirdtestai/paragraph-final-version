@@ -64,7 +64,7 @@ export default function Index() {
       />
 
       <LoginModal
-        visible={authStep === "login"}
+        visible={authStep === "login" || authStep === "signup"}
         onClose={() => setAuthStep(null)}
         onSendOTP={async (phone) => {
           await loginWithOTP(phone);
