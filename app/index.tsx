@@ -1,36 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "expo-router";
+import React from "react";
 import HomeScreenStatic from "@/components/HomeScreenStatic";
 import HomeScreen from "@/components/HomeScreen";
-import { LoginModal } from "@/components/auth/LoginModal";
-import { OTPModal } from "@/components/auth/OTPModal";
-import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { useAuth } from "@/contexts/AuthContext";
 import MainLayout from "@/components/MainLayout";
 
 export default function Index() {
-  const router = useRouter();
-  const { loginWithOTP, verifyOTP, registerUser, user, loading } = useAuth();
-
-  const [authStep, setAuthStep] = useState<
-    null | "login" | "otp" | "register"
-  >(null);
-
-  const [phone, setPhone] = useState("");
-
-  useEffect(() => {
-    const handler = (e: any) => {
-      const mode = e.detail;
-      if (mode === "login" || mode === "signup") {
-        setAuthStep("login");
-      }
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("open-auth", handler);
-      return () => window.removeEventListener("open-auth", handler);
-    }
-  }, []);
+  const { user, loading } = useAuth();
 
   const images = {
     img1: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp",
@@ -59,48 +34,18 @@ export default function Index() {
   }
 
   return (
-    <>
-      <HomeScreenStatic
-        images={images}
-        isLoggedIn={false}
-        onOpenAuth={(mode) => setAuthStep(mode)}
-      />
-
-      <LoginModal
-        visible={authStep === "login" || authStep === "signup"}
-        onClose={() => setAuthStep(null)}
-        onSendOTP={async (phone) => {
-          await loginWithOTP(phone);
-          setPhone(phone);
-          setAuthStep("otp");
-        }}
-      />
-
-      <OTPModal
-        visible={authStep === "otp"}
-        phoneNumber={phone}
-        onClose={() => setAuthStep(null)}
-        onVerify={async (otp) => {
-          const res = await verifyOTP(phone, otp);
-          if (res?.isNewUser) {
-            setAuthStep("register");
-          } else {
-            setAuthStep(null);
-            router.replace("/");
-          }
-        }}
-        onResend={() => loginWithOTP(phone)}
-      />
-
-      <RegistrationModal
-        visible={authStep === "register"}
-        onClose={() => {}}
-        onRegister={async (name) => {
-          await registerUser(name, phone);
-          setAuthStep(null);
-          router.replace("/");
-        }}
-      />
-    </>
+    <HomeScreenStatic
+      images={images}
+      isLoggedIn={false}
+      onOpenAuth={(mode) => {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("open-auth", {
+              detail: mode,
+            })
+          );
+        }
+      }}
+    />
   );
 }

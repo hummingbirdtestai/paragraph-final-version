@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useFrameworkReady } from "@/hooks/useFrameworkReady";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Helmet } from "react-helmet";
+import AuthModalController from "@/components/auth/AuthModalController";
 import "./global.css";
 
 function AuthGate() {
@@ -67,6 +68,7 @@ export default function RootLayout() {
 
       <AuthProvider>
         <AuthGate />
+        <AuthModalController />
 
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
