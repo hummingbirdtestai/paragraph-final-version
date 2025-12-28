@@ -35,6 +35,8 @@ self.addEventListener('fetch', (event) => {
 
   if (
     request.method !== 'GET' ||
+    url.pathname === '/' ||
+    url.pathname === '/index.html' ||
     url.pathname.startsWith('/app') ||
     url.pathname.includes('auth') ||
     url.search.includes('auth=')

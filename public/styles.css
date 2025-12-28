@@ -826,16 +826,17 @@ img {
 }
 
 /* ========================================
-   MOBILE LCP FIX — DO NOT APPLY TO DESKTOP
+   MOBILE HERO SECTIONS
    ======================================== */
 
-@media (max-width: 767px) {
-  .mobile-image-section1 {
-    content-visibility: auto;
-    contain-intrinsic-size: 380px 360px;
-  }
+.hero-content {
+  width: 100%;
+}
 
-  .mobile-heading {
-    contain: paint;
-  }
+.hero-content .mobile-padding {
+  margin: 16px;
+  padding: 24px 20px;
+  background-color: #161b22;
+  border-radius: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }

@@ -16,7 +16,8 @@
     .mobile-only{display:block}
     .web-only{display:none}
     @media (min-width:768px){.mobile-only{display:none}.web-only{display:block}}
-    .mobile-image-section1{width:100%;height:380px;object-fit:cover;border-radius:16px;background-color:#161b22}
+    .hero-lcp{width:100%;height:380px;overflow:hidden}
+    .hero-lcp img{width:100%;height:100%;object-fit:cover;display:block}
     .mobile-heading{font-size:28px;line-height:36px;color:#f4e4c1}
   </style>
 
@@ -64,38 +65,42 @@
   <main class="page">
 
     <!-- Section 1: Hero -->
-    <section class="section">
-      <!-- Mobile DOM -->
-      <div class="mobile-only">
-        <div class="mobile-section">
-          <img
-            src="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360"
-            srcset="
-              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=320 320w,
-              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360 360w,
-              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=420 420w
-            "
-            sizes="100vw"
-            width="360"
-            height="380"
-            decoding="async"
-            alt="NEETPG Preparation"
-            class="mobile-image-section1"
-          >
-          <div class="mobile-padding">
-            <h1 class="mobile-heading">NEETPG Prep Became Complicated. You Didn't</h1>
-            <p class="mobile-body">You're Not Struggling — The System Is Broken.</p>
-            <p class="mobile-body">Most students today are stuck in a cycle of:</p>
-            <p class="mobile-bullet">• <span class="highlight">Endless video lectures</span> that eat hours but give no clarity</p>
-            <p class="mobile-bullet">• <span class="highlight">Crowded classes</span> where no one knows your weaknesses</p>
-            <p class="mobile-bullet">• <span class="highlight">Mock tests</span> that crush confidence instead of building it</p>
-            <p class="mobile-bullet">• <span class="highlight">Overloaded Q-banks</span> you'll never revise</p>
-            <p class="mobile-bullet">• <span class="highlight">Notes</span> that grow heavier every year</p>
-            <p class="mobile-body emphasis">This isn't learning.<br>This is burnout.<br>And burnout doesn't produce ranks.</p>
-          </div>
-        </div>
-      </div>
+    <!-- MOBILE HERO IMAGE (LCP ONLY) -->
+    <section class="hero-lcp mobile-only">
+      <img
+        src="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360"
+        srcset="
+          https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=320 320w,
+          https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360 360w,
+          https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=420 420w
+        "
+        sizes="100vw"
+        width="360"
+        height="380"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        alt="NEETPG Preparation"
+      >
+    </section>
 
+    <!-- MOBILE HERO TEXT -->
+    <section class="hero-content mobile-only">
+      <div class="mobile-padding">
+        <h1 class="mobile-heading">NEETPG Prep Became Complicated. You Didn't</h1>
+        <p class="mobile-body">You're Not Struggling — The System Is Broken.</p>
+        <p class="mobile-body">Most students today are stuck in a cycle of:</p>
+        <p class="mobile-bullet">• <span class="highlight">Endless video lectures</span> that eat hours but give no clarity</p>
+        <p class="mobile-bullet">• <span class="highlight">Crowded classes</span> where no one knows your weaknesses</p>
+        <p class="mobile-bullet">• <span class="highlight">Mock tests</span> that crush confidence instead of building it</p>
+        <p class="mobile-bullet">• <span class="highlight">Overloaded Q-banks</span> you'll never revise</p>
+        <p class="mobile-bullet">• <span class="highlight">Notes</span> that grow heavier every year</p>
+        <p class="mobile-body emphasis">This isn't learning.<br>This is burnout.<br>And burnout doesn't produce ranks.</p>
+      </div>
+    </section>
+
+    <!-- Web DOM -->
+    <section class="section">
       <!-- Web DOM -->
       <div class="web-only">
         <div class="web-section">
