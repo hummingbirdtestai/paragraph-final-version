@@ -20,7 +20,10 @@ export default function Index() {
 
   useEffect(() => {
     const handler = (e: any) => {
-      setAuthStep("login");
+      const mode = e.detail;
+      if (mode === "login" || mode === "signup") {
+        setAuthStep("login");
+      }
     };
 
     if (typeof window !== "undefined") {
