@@ -496,4 +496,3 @@ const styles = StyleSheet.create({
   explanationItalic: { fontStyle: "italic", color: "#ffffff" },
   explanationBoldItalic: { fontWeight: "700", fontStyle: "italic", color: "#d9f99d" },
 });
-
