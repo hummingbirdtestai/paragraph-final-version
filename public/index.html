@@ -16,6 +16,8 @@
     .mobile-only{display:block}
     .web-only{display:none}
     @media (min-width:768px){.mobile-only{display:none}.web-only{display:block}}
+    .mobile-image-section1{width:100%;height:380px;object-fit:cover;border-radius:16px;background-color:#161b22}
+    .mobile-heading{font-size:28px;line-height:36px;color:#f4e4c1}
   </style>
 
   <link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -67,20 +69,20 @@
       <div class="mobile-only">
         <div class="mobile-section">
           <img
-            src="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=640"
+            src="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360"
             srcset="
-              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=480 480w,
-              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=640 640w,
-              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=960 960w
+              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=320 320w,
+              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360 360w,
+              https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=420 420w
             "
-            sizes="(max-width: 768px) 100vw, 50vw"
-            alt="NEETPG Preparation"
-            class="mobile-image-section1"
+            sizes="100vw"
+            width="360"
+            height="214"
             loading="eager"
             fetchpriority="high"
             decoding="async"
-            width="640"
-            height="380"
+            alt="NEETPG Preparation"
+            class="mobile-image-section1"
           >
           <div class="mobile-padding">
             <h1 class="mobile-heading">NEETPG Prep Became Complicated. You Didn't</h1>
@@ -143,6 +145,7 @@
             alt="10000 Concepts Journey"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -195,6 +198,7 @@
               alt="10000 Concepts Journey"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -325,6 +329,7 @@
             alt="NEETPG That Works"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -350,6 +355,7 @@
               alt="NEETPG That Works"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -380,6 +386,7 @@
             alt="From Mistakes to Mastery"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -405,6 +412,7 @@
               alt="From Mistakes to Mastery"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -435,6 +443,7 @@
             alt="Daily Support"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -478,6 +487,7 @@
               alt="Daily Support"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -497,6 +507,7 @@
             alt="AI Tutor"
             class="mobile-image-section6"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="340"
@@ -524,6 +535,7 @@
               alt="AI Tutor"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -554,6 +566,7 @@
             alt="Exam Critical"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -584,6 +597,7 @@
               alt="Exam Critical"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -603,6 +617,7 @@
             alt="Daily Progress"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -626,6 +641,7 @@
               alt="Daily Progress"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -652,6 +668,7 @@
             alt="Visual Memory"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -682,6 +699,7 @@
               alt="Visual Memory"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -701,6 +719,7 @@
             alt="Exam Pressure"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -724,6 +743,7 @@
               alt="Exam Pressure"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
@@ -750,6 +770,7 @@
             alt="Adaptive System"
             class="mobile-image"
             loading="lazy"
+            fetchpriority="low"
             decoding="async"
             width="600"
             height="240"
@@ -780,6 +801,7 @@
               alt="Adaptive System"
               class="web-side-image"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
               width="420"
               height="315"
