@@ -41,13 +41,13 @@ const currentTab =
   activeTab ||
   (pathname.includes("/feed") ? "feed"
     : pathname.includes("/flashcards") ? "flashcards"
-    : pathname.includes("/flashcard-feed-demo") ? "flash"      // ⭐ NEW
+    : pathname.includes("/flashcard-feed-demo") ? "flash"
     : pathname.includes("/mocktests") ? "mocktests"
     : pathname.includes("/battle") ? "battle"
     : pathname.includes("/analytics") ? "analytics"
     : pathname.includes("/settings") ? "settings"
-    : pathname.includes("/concept") ? "concept"
-    : "practice");
+    : pathname.includes("/practice") ? "practice"
+    : "concept");
 
 const allTabs = [
   { id: "practice", label: "Practice", Icon: BookOpen },
@@ -71,9 +71,9 @@ const handleTabPress = (tab: string) => {
   if (onTabPress) onTabPress(tab);
   else {
     if (tab === "feed") router.push("/feed");
-    else if (tab === "practice") router.push("/");
-    else if (tab === "concept") router.push("/practice");
-    else if (tab === "flash") router.push("/flashcard-feed-demo");   // ⭐ NEW ROUTE
+    else if (tab === "practice") router.push("/practice");
+    else if (tab === "concept") router.push("/");
+    else if (tab === "flash") router.push("/flashcard-feed-demo");
     else router.push(`/${tab}`);
   }
   setMoreVisible(false);

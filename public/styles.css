@@ -1,0 +1,862 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  line-height: 1.5;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ========================================
+   DUAL DOM PATH VISIBILITY CONTROL
+   ======================================== */
+
+/* Mobile: Show mobile-only, hide web-only */
+.mobile-only {
+  display: block;
+}
+
+.web-only {
+  display: none;
+}
+
+/* Desktop: Hide mobile-only, show web-only */
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .web-only {
+    display: block;
+  }
+}
+
+/* ========================================
+   LOGO HEADER
+   ======================================== */
+
+.logo-header {
+  background-color: #0D0D0D;
+  border-bottom: 1px solid #1F1F1F;
+  padding: 16px 20px;
+}
+
+.logo-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo-section {
+  flex: 1;
+}
+
+.logo-image {
+  width: 150px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.logo-tagline {
+  font-size: 13.6px;
+  font-weight: 500;
+  color: #FFFBED;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.header-login-button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin-right: 12px;
+  background: transparent;
+  font-size: 14px;
+  color: #E5E5E5;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+}
+
+.header-login-button:hover {
+  opacity: 0.8;
+}
+
+.header-signup-button {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #25D366;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #0D0D0D;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.header-signup-button:hover {
+  background-color: #20b857;
+}
+
+/* ========================================
+   MOBILE STYLES (PRESERVE EXACTLY)
+   ======================================== */
+
+.page {
+  width: 100%;
+  background-color: #0d1117;
+  padding-bottom: 40px;
+}
+
+.section {
+  width: 100%;
+}
+
+.mobile-section {
+  margin-bottom: 32px;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.mobile-padding {
+  padding: 24px 20px;
+  background-color: #161b22;
+  border-radius: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-image {
+  width: 100%;
+  height: 240px;
+  background-color: #161b22;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  object-fit: cover;
+}
+
+.mobile-image-section1 {
+  width: 100%;
+  height: 380px;
+  background-color: #161b22;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  object-fit: cover;
+}
+
+.mobile-image-section6 {
+  width: 100%;
+  height: 340px;
+  background-color: #161b22;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  object-fit: cover;
+}
+
+.mobile-heading {
+  font-size: 28px;
+  font-weight: 600;
+  color: #f4e4c1;
+  margin-bottom: 16px;
+  line-height: 36px;
+}
+
+.mobile-body {
+  font-size: 16px;
+  color: #c9d1d9;
+  line-height: 24px;
+  margin-bottom: 12px;
+}
+
+.mobile-bullet {
+  font-size: 15px;
+  color: #8b949e;
+  line-height: 22px;
+  margin-bottom: 8px;
+  padding-left: 8px;
+}
+
+.mobile-check {
+  font-size: 16px;
+  color: #3fb950;
+  line-height: 24px;
+  margin-bottom: 8px;
+}
+
+.mobile-step {
+  font-size: 18px;
+  color: #58a6ff;
+  line-height: 28px;
+  margin-bottom: 8px;
+}
+
+.bold {
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.emphasis {
+  color: #58a6ff;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.highlight {
+  color: #FFD700;
+  font-weight: bold;
+}
+
+.doubt-box {
+  background-color: #1c2128;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 12px 0;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.doubt-text {
+  font-size: 15px;
+  color: #8b949e;
+  line-height: 22px;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.mobile-quote-section {
+  background-color: #161b22;
+  padding: 48px 20px;
+  margin-bottom: 32px;
+  margin-left: 16px;
+  margin-right: 16px;
+  border-radius: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-quote-heading {
+  font-size: 32px;
+  font-weight: 700;
+  color: #f4e4c1;
+  margin-bottom: 24px;
+  text-align: center;
+  line-height: 40px;
+}
+
+.mobile-quote {
+  font-size: 16px;
+  color: #c9d1d9;
+  line-height: 24px;
+  margin-bottom: 12px;
+}
+
+.mobile-quote-check {
+  font-size: 16px;
+  color: #3fb950;
+  line-height: 24px;
+  margin-bottom: 8px;
+}
+
+.plan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #21262d;
+}
+
+.plan-text {
+  font-size: 16px;
+  color: #c9d1d9;
+  font-weight: 500;
+}
+
+.plan-hours {
+  font-size: 16px;
+  color: #3fb950;
+  font-weight: 700;
+}
+
+.plan-total {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #30363d;
+}
+
+.plan-total-text {
+  font-size: 20px;
+  color: #f4e4c1;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.plan-subtext {
+  font-size: 14px;
+  color: #8b949e;
+}
+
+.mobile-cta-section {
+  padding: 48px 20px;
+  margin: 0 16px;
+  border-radius: 16px;
+  background-color: #161b22;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.mobile-cta-heading {
+  font-size: 36px;
+  font-weight: 700;
+  color: #f4e4c1;
+  margin-bottom: 24px;
+  line-height: 44px;
+}
+
+.mobile-cta-text {
+  font-size: 16px;
+  color: #c9d1d9;
+  line-height: 24px;
+  margin-bottom: 16px;
+}
+
+.mobile-cta-button {
+  display: inline-block;
+  background-color: #238636;
+  padding: 16px 48px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0f6fc;
+  cursor: pointer;
+  border: none;
+}
+
+.mobile-cta-button:hover {
+  background-color: #2ea043;
+}
+
+.mobile-footer {
+  background-color: #0d1117;
+  padding: 24px 20px;
+  text-align: center;
+  border-top: 1px solid #21262d;
+}
+
+.brand-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f0f6fc;
+  letter-spacing: 0.5px;
+}
+
+.mobile-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.link {
+  font-size: 13px;
+  color: #8b949e;
+  font-weight: 400;
+  margin: 0 4px;
+}
+
+.separator {
+  font-size: 13px;
+  color: #8b949e;
+  margin: 0 4px;
+}
+
+.copyright-text {
+  font-size: 13px;
+  color: #8b949e;
+  font-weight: 400;
+}
+
+/* ========================================
+   WEB STYLES (RNW PIXEL-PERFECT TRANSLATION)
+   ======================================== */
+
+@media (min-width: 768px) {
+  /* Page Container */
+  .page {
+    padding-bottom: 80px;
+  }
+
+  /* webSection - RNW Line 1085 */
+  .web-section {
+    max-width: 1200px;
+    width: 100%;
+    align-self: center;
+    margin: 24px auto;
+    padding: 64px 48px;
+    border-radius: 20px;
+    background-color: #161b22;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  /* webHero - RNW Line 1100 */
+  .web-hero {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  /* webReverse - RNW Line 1106 */
+  .web-reverse {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  /* webHeroText - RNW Line 1112 */
+  .web-hero-text {
+    flex: 1;
+    min-width: 300px;
+    margin-right: 20px;
+    margin-left: 20px;
+  }
+
+  /* webTextBlock - RNW Line 1118 */
+  .web-text-block {
+    flex: 1;
+    min-width: 300px;
+    margin-right: 20px;
+    margin-left: 20px;
+  }
+
+  /* webHeroImage - RNW Line 1124 */
+  .web-hero-image {
+    width: 40%;
+    max-width: 480px;
+    min-width: 260px;
+    aspect-ratio: 4 / 3;
+    border-radius: 16px;
+    background-color: #161b22;
+    object-fit: contain;
+  }
+
+  /* webSideImage - RNW Line 1132 */
+  .web-side-image {
+    width: 40%;
+    max-width: 420px;
+    min-width: 260px;
+    aspect-ratio: 4 / 3;
+    border-radius: 16px;
+    background-color: #161b22;
+    object-fit: contain;
+  }
+
+  /* webHeading - RNW Line 1140 */
+  .web-heading {
+    font-size: 48px;
+    font-weight: 600;
+    color: #f4e4c1;
+    margin-bottom: 24px;
+    line-height: 56px;
+  }
+
+  /* webSubheading - RNW Line 1147 */
+  .web-subheading {
+    font-size: 24px;
+    color: #f4e4c1;
+    line-height: 36px;
+    margin-bottom: 24px;
+  }
+
+  /* webBody - RNW Line 1153 */
+  .web-body {
+    font-size: 18px;
+    color: #c9d1d9;
+    line-height: 28px;
+    margin-bottom: 16px;
+  }
+
+  /* webBulletList - RNW Line 1159 */
+  .web-bullet-list {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* webBullet - RNW Line 1162 */
+  .web-bullet {
+    font-size: 17px;
+    color: #8b949e;
+    line-height: 26px;
+    margin-bottom: 10px;
+  }
+
+  /* webCheckList - RNW Line 1168 */
+  .web-check-list {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* webCheck - RNW Line 1171 */
+  .web-check {
+    font-size: 18px;
+    color: #3fb950;
+    line-height: 28px;
+    margin-bottom: 10px;
+  }
+
+  /* webFeatureGrid - RNW Line 1177 */
+  .web-feature-grid {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  /* webFeature - RNW Line 1180 */
+  .web-feature {
+    background-color: #1c2128;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  /* webFeatureTitle - RNW Line 1191 */
+  .web-feature-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-bottom: 8px;
+  }
+
+  /* webFeatureText - RNW Line 1197 */
+  .web-feature-text {
+    font-size: 16px;
+    color: #c9d1d9;
+    line-height: 24px;
+  }
+
+  /* webStepGrid - RNW Line 1202 */
+  .web-step-grid {
+    display: flex;
+    flex-direction: row;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+
+  /* webStep - RNW Line 1208 */
+  .web-step {
+    flex: 1;
+    min-width: 120px;
+    background-color: #1c2128;
+    padding: 16px;
+    margin: 8px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  /* webStepNumber - RNW Line 1222 */
+  .web-step-number {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  /* webStepText - RNW Line 1226 */
+  .web-step-text {
+    font-size: 17px;
+    color: #58a6ff;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* webDoubtBox - RNW Line 1232 */
+  .web-doubt-box {
+    background-color: #1c2128;
+    padding: 24px;
+    border-radius: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  /* webDoubtText - RNW Line 1243 */
+  .web-doubt-text {
+    font-size: 17px;
+    color: #8b949e;
+    line-height: 26px;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  /* webQuoteSection - RNW Line 1250 */
+  .web-quote-section {
+    max-width: 1200px;
+    width: 100%;
+    align-self: center;
+    margin: 24px auto;
+    padding: 64px 48px;
+    border-radius: 20px;
+    background-color: #161b22;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  /* webQuoteContent - RNW Line 1265 */
+  .web-quote-content {
+    max-width: 1000px;
+    align-self: center;
+    margin: 0 auto;
+  }
+
+  /* webQuoteHeading - RNW Line 1269 */
+  .web-quote-heading {
+    font-size: 52px;
+    font-weight: 700;
+    color: #f4e4c1;
+    margin-bottom: 48px;
+    text-align: center;
+    line-height: 64px;
+  }
+
+  /* webQuoteGrid - RNW Line 1277 */
+  .web-quote-grid {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 32px;
+    justify-content: space-between;
+  }
+
+  /* webQuoteColumn - RNW Line 1282 */
+  .web-quote-column {
+    flex: 1;
+    margin-left: 32px;
+    margin-right: 32px;
+  }
+
+  /* webQuoteSubtitle - RNW Line 1286 */
+  .web-quote-subtitle {
+    font-size: 20px;
+    color: #f4e4c1;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  /* webQuoteItem - RNW Line 1292 */
+  .web-quote-item {
+    font-size: 18px;
+    color: #8b949e;
+    line-height: 28px;
+    margin-bottom: 12px;
+  }
+
+  /* webQuoteCheck - RNW Line 1298 */
+  .web-quote-check {
+    font-size: 18px;
+    color: #3fb950;
+    line-height: 28px;
+    margin-bottom: 12px;
+  }
+
+  /* webQuoteFooter - RNW Line 1304 */
+  .web-quote-footer {
+    font-size: 22px;
+    color: #58a6ff;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  /* webPlanContent - RNW Line 1311 */
+  .web-plan-content {
+    max-width: 1100px;
+    align-self: center;
+    margin: 0 auto;
+  }
+
+  /* webPlanGrid - RNW Line 1315 */
+  .web-plan-grid {
+    display: flex;
+    flex-direction: row;
+    margin-top: 32px;
+    margin-bottom: 32px;
+    margin-left: -12px;
+    margin-right: -12px;
+  }
+
+  /* webPlanCard - RNW Line 1320 */
+  .web-plan-card {
+    flex: 1;
+    background-color: #1c2128;
+    padding: 28px;
+    margin: 12px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  /* webPlanNumber - RNW Line 1333 */
+  .web-plan-number {
+    font-size: 40px;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-bottom: 8px;
+  }
+
+  /* webPlanLabel - RNW Line 1339 */
+  .web-plan-label {
+    font-size: 16px;
+    color: #c9d1d9;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  /* webPlanHours - RNW Line 1345 */
+  .web-plan-hours {
+    font-size: 18px;
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  /* webPlanTotal - RNW Line 1350 */
+  .web-plan-total {
+    text-align: center;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    border-top-width: 2px;
+    border-top-style: solid;
+    border-top-color: #30363d;
+    margin-bottom: 24px;
+  }
+
+  /* webPlanTotalText - RNW Line 1357 */
+  .web-plan-total-text {
+    font-size: 28px;
+    color: #f4e4c1;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  /* webPlanSubtext - RNW Line 1363 */
+  .web-plan-subtext {
+    font-size: 16px;
+    color: #8b949e;
+  }
+
+  /* webCTASection - RNW Line 1367 */
+  .web-cta-section {
+    max-width: 1200px;
+    width: 100%;
+    align-self: center;
+    margin: 24px auto;
+    padding: 64px 48px;
+    border-radius: 20px;
+    background-color: #161b22;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  /* webCTAContent - RNW Line 1382 */
+  .web-cta-content {
+    max-width: 800px;
+    align-self: center;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* webCTAHeading - RNW Line 1387 */
+  .web-cta-heading {
+    font-size: 56px;
+    font-weight: 700;
+    color: #f4e4c1;
+    margin-bottom: 32px;
+    text-align: center;
+    line-height: 68px;
+  }
+
+  /* webCTAText - RNW Line 1395 */
+  .web-cta-text {
+    font-size: 20px;
+    color: #c9d1d9;
+    line-height: 32px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  /* webCTAButton - RNW Line 1402 */
+  .web-cta-button {
+    display: inline-block;
+    background-color: #238636;
+    padding: 20px 64px;
+    border-radius: 8px;
+    margin-top: 24px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #f0f6fc;
+    cursor: pointer;
+    border: none;
+  }
+
+  .web-cta-button:hover {
+    background-color: #2ea043;
+  }
+
+  /* Footer Desktop Layout */
+  .mobile-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .mobile-links {
+    flex-direction: row;
+    margin: 0;
+  }
+}
+
+/* ========================================
+   MOBILE HERO SECTIONS
+   ======================================== */
+
+.hero-text .mobile-padding {
+  margin: 16px;
+  padding: 24px 20px;
+  background-color: #161b22;
+  border-radius: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
