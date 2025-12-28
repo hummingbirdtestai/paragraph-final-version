@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Bookmark, XCircle, ArrowUp, ArrowDown, Filter, Eye } from "lucide-react-native";
 import { SubjectFilterBubble } from "@/components/SubjectFilterBubble";
-import { PracticeCard } from "@/components/PracticeCard";
+import { MockPracticeCard } from "@/components/MockPracticecard";
 import { useMockPracticeData } from "@/hooks/useMockPracticeData";
 import MainLayout from "@/components/MainLayout";
 import { supabase } from "@/lib/supabaseClient";
@@ -173,14 +173,8 @@ export default function PracticeScreen() {
   data={filteredRows}
   keyExtractor={(item) => item.id}
   renderItem={({ item }) => (
-    <PracticeCard
-      phase={item}
-      examSerial={Number(exam_serial)}
-      viewMode={selectedCategory}
-      bookmarkedMCQs={bookmarkedMCQs}
-      wrongMCQs={wrongMCQs}
-    />
-  )}
+  <MockPracticeCard phase={item} />
+)}
   contentContainerStyle={styles.cardsWrapper}
   onScroll={(e) => {
     const offsetY = e.nativeEvent.contentOffset.y;
