@@ -1,4 +1,3 @@
-//MocktestMCQScreen.tsx
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -27,26 +26,7 @@ interface MCQData {
   mcq_image?: string;
 }
 
-export default function MCQChatScreen({
-  item,
-  onNext,
-  studentId,
-  conceptId,
-  mcqId,
-  correctAnswer,
-  reactOrderFinal,
-  onAnswered,
-  hideInternalNext = false,
-  disabled = false,
-  reviewMode = false,
-  isBookmarked = false,
-  studentSelected = null,
-  phaseUniqueId,
-  practicecardId,
-  subject,
-  onAnswerSelected,
-  interactiveReview = false,
-}: {
+interface Props {
   item: MCQData;
   onNext?: () => void;
   studentId?: string;
@@ -65,51 +45,56 @@ export default function MCQChatScreen({
   subject?: string;
   onAnswerSelected?: (answer: string, isCorrect: boolean) => void;
   interactiveReview?: boolean;
-}) {
-  const baseMcqData = item?.phase_json?.[0] ?? item?.phase_json ?? item;
-  const mcqData = {
-    ...baseMcqData,
-    is_mcq_image_type: item?.is_mcq_image_type ?? baseMcqData?.is_mcq_image_type,
-    mcq_image: item?.mcq_image ?? baseMcqData?.mcq_image,
-  };
+}
+
+export default function MocktestMCQScreen({
+  item,
+  onAnswered,
+  onAnswerSelected,
+}: Props) {
+  const baseMcq = item?.phase_json?.[0] ?? item?.phase_json ?? item;
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [hasAnswered, setHasAnswered] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const handleOptionSelect = (option: string) => {
-    if (hasAnswered) return;
+    if (selectedOption !== null) return;
 
     setSelectedOption(option);
-    setHasAnswered(true);
 
-    const isCorrect = option === mcqData.correct_answer;
+    const isCorrect = option === baseMcq.correct_answer;
     onAnswerSelected?.(option, isCorrect);
     onAnswered?.();
+
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 300);
   };
 
-  const shouldRevealFeedback = hasAnswered;
+  const hasAnswered = selectedOption !== null;
 
   return (
     <View style={styles.container}>
-      <ScrollView ref={scrollViewRef} style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-
-        <MCQQuestion mcq={mcqData} />
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <MCQQuestion mcq={baseMcq} />
 
         <OptionsGrid
-          options={mcqData.options}
+          options={baseMcq.options}
           selectedOption={selectedOption}
-          correctAnswer={mcqData.correct_answer}
+          correctAnswer={baseMcq.correct_answer}
           onSelect={handleOptionSelect}
-          reviewMode={hasAnswered}
         />
 
-        {shouldRevealFeedback && (
+        {hasAnswered && (
           <FeedbackSection
-            learningGap={mcqData.learning_gap}
-            highYieldFacts={mcqData.high_yield_facts}
-            correctAnswer={mcqData.correct_answer}
-            imageDescription={mcqData.image_description}
+            correctAnswer={baseMcq.correct_answer}
+            learningGap={baseMcq.learning_gap}
+            highYieldFacts={baseMcq.high_yield_facts}
+            imageDescription={baseMcq.image_description}
           />
         )}
       </ScrollView>
@@ -121,7 +106,12 @@ function MCQQuestion({ mcq }: { mcq: MCQData }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 100, useNativeDriver: true }).start();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      delay: 100,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   return (
@@ -144,21 +134,24 @@ function OptionsGrid({
   selectedOption,
   correctAnswer,
   onSelect,
-  reviewMode = false,
 }: {
   options?: MCQData["options"] | string[];
   selectedOption: string | null;
   correctAnswer?: string;
   onSelect: (option: string) => void;
-  reviewMode?: boolean;
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 200, useNativeDriver: true }).start();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      delay: 200,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
-  if (!options || (typeof options === 'object' && Object.keys(options).length === 0)) {
+  if (!options || (typeof options === "object" && Object.keys(options).length === 0)) {
     return null;
   }
 
@@ -174,29 +167,20 @@ function OptionsGrid({
     <Animated.View style={[styles.optionsContainer, { opacity: fadeAnim }]}>
       {optionEntries.map(([key, value]) => {
         const text = value as string;
-
-        let isCorrect = false;
-        let isWrong = false;
-        let isDisabled = true;
-
-        if (reviewMode) {
-          isCorrect = key === correctAnswer;
-          isWrong = selectedOption === key && key !== correctAnswer;
-        } else {
-          isCorrect = selectedOption !== null && key === correctAnswer;
-          isWrong = selectedOption === key && key !== correctAnswer;
-          isDisabled = selectedOption !== null;
-        }
+        const isSelected = selectedOption === key;
+        const isCorrect = key === correctAnswer;
+        const isWrong = isSelected && key !== correctAnswer;
+        const hasAnswered = selectedOption !== null;
 
         return (
           <OptionButton
             key={key}
             label={key}
             text={text}
-            isSelected={selectedOption === key}
-            isCorrect={isCorrect}
-            isWrong={isWrong}
-            disabled={isDisabled}
+            isSelected={isSelected}
+            isCorrect={hasAnswered && isCorrect}
+            isWrong={hasAnswered && isWrong}
+            disabled={hasAnswered}
             onPress={() => onSelect(key)}
           />
         );
@@ -264,24 +248,29 @@ function OptionButton({
   );
 }
 
-export function FeedbackSection({
+function FeedbackSection({
+  correctAnswer,
   learningGap,
   highYieldFacts,
-  correctAnswer,
   imageDescription,
 }: {
+  correctAnswer?: string;
   learningGap?: string;
   highYieldFacts?: string;
-  correctAnswer?: string;
   imageDescription?: string;
 }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 400, delay: 300, useNativeDriver: true }).start();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      delay: 300,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
-  const hasContent = learningGap || highYieldFacts || correctAnswer || imageDescription;
+  const hasContent = correctAnswer || learningGap || highYieldFacts || imageDescription;
   if (!hasContent) return null;
 
   return (
@@ -319,8 +308,11 @@ export function FeedbackSection({
   );
 }
 
-/* MARKUP PARSER */
-function renderMarkupText(content: string | undefined | null, baseStyle: any, isExplanation: boolean = false) {
+function renderMarkupText(
+  content: string | undefined | null,
+  baseStyle: any,
+  isExplanation: boolean = false
+) {
   if (!content || typeof content !== "string") {
     return null;
   }
@@ -349,7 +341,10 @@ function parseInlineMarkup(text: string, isExplanation: boolean = false) {
   segments.forEach((segment) => {
     if (segment.startsWith("*_") && segment.endsWith("_*")) {
       parts.push(
-        <Text key={key++} style={isExplanation ? styles.explanationBoldItalic : styles.boldItalic}>
+        <Text
+          key={key++}
+          style={isExplanation ? styles.explanationBoldItalic : styles.boldItalic}
+        >
           {segment.slice(2, -2)}
         </Text>
       );
@@ -373,7 +368,6 @@ function parseInlineMarkup(text: string, isExplanation: boolean = false) {
   return <>{parts}</>;
 }
 
-/* STYLES */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -385,19 +379,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 24,
-  },
-  mentorBubble: {
-    maxWidth: "85%",
-    alignSelf: "flex-start",
-    backgroundColor: "#1f1f1f",
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 12,
-  },
-  mentorText: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#e1e1e1",
   },
   mcqCard: {
     backgroundColor: "#1a3a2e",
@@ -438,18 +419,22 @@ const styles = StyleSheet.create({
   feedbackContainer: {
     marginTop: 8,
   },
-  feedbackBubble: {
-    maxWidth: "85%",
-    alignSelf: "flex-start",
-    backgroundColor: "#1f1f1f",
-    borderRadius: 16,
-    padding: 14,
+  correctAnswerCard: {
+    backgroundColor: "#1a2a1a",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#25D366",
+    padding: 12,
     marginBottom: 12,
   },
-  feedbackText: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#e1e1e1",
+  correctAnswerText: {
+    fontSize: 14,
+    color: "#ffffff",
+  },
+  correctAnswerBold: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#25D366",
   },
   learningGapCard: {
     backgroundColor: "#1a1a1a",
@@ -472,27 +457,14 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: "#ffffff",
   },
-  correctAnswerCard: {
-    backgroundColor: "#1a2a1a",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#25D366",
-    padding: 12,
-    marginBottom: 12,
-  },
-  correctAnswerText: {
-    fontSize: 14,
-    color: "#ffffff",
-  },
-  correctAnswerBold: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#25D366",
-  },
   bold: { fontWeight: "700" },
   italic: { fontStyle: "italic" },
   boldItalic: { fontWeight: "700", fontStyle: "italic" },
   explanationBold: { fontWeight: "700", color: "#d9f99d" },
   explanationItalic: { fontStyle: "italic", color: "#ffffff" },
-  explanationBoldItalic: { fontWeight: "700", fontStyle: "italic", color: "#d9f99d" },
+  explanationBoldItalic: {
+    fontWeight: "700",
+    fontStyle: "italic",
+    color: "#d9f99d",
+  },
 });
