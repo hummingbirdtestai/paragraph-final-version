@@ -1,0 +1,23 @@
+{
+  "short_name": "Paragraph",
+  "name": "Paragraph - NEETPG Prep",
+  "description": "100% AI-Driven NEETPG Self Prep Platform",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0d1117",
+  "background_color": "#0d1117",
+  "orientation": "portrait-primary"
+}
