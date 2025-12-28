@@ -1,9 +1,8 @@
-const CACHE_NAME = 'paragraph-static-v3';
+const CACHE_NAME = 'paragraph-static-v4';
 const urlsToCache = [
   '/styles.css',
   'https://paragraph.b-cdn.net/battle/Home%20page%20images/logo.webp',
-  'https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360',
-  'https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=320'
+  'https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=420'
 ];
 
 self.addEventListener('install', (event) => {
