@@ -1,3 +1,4 @@
+//AUTHMODALCONTROLLER.TSX
 import { useEffect, useState } from "react";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
