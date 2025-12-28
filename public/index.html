@@ -17,16 +17,16 @@
     .web-only{display:none}
     @media (min-width:768px){.mobile-only{display:none}.web-only{display:block}}
     @media (max-width:767px){
-      .mobile-hero-lcp{height:180px;padding:24px 20px;background-color:#161b22;border-radius:16px;margin:16px;box-shadow:0px 4px 8px rgba(0,0,0,0.3)}
+      .mobile-hero-lcp{margin:16px;padding:24px 20px;background-color:#161b22;border-radius:16px;box-shadow:0px 4px 8px rgba(0,0,0,0.3)}
       .mobile-hero-lcp h1{font-size:28px;line-height:36px;margin-bottom:12px;color:#f4e4c1}
       .mobile-hero-lcp p{font-size:16px;line-height:24px;color:#c9d1d9}
+      .mobile-hero-image{margin-top:100vh}
     }
     .hero-media{height:380px;width:100%;overflow:hidden}
     .hero-media img{width:100%;height:100%;object-fit:cover;display:block}
   </style>
 
-  <link rel="preload" href="/styles.css" as="style">
-  <link rel="stylesheet" href="/styles.css" media="print" onload="this.media='all'">
+  <link rel="preload" href="/styles.css" as="style" onload="this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="/styles.css"></noscript>
 
   <link rel="manifest" href="/manifest.json">
@@ -71,14 +71,14 @@
 
     <!-- Section 1: Hero -->
     <section class="hero-mobile mobile-only">
-      <!-- Block A: LCP Block (Above the Fold) -->
+      <!-- A. TEXT LCP BLOCK (ABOVE THE FOLD) -->
       <div class="mobile-hero-lcp">
         <h1 class="mobile-heading">NEETPG Prep Became Complicated. You Didn't</h1>
         <p class="mobile-body">You're Not Struggling — The System Is Broken.</p>
       </div>
 
-      <!-- Hero Image -->
-      <div class="hero-media">
+      <!-- B. IMAGE BLOCK (BELOW THE FOLD) -->
+      <div class="hero-media mobile-hero-image">
         <img
           src="https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp?width=360"
           srcset="
@@ -95,7 +95,7 @@
         >
       </div>
 
-      <!-- Block B: Rest of Content (Below the Fold) -->
+      <!-- C. REST OF CONTENT -->
       <div class="hero-text">
         <div class="mobile-padding">
           <p class="mobile-body">Most students today are stuck in a cycle of:</p>
