@@ -1,17 +1,43 @@
 // app/_layout.tsx
-import { Stack } from "expo-router";
+import { Stack, Slot, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { useFrameworkReady } from "@/hooks/useFrameworkReady";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Helmet } from "react-helmet";
 import "./global.css";
+
+function AuthGate() {
+  const params = useLocalSearchParams();
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user && params.auth) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("open-auth", {
+            detail: params.auth,
+          })
+        );
+      }
+    }
+
+    if (user && params.auth) {
+      router.replace("/");
+    }
+  }, [params.auth, user, loading]);
+
+  return <Slot />;
+}
 
 export default function RootLayout() {
   useFrameworkReady();
 
   return (
     <>
-      {/* ✅ Cashfree SDK — MUST be loaded once, before any checkout call */}
       <Helmet>
         <script
           id="cashfree-sdk"
@@ -22,6 +48,8 @@ export default function RootLayout() {
       </Helmet>
 
       <AuthProvider>
+        <AuthGate />
+
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="settings" />
@@ -31,6 +59,7 @@ export default function RootLayout() {
           <Stack.Screen name="help" />
           <Stack.Screen name="+not-found" />
         </Stack>
+
         <StatusBar style="light" />
       </AuthProvider>
     </>

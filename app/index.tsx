@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "expo-router";
 import HomeScreenStatic from "@/components/HomeScreenStatic";
 import HomeScreen from "@/components/HomeScreen";
 import { LoginModal } from "@/components/auth/LoginModal";
@@ -8,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import MainLayout from "@/components/MainLayout";
 
 export default function Index() {
+  const router = useRouter();
   const { loginWithOTP, verifyOTP, registerUser, user, loading } = useAuth();
 
   const [authStep, setAuthStep] = useState<
@@ -15,6 +17,17 @@ export default function Index() {
   >(null);
 
   const [phone, setPhone] = useState("");
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      setAuthStep("login");
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("open-auth", handler);
+      return () => window.removeEventListener("open-auth", handler);
+    }
+  }, []);
 
   const images = {
     img1: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp",
@@ -70,6 +83,7 @@ export default function Index() {
             setAuthStep("register");
           } else {
             setAuthStep(null);
+            router.replace("/");
           }
         }}
         onResend={() => loginWithOTP(phone)}
@@ -81,6 +95,7 @@ export default function Index() {
         onRegister={async (name) => {
           await registerUser(name, phone);
           setAuthStep(null);
+          router.replace("/");
         }}
       />
     </>

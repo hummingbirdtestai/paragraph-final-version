@@ -260,6 +260,7 @@ const confirmLogout = async () => {
     setUserName("");
     setUserPhone("");
     showToast("Logged out successfully", "success");
+    router.replace("/");
   } catch (err) {
     console.error("Logout Error:", err);
     showToast("Failed to logout", "error");
