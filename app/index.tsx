@@ -1,30 +1,9 @@
-import React, { useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
-import HomeScreen from "@/components/HomeScreen";
-import { useAuth } from "@/contexts/AuthContext";
-import MainLayout from "@/components/MainLayout";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import HomeScreen from '@/components/HomeScreen';
+import MainLayout from '@/components/MainLayout';
 
-export default function App() {
-  const { user, loading } = useAuth();
-  const params = useLocalSearchParams();
-
-  useEffect(() => {
-    console.log("[APP] params =", params);
-    console.log("[APP] typeof params.auth =", typeof params.auth);
-    console.log("[APP] params.auth =", params.auth);
-
-    const auth = Array.isArray(params.auth) ? params.auth[0] : params.auth;
-
-    console.log("[APP] normalized auth =", auth);
-
-    if (auth === "login" || auth === "signup") {
-      console.log("[APP] Dispatching OPEN_AUTH_MODAL");
-      window.dispatchEvent(
-        new CustomEvent("OPEN_AUTH_MODAL", { detail: auth })
-      );
-    }
-  }, [params]);
-
+export default function Index() {
   const images = {
     img1: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img1.webp",
     img2: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img2.webp",
@@ -39,13 +18,16 @@ export default function App() {
     img11: "https://paragraph.b-cdn.net/battle/Home%20page%20images/img11.webp",
   };
 
-  if (loading) {
-    return null;
-  }
-
   return (
     <MainLayout>
-      <HomeScreen images={images} />
-    </MainLayout>
+  <HomeScreen images={images} />
+</MainLayout>
+
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
