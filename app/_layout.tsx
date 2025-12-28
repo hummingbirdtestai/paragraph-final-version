@@ -25,7 +25,7 @@ export default function RootLayout() {
         <AuthModalController />
 
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="app" />
+          <Stack.Screen name="index" />
           <Stack.Screen name="settings" />
           <Stack.Screen name="privacy-policy" />
           <Stack.Screen name="terms" />
