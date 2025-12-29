@@ -66,12 +66,7 @@ export default function MCQChatScreen({
   onAnswerSelected?: (answer: string, isCorrect: boolean) => void;
   interactiveReview?: boolean;
 }) {
-  const baseMcqData = item?.phase_json?.[0] ?? item?.phase_json ?? item;
-  const mcqData = {
-    ...baseMcqData,
-    is_mcq_image_type: item?.is_mcq_image_type ?? baseMcqData?.is_mcq_image_type,
-    mcq_image: item?.mcq_image ?? baseMcqData?.mcq_image,
-  };
+  const mcqData = item;
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
