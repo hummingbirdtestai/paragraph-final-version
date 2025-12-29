@@ -24,176 +24,326 @@ export default function PrivacyPolicyScreen() {
         <Text style={styles.sectionTitle}>Privacy Policy</Text>
         <Text style={styles.updateDate}>Last updated: October 15, 2025</Text>
 
-        {/* PART 1 — FOUNDATION & APPLICABILITY */}
+        /* ================================
+   PRIVACY POLICY — v1.0
+   PART 1 / 4 — FOUNDATION
+   ================================ */
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>1. 📜 Introduction & Acceptance</Text>
-          <Text style={styles.paragraph}>
-            This Privacy Policy governs the collection, use, processing, storage, and disclosure
-            of information by <Text style={styles.bold}>Paragraph</Text> through the platform
-            <Text style={styles.bold}> neetpg.app</Text> (the <Text style={styles.boldItalic}>Platform</Text>).
-          </Text>
+<View style={styles.section}>
+  <Text style={styles.heading}>1. 📜 Introduction & Scope</Text>
+  <Text style={styles.paragraph}>
+    This Privacy Policy governs the collection, use, processing, storage, disclosure,
+    and protection of information by <Text style={styles.bold}>Paragraph</Text> through
+    the platform <Text style={styles.bold}>neetpg.app</Text>, including its mobile
+    applications, websites, dashboards, APIs, and related services
+    (collectively, the <Text style={styles.boldItalic}>Platform</Text>).
+  </Text>
+</View>
 
-          <Text style={styles.paragraph}>
-            By accessing or using the Platform, you expressly consent to the practices described
-            in this Privacy Policy and agree to be legally bound by it.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>2. 👤 Applicability</Text>
+  <Text style={styles.paragraph}>
+    This Policy applies to all Users, including visitors, registered users,
+    trial users, and paid subscribers, across web and mobile platforms.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>2. 🏢 Platform Owner & Controller</Text>
-          <Text style={styles.paragraph}>
-            The Platform is owned and operated by <Text style={styles.bold}>Paragraph</Text>,
-            a <Text style={styles.bold}>Sole Proprietorship</Text> entity based in India.
-          </Text>
+<View style={styles.section}>
+  <Text style={styles.heading}>3. 🏢 Data Controller</Text>
+  <Text style={styles.paragraph}>
+    The Platform is owned and operated by <Text style={styles.bold}>Paragraph</Text>,
+    a <Text style={styles.bold}>Sole Proprietorship</Text> entity based in India.
+    Paragraph acts as the <Text style={styles.bold}>Data Controller</Text> under
+    applicable data protection laws.
+  </Text>
+</View>
 
-          <Text style={styles.paragraph}>
-            Paragraph is the <Text style={styles.bold}>Data Controller</Text> for the purposes
-            of applicable data protection laws.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>4. 📘 Definitions</Text>
+  <Text style={styles.paragraph}>
+    • <Text style={styles.boldItalic}>User</Text> means any individual accessing the Platform{"\n"}
+    • <Text style={styles.boldItalic}>Personal Information</Text> means any information
+      identifying a User{"\n"}
+    • <Text style={styles.boldItalic}>Sensitive Personal Data</Text> includes identifiers,
+      government IDs, biometrics, health data{"\n"}
+    • <Text style={styles.boldItalic}>Services</Text> includes videos, AI mentor, tests,
+      analytics, images, and content{"\n"}
+    • <Text style={styles.boldItalic}>Third-Party Providers</Text> includes payment gateways,
+      analytics, hosting, CDN providers
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>3. 👤 Applicability</Text>
-          <Text style={styles.paragraph}>
-            This Privacy Policy applies to all users of the Platform, including registered users,
-            subscribers, trial users, and visitors.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>5. 👶 Children & Minors</Text>
+  <Text style={styles.paragraph}>
+    Users must be at least <Text style={styles.bold}>18 years of age</Text>.
+    Minors may access the Platform only with verified parental or legal guardian consent.
+  </Text>
+</View>
+/* ================================
+   PRIVACY POLICY — v1.0
+   PART 2 / 4 — DATA COLLECTION
+   ================================ */
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>4. 👶 Children & Minors</Text>
-          <Text style={styles.paragraph}>
-            Users must be <Text style={styles.bold}>18 years or older</Text>. Minors may access
-            the Platform only under parental or legal guardian consent.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>6. 📥 Information You Provide</Text>
+  <Text style={styles.paragraph}>
+    We may collect name, email, mobile number, educational details, profile images,
+    uploaded documents, preferences, and communications.
+  </Text>
+</View>
 
-        {/* PART 2 — INFORMATION COLLECTION */}
+<View style={styles.section}>
+  <Text style={styles.heading}>7. 🧾 Identity Verification (KYC)</Text>
+  <Text style={styles.paragraph}>
+    Certain subscriptions may require government-issued identity verification.
+    Such data is encrypted, used solely for verification, and stored securely.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>5. 📥 Information We Collect</Text>
-          <Text style={styles.paragraph}>
-            We may collect:
-            {"\n"}• Name, email, mobile number
-            {"\n"}• Educational details (college, year, exam)
-            {"\n"}• Device, IP address, browser, OS
-            {"\n"}• Usage patterns and analytics
-            {"\n"}• Uploaded images or verification documents (if required)
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>8. ⚙️ Automatically Collected Information</Text>
+  <Text style={styles.paragraph}>
+    Device type, IP address, browser, OS, timestamps, usage behavior,
+    crash logs, and diagnostic data may be collected automatically.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>6. 🔐 Sensitive Personal Data</Text>
-          <Text style={styles.paragraph}>
-            We do not intentionally collect Sensitive Personal Data except where legally required
-            for verification, security, or fraud prevention.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>9. 📍 Location Information</Text>
+  <Text style={styles.paragraph}>
+    Approximate location may be inferred via IP address for security,
+    analytics, and compliance purposes.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>7. 🍪 Cookies & Tracking</Text>
-          <Text style={styles.paragraph}>
-            Cookies and similar technologies are used to improve performance, analytics, and
-            security. You may disable cookies, but some features may not function.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>10. 🍪 Cookies & Tracking Technologies</Text>
+  <Text style={styles.paragraph}>
+    Cookies and similar technologies are used for authentication,
+    analytics, fraud prevention, and personalization.
+  </Text>
+</View>
 
-        {/* PART 3 — USAGE, SHARING & RIGHTS */}
+<View style={styles.section}>
+  <Text style={styles.heading}>11. 🔐 Sensitive Personal Data</Text>
+  <Text style={styles.paragraph}>
+    Sensitive data is collected only when legally required and processed
+    in compliance with Indian SPDI Rules and DPDP Act.
+  </Text>
+</View>
+/* ================================
+   PRIVACY POLICY — v1.0
+   PART 3 / 4 — DATA USAGE & RIGHTS
+   ================================ */
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>8. ⚙️ How We Use Information</Text>
-          <Text style={styles.paragraph}>
-            Your data is used to:
-            {"\n"}• Deliver educational services
-            {"\n"}• Personalize learning experience
-            {"\n"}• Provide analytics and insights
-            {"\n"}• Prevent fraud and misuse
-            {"\n"}• Comply with legal obligations
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>12. 🎯 Purpose of Data Use</Text>
+  <Text style={styles.paragraph}>
+    Personal Information is used strictly for:
+    {"\n"}• Account creation and authentication
+    {"\n"}• Delivering educational services and content
+    {"\n"}• AI mentor personalization and analytics
+    {"\n"}• Subscription management and payments
+    {"\n"}• Customer support and grievance handling
+    {"\n"}• Legal, regulatory, and security compliance
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>9. 🤝 Information Sharing</Text>
-          <Text style={styles.paragraph}>
-            Data may be shared with:
-            {"\n"}• Payment gateways (e.g. Cashfree)
-            {"\n"}• Cloud & analytics providers
-            {"\n"}• Law enforcement when required by law
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>13. 🤖 AI Processing & Profiling</Text>
+  <Text style={styles.paragraph}>
+    Certain data may be processed using <Text style={styles.bold}>AI-driven systems</Text> for
+    learning personalization, recommendations, analytics, and performance insights.
+  </Text>
+  <Text style={styles.paragraph}>
+    AI outputs are <Text style={styles.bold}>algorithmic, probabilistic (μ, σ², ∑)</Text> and may
+    not always be accurate. Users retain full responsibility for interpretation.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>10. 🌍 Cross-Border Transfers</Text>
-          <Text style={styles.paragraph}>
-            Data may be processed in India, Singapore, USA, or other jurisdictions with adequate
-            safeguards as required by law.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>14. 🤝 Data Sharing & Disclosure</Text>
+  <Text style={styles.paragraph}>
+    We do <Text style={styles.bold}>NOT sell</Text> personal data. Information may be shared only with:
+    {"\n"}• Payment gateways (e.g., Cashfree)
+    {"\n"}• Cloud infrastructure & CDN providers
+    {"\n"}• Analytics and monitoring services
+    {"\n"}• Legal or regulatory authorities when required by law
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>11. 🧑‍⚖️ User Rights</Text>
-          <Text style={styles.paragraph}>
-            You have rights to:
-            {"\n"}• Access
-            {"\n"}• Correction
-            {"\n"}• Erasure
-            {"\n"}• Withdrawal of consent
-            {"\n"}• Nomination (as per DPDP Act)
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>15. 💳 Payment Information</Text>
+  <Text style={styles.paragraph}>
+    Paragraph does <Text style={styles.bold}>not store</Text> card, UPI, or banking details.
+    All payment data is handled directly by authorised gateways in compliance with PCI-DSS.
+  </Text>
+</View>
 
-        {/* PART 4 — SECURITY, DISCLAIMERS & FINALITY */}
+<View style={styles.section}>
+  <Text style={styles.heading}>16. 🌍 Cross-Border Data Transfers</Text>
+  <Text style={styles.paragraph}>
+    Data may be processed or stored outside India on secure servers.
+    Appropriate safeguards are implemented in accordance with
+    <Text style={styles.bold}> GDPR, DPDP Act (India), and contractual clauses</Text>.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>12. 🔒 Data Security</Text>
-          <Text style={styles.paragraph}>
-            We implement technical and organizational safeguards including encryption,
-            access controls, and secure storage.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>17. 🗄️ Data Retention</Text>
+  <Text style={styles.paragraph}>
+    Data is retained only as long as necessary for service delivery,
+    legal compliance, dispute resolution, and enforcement.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>13. 🤖 AI & Automated Processing</Text>
-          <Text style={styles.paragraph}>
-            AI systems may process anonymized or pseudonymized data using probabilistic models
-            (μ, σ², ∑). Outputs are informational only.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>18. 🧑‍⚖️ User Rights (India – DPDP Act)</Text>
+  <Text style={styles.paragraph}>
+    Indian users have the right to:
+    {"\n"}• Access personal data
+    {"\n"}• Request correction or erasure
+    {"\n"}• Withdraw consent
+    {"\n"}• Nominate a representative
+    {"\n"}• Lodge grievances
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>14. ⏳ Data Retention</Text>
-          <Text style={styles.paragraph}>
-            Data is retained only as long as necessary for legal, operational, or educational
-            purposes.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>19. 🇪🇺 User Rights (GDPR – EU)</Text>
+  <Text style={styles.paragraph}>
+    EU users may exercise rights including:
+    {"\n"}• Right of access
+    {"\n"}• Right to rectification
+    {"\n"}• Right to erasure (Right to be Forgotten)
+    {"\n"}• Right to restrict or object to processing
+    {"\n"}• Data portability
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>15. 🏢 Entity Declaration</Text>
-          <Text style={styles.paragraph}>
-            <Text style={styles.bold}>Paragraph</Text>{"\n"}
-            Sole Proprietorship{"\n"}
-            Owner: <Text style={styles.bold}>Manu Bharadwaj Yadavalli</Text>
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>20. 🇺🇸 User Rights (CCPA – California)</Text>
+  <Text style={styles.paragraph}>
+    California residents may request disclosure, deletion, or opt-out
+    of personal data processing. We do not sell personal data.
+  </Text>
+</View>
+/* ================================
+   PRIVACY POLICY — v1.0
+   PART 4 / 4 — SECURITY & LEGAL
+   ================================ */
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>16. 📮 Grievance Redressal</Text>
-          <Text style={styles.paragraph}>
-            Email: <Text style={styles.bold}>support@neetpg.app</Text>{"\n"}
-            Response time: 7 working days
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>21. 🔐 Data Security Measures</Text>
+  <Text style={styles.paragraph}>
+    We employ <Text style={styles.bold}>industry-standard security practices</Text> including
+    encryption at rest and transit, access controls, monitoring, and periodic audits.
+  </Text>
+</View>
 
-        <View style={styles.section}>
-          <Text style={styles.heading}>17. 📜 Final Consent</Text>
-          <Text style={styles.paragraph}>
-            Continued use of the Platform constitutes explicit, informed, and unconditional
-            consent to this Privacy Policy.
-          </Text>
-        </View>
+<View style={styles.section}>
+  <Text style={styles.heading}>22. ⚠️ Data Breach Response</Text>
+  <Text style={styles.paragraph}>
+    In the event of a data breach, affected users will be notified as
+    required under applicable law.
+  </Text>
+</View>
 
+<View style={styles.section}>
+  <Text style={styles.heading}>23. 🧠 Educational & AI Disclaimer</Text>
+  <Text style={styles.paragraph}>
+    AI-generated outputs are <Text style={styles.bold}>not medical advice</Text>, not guaranteed,
+    and must not replace professional judgment.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>24. 🏛️ NEET-PG Disclaimer</Text>
+  <Text style={styles.paragraph}>
+    <Text style={styles.bold}>neetpg.app is NOT affiliated</Text> with the Government of India,
+    NMC, NBEMS, or NBE. NEET-PG is a national examination conducted by authorities.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>25. 📱 Device, IP & Abuse Monitoring</Text>
+  <Text style={styles.paragraph}>
+    We may restrict access based on IP address, device fingerprinting,
+    abnormal behavior, or security risk indicators.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>26. 🧾 Log Files & Monitoring</Text>
+  <Text style={styles.paragraph}>
+    Server logs, audit trails, and system logs may be maintained for
+    fraud prevention, debugging, and legal compliance.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>27. 🧹 Account Deletion</Text>
+  <Text style={styles.paragraph}>
+    Users may request account deletion. Certain data may be retained
+    where required by law or legitimate interest.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>28. 🔄 Policy Updates</Text>
+  <Text style={styles.paragraph}>
+    This Privacy Policy may be updated periodically. Continued use
+    constitutes acceptance of the revised policy.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>29. ⚖️ Governing Law</Text>
+  <Text style={styles.paragraph}>
+    This Policy shall be governed by the <Text style={styles.bold}>laws of India</Text>.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>30. 🧑‍⚖️ Jurisdiction</Text>
+  <Text style={styles.paragraph}>
+    Exclusive jurisdiction lies with courts at
+    <Text style={styles.bold}> Hyderabad, Telangana, India</Text>.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>31. 🏢 Ownership Declaration</Text>
+  <Text style={styles.paragraph}>
+    The Platform is owned by <Text style={styles.bold}>Paragraph</Text>,
+    a <Text style={styles.bold}>Sole Proprietorship</Text>.
+    {"\n"}Owner: <Text style={styles.bold}>Manu Bharadwaj Yadavalli</Text>
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>32. 📮 Grievance Redressal Officer</Text>
+  <Text style={styles.paragraph}>
+    <Text style={styles.bold}>Grievance Officer:</Text> Manu Bharadwaj Yadavalli
+    {"\n"}<Text style={styles.bold}>Email:</Text> support@neetpg.app
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>33. ⏱️ Grievance Resolution Timeline</Text>
+  <Text style={styles.paragraph}>
+    We aim to resolve grievances within <Text style={styles.bold}>7 working days</Text>.
+  </Text>
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.heading}>34. ✅ Consent & Final Acceptance</Text>
+  <Text style={styles.paragraph}>
+    By using the Platform, you provide <Text style={styles.bold}>free, informed, specific,
+    unconditional, and unambiguous consent</Text> to this Privacy Policy.
+  </Text>
+</View>
       </ScrollView>
     </SafeAreaView>
   );
