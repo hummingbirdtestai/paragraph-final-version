@@ -21,24 +21,31 @@ function normalizeMockRows(rows: any[]) {
       });
     }
 
-    phases.push({
-      id: row.id,
-      phase_type: "mcq",
-      subject: row.subject_name,
-      phase_json: row.mcq_json,
-      react_order_final: row.react_order,
-      total_count: rows.length,
+    const mcq = row.mcq_json?.[0];
 
-      student_answer: row.student_answer,
-      correct_answer: row.correct_answer,
-      is_correct_latest: row.is_correct,
-      is_wrong: isWrong,
-      is_bookmarked: row.is_bookmarked ?? false,
+    if (mcq) {
+      phases.push({
+        id: row.id,
+        phase_type: "mcq",
+        subject: row.subject_name,
 
-      is_mcq_image_type: row.is_mcq_image_type,
-      mcq_image: row.mcq_image,
-      image_description: row.image_description,
-    });
+        // ✅ FLATTENED MCQ OBJECT (FINAL SHAPE)
+        phase_json: {
+          ...mcq,
+          is_mcq_image_type: row.is_mcq_image_type,
+          mcq_image: row.mcq_image,
+        },
+
+        react_order_final: row.react_order,
+        total_count: rows.length,
+
+        student_answer: row.student_answer,
+        correct_answer: mcq.correct_answer,
+        is_correct_latest: row.is_correct,
+        is_wrong: isWrong,
+        is_bookmarked: row.is_bookmarked ?? false,
+      });
+    }
 
     return phases;
   });

@@ -103,15 +103,10 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 
 {isMCQ && (
   <View style={isWeb ? styles.webConstrained : undefined}>
-    <MCQChatScreen
-      item={phase.phase_json}
-      conceptId={phase.concept_id_before_this_mcq}
-      mcqId={phase.id}
-      correctAnswer={phase.phase_json?.correct_answer}
-      studentId={user?.id}
-      reviewMode={false}
-      hideInternalNext={true}
-      phaseUniqueId={phase.id}
+    <MockReviewManualMCQScreen
+      mcqJson={[phase.phase_json]}
+      isMcqImageType={phase.phase_json?.is_mcq_image_type || false}
+      mcqImage={phase.phase_json?.mcq_image || ""}
     />
 
     <AskParagraphButton
