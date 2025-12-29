@@ -24,11 +24,6 @@ export default function PrivacyPolicyScreen() {
         <Text style={styles.sectionTitle}>Privacy Policy</Text>
         <Text style={styles.updateDate}>Last updated: October 15, 2025</Text>
 
-        /* ================================
-   PRIVACY POLICY — v1.0
-   PART 1 / 4 — FOUNDATION
-   ================================ */
-
 <View style={styles.section}>
   <Text style={styles.heading}>1. 📜 Introduction & Scope</Text>
   <Text style={styles.paragraph}>
@@ -80,10 +75,7 @@ export default function PrivacyPolicyScreen() {
     Minors may access the Platform only with verified parental or legal guardian consent.
   </Text>
 </View>
-/* ================================
-   PRIVACY POLICY — v1.0
-   PART 2 / 4 — DATA COLLECTION
-   ================================ */
+
 
 <View style={styles.section}>
   <Text style={styles.heading}>6. 📥 Information You Provide</Text>
@@ -132,10 +124,6 @@ export default function PrivacyPolicyScreen() {
     in compliance with Indian SPDI Rules and DPDP Act.
   </Text>
 </View>
-/* ================================
-   PRIVACY POLICY — v1.0
-   PART 3 / 4 — DATA USAGE & RIGHTS
-   ================================ */
 
 <View style={styles.section}>
   <Text style={styles.heading}>12. 🎯 Purpose of Data Use</Text>
@@ -229,10 +217,7 @@ export default function PrivacyPolicyScreen() {
     of personal data processing. We do not sell personal data.
   </Text>
 </View>
-/* ================================
-   PRIVACY POLICY — v1.0
-   PART 4 / 4 — SECURITY & LEGAL
-   ================================ */
+
 
 <View style={styles.section}>
   <Text style={styles.heading}>21. 🔐 Data Security Measures</Text>
