@@ -16,7 +16,7 @@ const Footer = memo(() => {
             <Text style={styles.linkText}>Terms & Conditions</Text>
           </Link>
           <Text style={styles.separator}>•</Text>
-          <Link href="/privacy" style={styles.link}>
+         <Link href="/privacy-policy" style={styles.link}>
             <Text style={styles.linkText}>Privacy Policy</Text>
           </Link>
           <Text style={styles.separator}>•</Text>
