@@ -68,6 +68,11 @@ export default function MCQChatScreen({
 }) {
   const mcqData = item;
 
+  console.log("🖼 MCQ IMAGE DEBUG", {
+    is_mcq_image_type: item.is_mcq_image_type,
+    mcq_image: item.mcq_image,
+  });
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);

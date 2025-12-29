@@ -29,11 +29,15 @@ function normalizeMockRows(rows: any[]) {
         phase_type: "mcq",
         subject: row.subject_name,
 
-        // ✅ FLATTENED MCQ OBJECT (FINAL SHAPE)
         phase_json: {
           ...mcq,
-          is_mcq_image_type: row.is_mcq_image_type,
-          mcq_image: row.mcq_image,
+
+          // 🔒 HARD NORMALIZATION (CRITICAL)
+          is_mcq_image_type: row.is_mcq_image_type === true,
+          mcq_image:
+            typeof row.mcq_image === "string" && row.mcq_image.length > 0
+              ? row.mcq_image
+              : null,
         },
 
         react_order_final: row.react_order,
