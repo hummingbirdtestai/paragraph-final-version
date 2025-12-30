@@ -20,7 +20,7 @@ const Footer = memo(() => {
             <Text style={styles.linkText}>Privacy Policy</Text>
           </Link>
           <Text style={styles.separator}>•</Text>
-          <Link href="/refund" style={styles.link}>
+          <Link href="/refund-policy" style={styles.link}>
             <Text style={styles.linkText}>Refund Policy</Text>
           </Link>
           <Text style={styles.separator}>•</Text>
@@ -45,7 +45,7 @@ const Footer = memo(() => {
           <Text style={styles.linkText}>Privacy Policy</Text>
         </Link>
         <Text style={styles.separator}>•</Text>
-        <Link href="/refund" style={styles.link}>
+        <Link href="/refund-policy" style={styles.link}>
           <Text style={styles.linkText}>Refund Policy</Text>
         </Link>
         <Text style={styles.separator}>•</Text>
