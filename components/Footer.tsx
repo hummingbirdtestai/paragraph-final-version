@@ -24,7 +24,7 @@ const Footer = memo(() => {
             <Text style={styles.linkText}>Refund Policy</Text>
           </Link>
           <Text style={styles.separator}>•</Text>
-          <Link href="/contact" style={styles.link}>
+          <Link href="/contact-us" style={styles.link}>
             <Text style={styles.linkText}>Contact Us</Text>
           </Link>
         </View>
@@ -49,7 +49,7 @@ const Footer = memo(() => {
           <Text style={styles.linkText}>Refund Policy</Text>
         </Link>
         <Text style={styles.separator}>•</Text>
-        <Link href="/contact" style={styles.link}>
+        <Link href="/contact-us" style={styles.link}>
           <Text style={styles.linkText}>Contact Us</Text>
         </Link>
       </View>
