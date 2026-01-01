@@ -1730,9 +1730,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   webProCardCentered: {
-    alignSelf: 'center',
     width: '48%',
     maxWidth: '48%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   centeredText: {
     textAlign: 'center',
