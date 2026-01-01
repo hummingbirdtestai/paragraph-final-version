@@ -81,7 +81,6 @@ function MobileLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <ProFeaturesUnlockMobile />
       <AIPersonalizationMobile />
       <SystemNotFacultyMobile />
-      <FinitePlanMobile />
       <PersonalMentorMobile />
       <Footer />
     </ScrollView>
@@ -112,7 +111,6 @@ function WebLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <ProFeaturesUnlockWeb />
       <AIPersonalizationWeb />
       <SystemNotFacultyWeb />
-      <FinitePlanWeb />
       <PersonalMentorWeb />
       <Footer />
     </ScrollView>
@@ -1039,78 +1037,6 @@ const SystemNotFacultyWeb = memo(() => {
             <Text style={styles.webCheck}>✔ Daily direction and correction</Text>
           </View>
         </View>
-      </View>
-    </View>
-  );
-});
-
-const FinitePlanMobile = memo(() => {
-  return (
-    <View style={styles.mobileSection}>
-      <View style={styles.mobilePadding}>
-        <Text style={styles.mobileHeading}>A Finite 1000-Hour NEET-PG Plan</Text>
-
-        <View style={styles.planItem}>
-          <Text style={styles.planText}>Concepts</Text>
-          <Text style={styles.planHours}>~150 hours</Text>
-        </View>
-        <View style={styles.planItem}>
-          <Text style={styles.planText}>PYQs</Text>
-          <Text style={styles.planHours}>~150 hours</Text>
-        </View>
-        <View style={styles.planItem}>
-          <Text style={styles.planText}>Mock Tests</Text>
-          <Text style={styles.planHours}>~250 hours</Text>
-        </View>
-        <View style={styles.planItem}>
-          <Text style={styles.planText}>Flashcards</Text>
-          <Text style={styles.planHours}>~400 hours</Text>
-        </View>
-
-        <View style={styles.planTotal}>
-          <Text style={styles.planTotalText}>Total: ~1000 hours</Text>
-        </View>
-
-        <Text style={[styles.mobileBody, styles.emphasis]}>
-          No noise. No overwhelm. Just dependable daily progress.
-        </Text>
-      </View>
-    </View>
-  );
-});
-
-const FinitePlanWeb = memo(() => {
-  return (
-    <View style={styles.webSection}>
-      <View style={styles.webPlanContent}>
-        <Text style={styles.webHeading}>A Finite 1000-Hour NEET-PG Plan</Text>
-
-        <View style={styles.webPlanGrid}>
-          <View style={styles.webPlanCard}>
-            <Text style={styles.webPlanLabel}>Concepts</Text>
-            <Text style={styles.webPlanHours}>~150 hours</Text>
-          </View>
-          <View style={styles.webPlanCard}>
-            <Text style={styles.webPlanLabel}>PYQs</Text>
-            <Text style={styles.webPlanHours}>~150 hours</Text>
-          </View>
-          <View style={styles.webPlanCard}>
-            <Text style={styles.webPlanLabel}>Mock Tests</Text>
-            <Text style={styles.webPlanHours}>~250 hours</Text>
-          </View>
-          <View style={styles.webPlanCard}>
-            <Text style={styles.webPlanLabel}>Flashcards</Text>
-            <Text style={styles.webPlanHours}>~400 hours</Text>
-          </View>
-        </View>
-
-        <View style={styles.webPlanTotal}>
-          <Text style={styles.webPlanTotalText}>Total: ~1000 hours</Text>
-        </View>
-
-        <Text style={[styles.webBody, styles.emphasis, { textAlign: 'center' }]}>
-          No noise. No overwhelm. Just dependable daily progress.
-        </Text>
       </View>
     </View>
   );
