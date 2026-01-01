@@ -175,8 +175,12 @@ export default function PracticeScreen() {
   data={filteredRows}
   keyExtractor={(item) => item.id}
   renderItem={({ item }) => (
-    <MockPracticeCard phase={item} />
-  )}
+  <MockPracticeCard
+    phase={item}
+    examSerial={examSerial}
+  />
+)}
+
   contentContainerStyle={styles.cardsWrapper}
   onScroll={(e) => {
     const offsetY = e.nativeEvent.contentOffset.y;
