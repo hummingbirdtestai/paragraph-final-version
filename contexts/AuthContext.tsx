@@ -68,9 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ? phone.substring(3)
       : phone;
 
-    const trialStart = new Date();
-    const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-
+    
     const { error } = await supabase
       .from("users")
       .upsert(
@@ -80,8 +78,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           name,
           is_active: true,
           is_paid: false,
-          trial_started_at: trialStart.toISOString(),
-          trial_expires_at: trialEnd.toISOString(),
           content_access: true,
           last_login_at: new Date().toISOString(),
         },
