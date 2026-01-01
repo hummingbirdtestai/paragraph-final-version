@@ -22,6 +22,8 @@ export default function PracticeScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const { exam_serial } = useLocalSearchParams();
+  const examSerial = Number(exam_serial);
+
 
   const [containersVisible, setContainersVisible] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
