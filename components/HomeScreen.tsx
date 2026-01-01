@@ -931,12 +931,12 @@ const ProFeaturesUnlockWeb = memo(() => {
             <Text style={styles.webProCardText}>– Rank prediction & analysis</Text>
           </View>
 
-          <View style={styles.webProCard}>
-            <Text style={styles.webProCardTitle}>Daily Group Quizzes</Text>
-            <Text style={styles.webProCardText}>– 15 quizzes every day</Text>
-            <Text style={styles.webProCardText}>– 450 MCQs/day</Text>
-            <Text style={styles.webProCardText}>– All 19 NEET-PG subjects</Text>
-            <Text style={styles.webProCardText}>– Live competition & feedback</Text>
+          <View style={[styles.webProCard, styles.webProCardCentered]}>
+            <Text style={[styles.webProCardTitle, styles.centeredText]}>Daily Group Quizzes</Text>
+            <Text style={[styles.webProCardText, styles.centeredText]}>– 15 quizzes every day</Text>
+            <Text style={[styles.webProCardText, styles.centeredText]}>– 450 MCQs/day</Text>
+            <Text style={[styles.webProCardText, styles.centeredText]}>– All 19 NEET-PG subjects</Text>
+            <Text style={[styles.webProCardText, styles.centeredText]}>– Live competition & feedback</Text>
           </View>
         </View>
       </View>
@@ -1728,5 +1728,13 @@ const styles = StyleSheet.create({
     color: '#c9d1d9',
     lineHeight: 26,
     marginBottom: 6,
+  },
+  webProCardCentered: {
+    alignSelf: 'center',
+    width: '48%',
+    maxWidth: '48%',
+  },
+  centeredText: {
+    textAlign: 'center',
   },
 });
