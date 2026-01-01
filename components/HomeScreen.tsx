@@ -1179,6 +1179,7 @@ const styles = StyleSheet.create({
     color: '#f4e4c1',
     marginBottom: 16,
     lineHeight: 36,
+    textAlign: 'center',
   },
   mobileBody: {
     fontSize: 16,
@@ -1405,6 +1406,7 @@ const styles = StyleSheet.create({
     color: '#f4e4c1',
     marginBottom: 24,
     lineHeight: 56,
+    textAlign: 'center',
   },
   webSubheading: {
     fontSize: 24,
