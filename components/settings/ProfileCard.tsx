@@ -5,7 +5,7 @@ import { theme } from '@/constants/theme';
 interface ProfileCardProps {
   name: string;
   contact: string;
-  subscriptionStatus: 'active' | 'expiring' | 'expired';
+  subscriptionStatus: 'active' | 'inactive';
   avatarUrl?: string;
 }
 
@@ -14,10 +14,8 @@ export function ProfileCard({ name, contact, subscriptionStatus }: ProfileCardPr
     switch (subscriptionStatus) {
       case 'active':
         return theme.colors.success;
-      case 'expiring':
-        return theme.colors.warning;
-      case 'expired':
-        return theme.colors.error;
+      case 'inactive':
+        return theme.colors.textSecondary;
       default:
         return theme.colors.textSecondary;
     }
@@ -27,12 +25,10 @@ export function ProfileCard({ name, contact, subscriptionStatus }: ProfileCardPr
     switch (subscriptionStatus) {
       case 'active':
         return 'Active';
-      case 'expiring':
-        return 'Expiring Soon';
-      case 'expired':
-        return 'Expired';
+      case 'inactive':
+        return 'Inactive';
       default:
-        return 'Unknown';
+        return 'Inactive';
     }
   };
 
