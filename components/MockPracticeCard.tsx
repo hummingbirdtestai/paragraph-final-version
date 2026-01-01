@@ -11,7 +11,13 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 
-export function MockPracticeCard({ phase }) {
+export function MockPracticeCard({
+  phase,
+  examSerial,
+}: {
+  phase: any;
+  examSerial: number;
+}) {
    const { width } = useWindowDimensions();   // ✅ ADD
   const isWeb = width >= 1024;               // ✅ ADD
   const isConcept = phase.phase_type === "concept";
