@@ -283,6 +283,23 @@ const confirmLogout = async () => {
     router.push('/help');
   };
 
+  const getSubscriptionStatus = () => {
+    if (!profile) return "inactive";
+
+    const now = new Date();
+
+    const hasValidTrial =
+      profile.trial_expires_at &&
+      new Date(profile.trial_expires_at) > now;
+
+    const hasValidSubscription =
+      profile.is_paid === true &&
+      profile.subscription_end_at &&
+      new Date(profile.subscription_end_at) > now;
+
+    return hasValidTrial || hasValidSubscription ? "active" : "inactive";
+  };
+
   return (
     <MainLayout>
     <SafeAreaView style={styles.container}>
@@ -298,7 +315,7 @@ const confirmLogout = async () => {
             <ProfileCard
               name={userName}
               contact={userPhone}
-              subscriptionStatus="active"
+              subscriptionStatus={getSubscriptionStatus()}
             />
 
             <View style={styles.section}>
