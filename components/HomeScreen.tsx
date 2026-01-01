@@ -78,6 +78,11 @@ function MobileLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Block4Mobile image={images.img10} />
       <Block5Mobile image={images.img11} />
       <Section9Mobile onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
+      <ProFeaturesUnlockMobile />
+      <AIPersonalizationMobile />
+      <SystemNotFacultyMobile />
+      <FinitePlanMobile />
+      <PersonalMentorMobile />
       <Footer />
     </ScrollView>
   );
@@ -104,6 +109,11 @@ function WebLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Block4Web image={images.img10} />
       <Block5Web image={images.img11} />
       <Section9Web onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
+      <ProFeaturesUnlockWeb />
+      <AIPersonalizationWeb />
+      <SystemNotFacultyWeb />
+      <FinitePlanWeb />
+      <PersonalMentorWeb />
       <Footer />
     </ScrollView>
   );
@@ -820,6 +830,332 @@ const Block5Web = memo(({ image }: { image: string }) => {
   );
 });
 
+const ProFeaturesUnlockMobile = memo(() => {
+  return (
+    <View style={styles.mobileSection}>
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>What You Unlock with Paragraph Pro</Text>
+
+        <View style={styles.proFeatureCard}>
+          <Text style={styles.proFeatureTitle}>10,000 NEET-PG PYQs</Text>
+          <Text style={styles.proFeatureText}>– Mapped to concepts, mistakes, and exam patterns</Text>
+          <Text style={styles.proFeatureText}>– ~150 hours of focused revision</Text>
+        </View>
+
+        <View style={styles.proFeatureCard}>
+          <Text style={styles.proFeatureTitle}>10,000 High-Yield Concepts</Text>
+          <Text style={styles.proFeatureText}>– Exam-critical only</Text>
+          <Text style={styles.proFeatureText}>– No duplication, no fluff</Text>
+        </View>
+
+        <View style={styles.proFeatureCard}>
+          <Text style={styles.proFeatureTitle}>45,000 Flashcards</Text>
+          <Text style={styles.proFeatureText}>– Rapid recall</Text>
+          <Text style={styles.proFeatureText}>– Long-term memory</Text>
+          <Text style={styles.proFeatureText}>– Last-minute revision</Text>
+        </View>
+
+        <View style={styles.proFeatureCard}>
+          <Text style={styles.proFeatureTitle}>Daily Short Videos (3-minute reels)</Text>
+          <Text style={styles.proFeatureText}>– 6,000 videos total</Text>
+          <Text style={styles.proFeatureText}>– ~60,000 high-yield facts</Text>
+          <Text style={styles.proFeatureText}>– No binge-watching</Text>
+        </View>
+
+        <View style={styles.proFeatureCard}>
+          <Text style={styles.proFeatureTitle}>Daily Image-Based Learning</Text>
+          <Text style={styles.proFeatureText}>– 4,500 clinical images</Text>
+          <Text style={styles.proFeatureText}>– Visual exam-pattern recognition</Text>
+        </View>
+
+        <View style={styles.proFeatureCard}>
+          <Text style={styles.proFeatureTitle}>100 Full-Length NEET-PG Mock Tests</Text>
+          <Text style={styles.proFeatureText}>– Bi-weekly</Text>
+          <Text style={styles.proFeatureText}>– Exam-level difficulty</Text>
+          <Text style={styles.proFeatureText}>– Rank prediction & analysis</Text>
+        </View>
+
+        <View style={styles.proFeatureCard}>
+          <Text style={styles.proFeatureTitle}>Daily Group Quizzes</Text>
+          <Text style={styles.proFeatureText}>– 15 quizzes every day</Text>
+          <Text style={styles.proFeatureText}>– 450 MCQs/day</Text>
+          <Text style={styles.proFeatureText}>– All 19 NEET-PG subjects</Text>
+          <Text style={styles.proFeatureText}>– Live competition & feedback</Text>
+        </View>
+      </View>
+    </View>
+  );
+});
+
+const ProFeaturesUnlockWeb = memo(() => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webTextBlock}>
+        <Text style={styles.webHeading}>What You Unlock with Paragraph Pro</Text>
+
+        <View style={styles.webProGrid}>
+          <View style={styles.webProCard}>
+            <Text style={styles.webProCardTitle}>10,000 NEET-PG PYQs</Text>
+            <Text style={styles.webProCardText}>– Mapped to concepts, mistakes, and exam patterns</Text>
+            <Text style={styles.webProCardText}>– ~150 hours of focused revision</Text>
+          </View>
+
+          <View style={styles.webProCard}>
+            <Text style={styles.webProCardTitle}>10,000 High-Yield Concepts</Text>
+            <Text style={styles.webProCardText}>– Exam-critical only</Text>
+            <Text style={styles.webProCardText}>– No duplication, no fluff</Text>
+          </View>
+
+          <View style={styles.webProCard}>
+            <Text style={styles.webProCardTitle}>45,000 Flashcards</Text>
+            <Text style={styles.webProCardText}>– Rapid recall</Text>
+            <Text style={styles.webProCardText}>– Long-term memory</Text>
+            <Text style={styles.webProCardText}>– Last-minute revision</Text>
+          </View>
+
+          <View style={styles.webProCard}>
+            <Text style={styles.webProCardTitle}>Daily Short Videos (3-minute reels)</Text>
+            <Text style={styles.webProCardText}>– 6,000 videos total</Text>
+            <Text style={styles.webProCardText}>– ~60,000 high-yield facts</Text>
+            <Text style={styles.webProCardText}>– No binge-watching</Text>
+          </View>
+
+          <View style={styles.webProCard}>
+            <Text style={styles.webProCardTitle}>Daily Image-Based Learning</Text>
+            <Text style={styles.webProCardText}>– 4,500 clinical images</Text>
+            <Text style={styles.webProCardText}>– Visual exam-pattern recognition</Text>
+          </View>
+
+          <View style={styles.webProCard}>
+            <Text style={styles.webProCardTitle}>100 Full-Length NEET-PG Mock Tests</Text>
+            <Text style={styles.webProCardText}>– Bi-weekly</Text>
+            <Text style={styles.webProCardText}>– Exam-level difficulty</Text>
+            <Text style={styles.webProCardText}>– Rank prediction & analysis</Text>
+          </View>
+
+          <View style={styles.webProCard}>
+            <Text style={styles.webProCardTitle}>Daily Group Quizzes</Text>
+            <Text style={styles.webProCardText}>– 15 quizzes every day</Text>
+            <Text style={styles.webProCardText}>– 450 MCQs/day</Text>
+            <Text style={styles.webProCardText}>– All 19 NEET-PG subjects</Text>
+            <Text style={styles.webProCardText}>– Live competition & feedback</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+});
+
+const AIPersonalizationMobile = memo(() => {
+  return (
+    <View style={styles.mobileSection}>
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>AI-Driven, Hyper-Personalised Learning</Text>
+
+        <Text style={styles.mobileBody}>AI tracks:</Text>
+        <Text style={styles.mobileBullet}>– Your mistakes</Text>
+        <Text style={styles.mobileBullet}>– Your speed</Text>
+        <Text style={styles.mobileBullet}>– Your weak subjects</Text>
+
+        <Text style={[styles.mobileBody, { marginTop: 16 }]}>The system automatically:</Text>
+        <Text style={styles.mobileBullet}>– Builds your daily study plan</Text>
+        <Text style={styles.mobileBullet}>– Pushes only what YOU need today</Text>
+        <Text style={styles.mobileBullet}>– Repeats weak areas until fixed</Text>
+
+        <Text style={[styles.mobileBody, styles.emphasis]}>
+          Two students. Same syllabus. Completely different daily plans.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const AIPersonalizationWeb = memo(() => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webTextBlock}>
+        <Text style={styles.webHeading}>AI-Driven, Hyper-Personalised Learning</Text>
+
+        <View style={styles.webHero}>
+          <View style={styles.webTextBlock}>
+            <Text style={styles.webSubheading}>AI tracks:</Text>
+            <Text style={styles.webBullet}>– Your mistakes</Text>
+            <Text style={styles.webBullet}>– Your speed</Text>
+            <Text style={styles.webBullet}>– Your weak subjects</Text>
+          </View>
+
+          <View style={styles.webTextBlock}>
+            <Text style={styles.webSubheading}>The system automatically:</Text>
+            <Text style={styles.webBullet}>– Builds your daily study plan</Text>
+            <Text style={styles.webBullet}>– Pushes only what YOU need today</Text>
+            <Text style={styles.webBullet}>– Repeats weak areas until fixed</Text>
+          </View>
+        </View>
+
+        <Text style={[styles.webBody, styles.emphasis, { textAlign: 'center', marginTop: 24 }]}>
+          Two students. Same syllabus. Completely different daily plans.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const SystemNotFacultyMobile = memo(() => {
+  return (
+    <View style={styles.mobileSection}>
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>No Faculty Hype. Just a System.</Text>
+
+        <Text style={styles.mobileBody}>No celebrity faculty dependency</Text>
+        <Text style={styles.mobileBody}>No one-size-fits-all schedules</Text>
+        <Text style={styles.mobileBody}>No marathon lectures</Text>
+
+        <Text style={[styles.mobileBody, { marginTop: 16, fontWeight: '700', color: '#3fb950' }]}>Instead:</Text>
+        <Text style={styles.mobileCheck}>✔ System-driven learning</Text>
+        <Text style={styles.mobileCheck}>✔ Self-paced momentum</Text>
+        <Text style={styles.mobileCheck}>✔ Daily direction and correction</Text>
+      </View>
+    </View>
+  );
+});
+
+const SystemNotFacultyWeb = memo(() => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webTextBlock}>
+        <Text style={styles.webHeading}>No Faculty Hype. Just a System.</Text>
+
+        <View style={styles.webHero}>
+          <View style={styles.webTextBlock}>
+            <Text style={styles.webBody}>No celebrity faculty dependency</Text>
+            <Text style={styles.webBody}>No one-size-fits-all schedules</Text>
+            <Text style={styles.webBody}>No marathon lectures</Text>
+          </View>
+
+          <View style={styles.webTextBlock}>
+            <Text style={[styles.webBody, { fontWeight: '700', color: '#3fb950' }]}>Instead:</Text>
+            <Text style={styles.webCheck}>✔ System-driven learning</Text>
+            <Text style={styles.webCheck}>✔ Self-paced momentum</Text>
+            <Text style={styles.webCheck}>✔ Daily direction and correction</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+});
+
+const FinitePlanMobile = memo(() => {
+  return (
+    <View style={styles.mobileSection}>
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>A Finite 1000-Hour NEET-PG Plan</Text>
+
+        <View style={styles.planItem}>
+          <Text style={styles.planText}>Concepts</Text>
+          <Text style={styles.planHours}>~150 hours</Text>
+        </View>
+        <View style={styles.planItem}>
+          <Text style={styles.planText}>PYQs</Text>
+          <Text style={styles.planHours}>~150 hours</Text>
+        </View>
+        <View style={styles.planItem}>
+          <Text style={styles.planText}>Mock Tests</Text>
+          <Text style={styles.planHours}>~250 hours</Text>
+        </View>
+        <View style={styles.planItem}>
+          <Text style={styles.planText}>Flashcards</Text>
+          <Text style={styles.planHours}>~400 hours</Text>
+        </View>
+
+        <View style={styles.planTotal}>
+          <Text style={styles.planTotalText}>Total: ~1000 hours</Text>
+        </View>
+
+        <Text style={[styles.mobileBody, styles.emphasis]}>
+          No noise. No overwhelm. Just dependable daily progress.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const FinitePlanWeb = memo(() => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webPlanContent}>
+        <Text style={styles.webHeading}>A Finite 1000-Hour NEET-PG Plan</Text>
+
+        <View style={styles.webPlanGrid}>
+          <View style={styles.webPlanCard}>
+            <Text style={styles.webPlanLabel}>Concepts</Text>
+            <Text style={styles.webPlanHours}>~150 hours</Text>
+          </View>
+          <View style={styles.webPlanCard}>
+            <Text style={styles.webPlanLabel}>PYQs</Text>
+            <Text style={styles.webPlanHours}>~150 hours</Text>
+          </View>
+          <View style={styles.webPlanCard}>
+            <Text style={styles.webPlanLabel}>Mock Tests</Text>
+            <Text style={styles.webPlanHours}>~250 hours</Text>
+          </View>
+          <View style={styles.webPlanCard}>
+            <Text style={styles.webPlanLabel}>Flashcards</Text>
+            <Text style={styles.webPlanHours}>~400 hours</Text>
+          </View>
+        </View>
+
+        <View style={styles.webPlanTotal}>
+          <Text style={styles.webPlanTotalText}>Total: ~1000 hours</Text>
+        </View>
+
+        <Text style={[styles.webBody, styles.emphasis, { textAlign: 'center' }]}>
+          No noise. No overwhelm. Just dependable daily progress.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const PersonalMentorMobile = memo(() => {
+  return (
+    <View style={styles.mobileSection}>
+      <View style={styles.mobilePadding}>
+        <Text style={styles.mobileHeading}>Feels Like a Personal Mentor</Text>
+
+        <Text style={styles.mobileCheck}>✔ 24×7 AI doubt-clearing</Text>
+        <Text style={styles.mobileCheck}>✔ Instant explanations</Text>
+        <Text style={styles.mobileCheck}>✔ No waiting for faculty</Text>
+        <Text style={styles.mobileCheck}>✔ No batch dependency</Text>
+
+        <Text style={[styles.mobileBody, styles.emphasis, { marginTop: 16 }]}>
+          Reassuring, supportive, personal.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
+const PersonalMentorWeb = memo(() => {
+  return (
+    <View style={styles.webSection}>
+      <View style={styles.webTextBlock}>
+        <Text style={styles.webHeading}>Feels Like a Personal Mentor</Text>
+
+        <View style={styles.webCheckList}>
+          <Text style={styles.webCheck}>✔ 24×7 AI doubt-clearing</Text>
+          <Text style={styles.webCheck}>✔ Instant explanations</Text>
+          <Text style={styles.webCheck}>✔ No waiting for faculty</Text>
+          <Text style={styles.webCheck}>✔ No batch dependency</Text>
+        </View>
+
+        <Text style={[styles.webBody, styles.emphasis, { textAlign: 'center', marginTop: 24 }]}>
+          Reassuring, supportive, personal.
+        </Text>
+      </View>
+    </View>
+  );
+});
+
 const Section9Mobile = memo(({ onOpenAuth, isLoggedIn }) => {
   if (isLoggedIn) return null;
 
@@ -1410,5 +1746,56 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#f0f6fc',
+  },
+
+  proFeatureCard: {
+    backgroundColor: '#1c2128',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  proFeatureTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fbbf24',
+    marginBottom: 8,
+  },
+  proFeatureText: {
+    fontSize: 15,
+    color: '#c9d1d9',
+    lineHeight: 22,
+    marginBottom: 4,
+  },
+
+  webProGrid: {
+    marginTop: 24,
+  },
+  webProCard: {
+    backgroundColor: '#1c2128',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  webProCardTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#fbbf24',
+    marginBottom: 12,
+  },
+  webProCardText: {
+    fontSize: 17,
+    color: '#c9d1d9',
+    lineHeight: 26,
+    marginBottom: 6,
   },
 });
