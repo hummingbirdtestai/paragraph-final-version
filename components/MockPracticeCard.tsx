@@ -55,13 +55,13 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
       });
 
       const { data, error } = await supabase.rpc(
-        "toggle_practice_bookmark_v1",
-        {
-          p_student_id: user.id,
-          p_practicecard_id: phase.id,
-          p_subject: phase.subject,
-        }
-      );
+  "toggle_practice_bookmark_v1",
+  {
+    p_practicecard_id: phase.id,
+    p_subject: phase.subject,
+  }
+);
+
 
       if (error) {
         console.log("❌ Bookmark toggle error:", error);
