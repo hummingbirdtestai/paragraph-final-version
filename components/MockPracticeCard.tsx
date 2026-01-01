@@ -25,11 +25,9 @@ export function MockPracticeCard({
   const { user } = useAuth();
   const router = useRouter();
   // Local bookmark state (like FlashcardCard)
-const [isBookmarked, setIsBookmarked] = React.useState(false);
+const [isBookmarked, setIsBookmarked] =
+  React.useState(phase.is_bookmarked);
 
-React.useEffect(() => {
-  setIsBookmarked(!!phase.is_bookmarked);
-}, [phase.is_bookmarked]);
 
 
 
