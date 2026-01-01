@@ -17,7 +17,7 @@ function normalizeMockRows(rows: any[]) {
         react_order_final: row.react_order,
         total_count: rows.length,
         is_wrong: isWrong,
-        is_bookmarked: false,
+       is_bookmarked: row.is_bookmarked ?? false,
       });
     }
 
