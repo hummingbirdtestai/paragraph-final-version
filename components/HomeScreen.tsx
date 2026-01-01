@@ -1700,12 +1700,17 @@ const styles = StyleSheet.create({
 
   webProGrid: {
     marginTop: 24,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 24,
   },
   webProCard: {
     backgroundColor: '#1c2128',
     padding: 20,
     borderRadius: 12,
-    marginBottom: 20,
+    flex: 1,
+    minWidth: 300,
+    maxWidth: '48%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
