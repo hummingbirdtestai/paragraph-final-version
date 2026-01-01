@@ -108,10 +108,21 @@ export function useMockPracticeData(
     {}
   );
 
+  const updateBookmarkState = (reactOrder: number, newState: boolean) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.react_order_final === reactOrder
+          ? { ...r, is_bookmarked: newState }
+          : r
+      )
+    );
+  };
+
   return {
     loading,
     rows,
     subjectBuckets,
     refetch,
+    updateBookmarkState,
   };
 }

@@ -14,19 +14,20 @@ import { useAuth } from "@/contexts/AuthContext";
 export function MockPracticeCard({
   phase,
   examSerial,
+  onBookmarkToggle,
 }: {
   phase: any;
   examSerial: number;
+  onBookmarkToggle: (reactOrder: number, newState: boolean) => void;
 }) {
-   const { width } = useWindowDimensions();   // ✅ ADD
-  const isWeb = width >= 1024;               // ✅ ADD
+   const { width } = useWindowDimensions();
+  const isWeb = width >= 1024;
   const isConcept = phase.phase_type === "concept";
   const isMCQ = phase.phase_type === "mcq";
   const { user } = useAuth();
   const router = useRouter();
-  // Local bookmark state (like FlashcardCard)
-const [isBookmarked, setIsBookmarked] =
-  React.useState(phase.is_bookmarked);
+
+  const isBookmarked = phase.is_bookmarked;
 
 
 
@@ -63,12 +64,11 @@ const [isBookmarked, setIsBookmarked] =
         subject: phase.subject,
       });
 
-      const { data, error } =await supabase.rpc("toggle_mocktest_bookmark_v1", {
-  p_exam_serial: examSerial,
-  p_react_order_final: phase.react_order_final,
-  p_subject: phase.subject,
-});
-
+      const { data, error } = await supabase.rpc("toggle_mocktest_bookmark_v1", {
+        p_exam_serial: examSerial,
+        p_react_order_final: phase.react_order_final,
+        p_subject: phase.subject,
+      });
 
       if (error) {
         console.log("❌ Bookmark toggle error:", error);
@@ -76,7 +76,7 @@ const [isBookmarked, setIsBookmarked] =
       }
 
       const newState = data?.is_bookmark ?? !isBookmarked;
-      setIsBookmarked(newState);
+      onBookmarkToggle(phase.react_order_final, newState);
     }}
   >
     <Bookmark

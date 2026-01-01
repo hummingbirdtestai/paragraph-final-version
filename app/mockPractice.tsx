@@ -44,7 +44,7 @@ export default function PracticeScreen() {
     loadUser();
   }, []);
 
-  const { rows, subjectBuckets, loading, refetch } = useMockPracticeData(
+  const { rows, subjectBuckets, loading, refetch, updateBookmarkState } = useMockPracticeData(
     Number(exam_serial),
     userId
   );
@@ -178,6 +178,9 @@ export default function PracticeScreen() {
   <MockPracticeCard
     phase={item}
     examSerial={examSerial}
+    onBookmarkToggle={(reactOrder, newState) => {
+      updateBookmarkState(reactOrder, newState);
+    }}
   />
 )}
 
