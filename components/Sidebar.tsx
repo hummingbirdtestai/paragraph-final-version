@@ -53,17 +53,24 @@ export default function Sidebar({
   const [hasAccess, setHasAccess] = useState(true);
 
   useEffect(() => {
-    const checkUserAccess = async () => {
-      if (!user?.id) {
-        setHasAccess(true);
-        return;
-      }
+    if (!userProfile) {
+      setHasAccess(false);
+      return;
+    }
 
-      setHasAccess(true);
-    };
+    const now = new Date();
 
-    checkUserAccess();
-  }, [user?.id]);
+    const hasValidTrial =
+      userProfile.trial_expires_at &&
+      new Date(userProfile.trial_expires_at) > now;
+
+    const hasValidSubscription =
+      userProfile.is_paid === true &&
+      userProfile.subscription_end_at &&
+      new Date(userProfile.subscription_end_at) > now;
+
+    setHasAccess(Boolean(hasValidTrial || hasValidSubscription));
+  }, [userProfile]);
 
   const handleSubscribe = (plan: '3' | '6' | '12', finalPrice: number, promoCode?: string) => {
     console.log(`User selected ${plan} month plan`);
@@ -91,27 +98,50 @@ export default function Sidebar({
     const active = isActive(item.href);
     const Icon = item.icon;
 
+    const isProtected =
+      item.href !== '/' &&
+      item.href !== '/settings';
+
+    const blocked = isProtected && !hasAccess;
+
     return (
-      <Link key={item.href} href={item.href} asChild>
-        <Pressable
-          style={active ? styles.navItemActive : styles.navItem}
-          onPress={isMobile ? onClose : undefined}
-        >
+      <Pressable
+        key={item.href}
+        style={[
+          active ? styles.navItemActive : styles.navItem,
+          blocked && { opacity: 0.5 },
+        ]}
+        onPress={() => {
+          if (blocked) {
+            setShowSubscribeModal(true);
+            return;
+          }
+          if (isMobile) onClose?.();
+        }}
+      >
+        <Link href={item.href} asChild>
           <View style={styles.navItemContent}>
             <View style={styles.iconWrapper}>
               <Icon
                 size={20}
-                color={active ? '#25D366' : '#9A9A9A'}
-                strokeWidth={2}
+                color={blocked ? '#555' : active ? '#25D366' : '#9A9A9A'}
               />
             </View>
-            <Text style={active ? styles.navLabelActive : styles.navLabel}>
+            <Text
+              style={
+                blocked
+                  ? styles.navLabel
+                  : active
+                  ? styles.navLabelActive
+                  : styles.navLabel
+              }
+            >
               {item.label}
             </Text>
           </View>
-          {active && <View style={styles.activeIndicator} />}
-        </Pressable>
-      </Link>
+        </Link>
+        {active && !blocked && <View style={styles.activeIndicator} />}
+      </Pressable>
     );
   };
 
