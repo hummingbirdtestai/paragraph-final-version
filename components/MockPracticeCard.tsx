@@ -54,13 +54,11 @@ const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
         subject: phase.subject,
       });
 
-      const { data, error } = await supabase.rpc(
-  "toggle_practice_bookmark_v1",
-  {
-    p_practicecard_id: phase.id,
-    p_subject: phase.subject,
-  }
-);
+      const { data, error } =await supabase.rpc("toggle_mocktest_bookmark_v1", {
+  p_exam_serial: examSerial,
+  p_react_order_final: phase.react_order_final,
+  p_subject: phase.subject,
+});
 
 
       if (error) {
