@@ -56,45 +56,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ⭐ REGISTER USER (centralized)
   const registerUser = async (name: string, phone: string) => {
-  try {
-    const { data: authUser } = await supabase.auth.getUser();
+    try {
+      const cleanedPhone = phone.startsWith("+91")
+        ? phone.substring(3)
+        : phone;
 
-    if (!authUser?.user?.id) {
-      console.error("❌ Cannot register — user not authenticated yet");
+      const { error } = await supabase.rpc("register_user_profile", {
+        p_name: name,
+        p_phone: cleanedPhone,
+      });
+
+      if (error) {
+        console.error("❌ register_user_profile RPC error:", error);
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.error("❌ Registration error:", err);
       return false;
     }
-
-    const cleanedPhone = phone.startsWith("+91")
-      ? phone.substring(3)
-      : phone;
-
-    
-    const { error } = await supabase
-      .from("users")
-      .upsert(
-        {
-          id: authUser.user.id,     // 🔑 critical
-          phone: cleanedPhone,
-          name,
-          is_active: true,
-          is_paid: false,
-          content_access: true,
-          last_login_at: new Date().toISOString(),
-        },
-        { onConflict: "id" }
-      );
-
-    if (error) {
-      console.error("❌ Supabase registration upsert error:", error);
-      return false;
-    }
-
-    return true;
-  } catch (err) {
-    console.error("❌ Registration error:", err);
-    return false;
-  }
-};
+  };
 
 
   const loginWithOTP = async (phone: string) => {
