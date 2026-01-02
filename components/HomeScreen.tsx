@@ -67,6 +67,10 @@ function MobileLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Section1Mobile image={images.img1} />
       <Section5Mobile image={images.img5} />
       <Section8Mobile />
+      <ProFeaturesUnlockMobile />
+      <AIPersonalizationMobile />
+      <SystemNotFacultyMobile />
+      <PersonalMentorMobile />
       <Section7Mobile />
       <Section2Mobile image={images.img2} />
       <Section4Mobile image={images.img4} />
@@ -78,10 +82,6 @@ function MobileLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Block4Mobile image={images.img10} />
       <Block5Mobile image={images.img11} />
       <Section9Mobile onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
-      <ProFeaturesUnlockMobile />
-      <AIPersonalizationMobile />
-      <SystemNotFacultyMobile />
-      <PersonalMentorMobile />
       <Footer />
     </ScrollView>
   );
@@ -97,6 +97,10 @@ function WebLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Section1Web image={images.img1} />
       <Section5Web image={images.img5} />
       <Section8Web />
+      <ProFeaturesUnlockWeb />
+      <AIPersonalizationWeb />
+      <SystemNotFacultyWeb />
+      <PersonalMentorWeb />
       <Section7Web />
       <Section2Web image={images.img2} />
       <Section4Web image={images.img4} />
@@ -108,10 +112,6 @@ function WebLayout({ images, onOpenAuth, isLoggedIn }: HomeScreenProps & {
       <Block4Web image={images.img10} />
       <Block5Web image={images.img11} />
       <Section9Web onOpenAuth={onOpenAuth} isLoggedIn={isLoggedIn} />
-      <ProFeaturesUnlockWeb />
-      <AIPersonalizationWeb />
-      <SystemNotFacultyWeb />
-      <PersonalMentorWeb />
       <Footer />
     </ScrollView>
   );
