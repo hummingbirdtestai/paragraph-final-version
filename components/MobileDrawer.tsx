@@ -9,7 +9,7 @@ interface MobileDrawerProps {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const DRAWER_WIDTH = SCREEN_WIDTH * 0.7;
+const DRAWER_WIDTH = SCREEN_WIDTH * 0.75;
 
 export default function MobileDrawer({ visible, onClose, onOpenAuth }: MobileDrawerProps) {
   const slideAnim = React.useRef(new Animated.Value(-DRAWER_WIDTH)).current;
