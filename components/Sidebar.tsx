@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
 import { Link, usePathname } from 'expo-router';
-import { Hop as Home, BookOpen, CreditCard, FileText, Swords, ChartBar as BarChart3, Settings, X, Video, Crown, Image as ImageIcon, Calendar } from 'lucide-react-native';
+import { Brain, BookOpen, CreditCard, FileText, Swords, ChartBar as BarChart3, Settings, X, Video, Crown, Image as ImageIcon, Calendar } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
 import SubscribeModal from './SubscribeModal';
@@ -23,7 +23,7 @@ interface SidebarProps {
 }
 
 const navItems: NavItem[] = [
-  { id: "home", label: "AI powered NEETPG Prep Strategy", href: "/", icon: Home },
+  { id: "home", label: "AI powered NEETPG Prep Strategy", href: "/", icon: Brain },
   { id: "practice", label: "10000 NEETPG PYQs", href: "/practice", icon: BookOpen },
   { id: "flash", label: "45000 Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
   { id: "videos", label: "Daily 20 NEETPG Reels", href: "/videos", icon: Video },
