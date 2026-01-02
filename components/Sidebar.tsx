@@ -24,8 +24,8 @@ interface SidebarProps {
 
 const navItems: NavItem[] = [
   { id: "home", label: "Home", href: "/", icon: Home },
-  { id: "practice", label: "Concepts", href: "/practice", icon: BookOpen },
-  { id: "flash", label: "Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
+  { id: "practice", label: "10000 NEETPG PYQs", href: "/practice", icon: BookOpen },
+  { id: "flash", label: "45000 Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
   { id: "videos", label: "Daily 20 NEETPG Reels", href: "/videos", icon: Video },
   { id: "image", label: "Daily 50 Image Based MCQs", href: "/image", icon: ImageIcon },
   { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
