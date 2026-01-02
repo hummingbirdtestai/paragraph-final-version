@@ -28,8 +28,8 @@ const navItems: NavItem[] = [
   { id: "flash", label: "45000 Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
   { id: "videos", label: "Daily 20 NEETPG Reels", href: "/videos", icon: Video },
   { id: "image", label: "Daily 50 Image Based MCQs", href: "/image", icon: ImageIcon },
-  { id: "mocktests", label: "NEET-PG Full-Scale Mock Tests", href: "/mocktests", icon: FileText },
-  { id: "battle", label: "Battles", href: "/battle", icon: Swords },
+  { id: "mocktests", label: "100 Bi-Weekly NEETPG Mock Tests", href: "/mocktests", icon: FileText },
+  { id: "battle", label: "Daily 15 Live Group Quiz Battles", href: "/battle", icon: Swords },
   { id: "analytics", label: "Analytics", href: "/analyticspage", icon: BarChart3 },
   { id: "planner", label: "NEETPG Daily Study Planner", href: "/planner", icon: Calendar },
 ];
