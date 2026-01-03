@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           id: authUser.user.id,     // 🔑 critical
           phone: cleanedPhone,
           name,
+          is_profile_complete: true,   // ✅ ADD THIS LINE
           is_active: true,
           is_paid: false,
           trial_started_at: trialStart.toISOString(),
