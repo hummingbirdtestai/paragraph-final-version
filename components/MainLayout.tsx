@@ -29,7 +29,6 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
   const [notif, setNotif] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const registrationCheckedRef = React.useRef(false);
   // 🌟 DEBUG
   console.log("🔵 MainLayout rendered. Current user:", user?.id);
 
@@ -134,24 +133,16 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
       setShowOTPModal(false);
       setDrawerVisible(false); // ✅ MOBILE FIX: close drawer first
       
-      const { data: profile } = await supabase
-        .from("users")
-        .select("name")
-        .eq("id", authUser.id)
-        .maybeSingle();
-      
-      // ⏳ wait for mobile layout stack to settle
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-       if (
-  !registrationCheckedRef.current &&
-  (!profile?.name || !profile.name.trim())
-) {
-  registrationCheckedRef.current = true; // 🔒 lock immediately
+     const { data: profile } = await supabase
+  .from("users")
+  .select("is_profile_complete")
+  .eq("id", authUser.id)
+  .single();
+
+if (!profile?.is_profile_complete) {
   setShowRegistrationModal(true);
 }
-        }, 50);
-      });
+
 
 
       }, 300);
