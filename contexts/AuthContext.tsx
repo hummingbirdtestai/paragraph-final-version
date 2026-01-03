@@ -6,6 +6,7 @@ interface AuthContextType {
   user: any | null;
   session: any | null;
   loading: boolean;
+  profileComplete: boolean | null; // 🔥 ADD
   loginWithOTP: (phone: string) => Promise<any>;
   verifyOTP: (phone: string, token: string) => Promise<any>;
   registerUser: (name: string, phone: string) => Promise<boolean>;
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   loading: true,
+  profileComplete: null,
   loginWithOTP: async () => {},
   verifyOTP: async () => {},
   registerUser: async () => false,
@@ -26,6 +28,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [profileComplete, setProfileComplete] = useState<boolean | null>(null); // 🔥 ADD
+
+  // 🔍 Load profile completion status
+  const loadProfileStatus = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("is_profile_complete")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      // No profile row yet → first-time user
+      setProfileComplete(false);
+      return;
+    }
+
+    setProfileComplete(data.is_profile_complete);
+  };
 
   useEffect(() => {
     let active = true;
@@ -33,17 +53,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const loadSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (!active) return;
+
       setSession(data.session);
       setUser(data.session?.user ?? null);
+
+      if (data.session?.user?.id) {
+        await loadProfileStatus(data.session.user.id);
+      } else {
+        setProfileComplete(null);
+      }
+
       setLoading(false);
     };
+
     loadSession();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
         if (!active) return;
+
         setSession(session);
         setUser(session?.user ?? null);
+
+        if (session?.user?.id) {
+          await loadProfileStatus(session.user.id);
+        } else {
+          setProfileComplete(null);
+        }
+
         setLoading(false);
       }
     );
@@ -54,7 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  // ⭐ REGISTER USER (centralized)
+  // ⭐ REGISTER USER (RPC – unchanged logic, now authoritative)
   const registerUser = async (name: string, phone: string) => {
     try {
       const cleanedPhone = phone.startsWith("+91")
@@ -71,13 +108,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return false;
       }
 
+      // Immediately reflect completion in UI
+      setProfileComplete(true);
+
       return true;
     } catch (err) {
       console.error("❌ Registration error:", err);
       return false;
     }
   };
-
 
   const loginWithOTP = async (phone: string) => {
     const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
@@ -103,6 +142,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
+    setProfileComplete(null);
   };
 
   return (
@@ -111,6 +151,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         user,
         session,
         loading,
+        profileComplete, // 🔥 EXPOSED
         loginWithOTP,
         verifyOTP,
         registerUser,
