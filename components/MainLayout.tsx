@@ -29,7 +29,7 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
   const [notif, setNotif] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
-
+  const registrationCheckedRef = React.useRef(false);
   // 🌟 DEBUG
   console.log("🔵 MainLayout rendered. Current user:", user?.id);
 
@@ -143,9 +143,13 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
       // ⏳ wait for mobile layout stack to settle
       requestAnimationFrame(() => {
         setTimeout(() => {
-          if (!profile?.name || !profile.name.trim()) {
-            setShowRegistrationModal(true);
-          }
+       if (
+  !registrationCheckedRef.current &&
+  (!profile?.name || !profile.name.trim())
+) {
+  registrationCheckedRef.current = true; // 🔒 lock immediately
+  setShowRegistrationModal(true);
+}
         }, 50);
       });
 
@@ -156,14 +160,17 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
     }
   };
 
-  const handleRegister = async (name) => {
-    try {
-      await registerUser(name, phoneNumber);
-      setShowRegistrationModal(false);
-    } catch (err) {
-      console.error("Registration error:", err);
-    }
-  };
+ const handleRegister = async (name) => {
+  try {
+    await registerUser(name, phoneNumber);
+
+    registrationCheckedRef.current = true; // ✅ final lock
+    setShowRegistrationModal(false);
+  } catch (err) {
+    console.error("Registration error:", err);
+  }
+};
+
 
   // LOGIN CHECK
   const isLoggedIn = !!user;
