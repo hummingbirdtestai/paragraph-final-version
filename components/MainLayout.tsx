@@ -132,15 +132,16 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
 
         setShowOTPModal(false);
 
-        const { data: existing } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", authUser.id)
-          .maybeSingle();
+const { data: profile } = await supabase
+  .from("users")
+  .select("name")
+  .eq("id", authUser.id)
+  .maybeSingle();
 
 if (!profile?.name || !profile.name.trim()) {
   setShowRegistrationModal(true);
 }
+
       }, 300);
     } catch (err) {
       console.error("OTP verify error:", err);
