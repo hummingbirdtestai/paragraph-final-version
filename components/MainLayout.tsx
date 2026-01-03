@@ -25,6 +25,7 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const isAuthLocked = showOTPModal || showRegistrationModal;
   const [notif, setNotif] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -130,17 +131,24 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
 
         if (!authUser) return;
 
-        setShowOTPModal(false);
+      setShowOTPModal(false);
+      setDrawerVisible(false); // ✅ MOBILE FIX: close drawer first
+      
+      const { data: profile } = await supabase
+        .from("users")
+        .select("name")
+        .eq("id", authUser.id)
+        .maybeSingle();
+      
+      // ⏳ wait for mobile layout stack to settle
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (!profile?.name || !profile.name.trim()) {
+            setShowRegistrationModal(true);
+          }
+        }, 50);
+      });
 
-const { data: profile } = await supabase
-  .from("users")
-  .select("name")
-  .eq("id", authUser.id)
-  .maybeSingle();
-
-if (!profile?.name || !profile.name.trim()) {
-  setShowRegistrationModal(true);
-}
 
       }, 300);
     } catch (err) {
@@ -169,7 +177,9 @@ if (!profile?.name || !profile.name.trim()) {
           {!isHeaderHidden && (
             <AppHeader
               onMenuPress={openDrawer}
-              onOpenAuth={() => setShowLoginModal(true)}
+              onOpenAuth={() => {
+                if (!isAuthLocked) setShowLoginModal(true);
+              }}
             />
           )}
 
@@ -190,7 +200,9 @@ if (!profile?.name || !profile.name.trim()) {
           {!isLoggedIn && (
             <AppHeader
               onMenuPress={() => {}}
-              onOpenAuth={() => setShowLoginModal(true)}
+              onOpenAuth={() => {
+                if (!isAuthLocked) setShowLoginModal(true);
+              }}
             />
           )}
 
