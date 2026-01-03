@@ -133,15 +133,16 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
       setShowOTPModal(false);
       setDrawerVisible(false); // ✅ MOBILE FIX: close drawer first
       
-     const { data: profile } = await supabase
+const { data: profile, error } = await supabase
   .from("users")
   .select("is_profile_complete")
   .eq("id", authUser.id)
-  .single();
+  .maybeSingle();
 
-if (!profile?.is_profile_complete) {
+if (!profile || profile.is_profile_complete === false) {
   setShowRegistrationModal(true);
 }
+
 
 
 
@@ -151,16 +152,15 @@ if (!profile?.is_profile_complete) {
     }
   };
 
- const handleRegister = async (name) => {
+const handleRegister = async (name) => {
   try {
     await registerUser(name, phoneNumber);
-
-    registrationCheckedRef.current = true; // ✅ final lock
     setShowRegistrationModal(false);
   } catch (err) {
     console.error("Registration error:", err);
   }
 };
+
 
 
   // LOGIN CHECK
