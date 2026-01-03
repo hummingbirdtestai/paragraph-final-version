@@ -43,12 +43,12 @@ export function RegistrationModal({ visible, onClose, onRegister }: Registration
 
   return (
     <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      // ❗ BLOCK ESC KEY / ANDROID BACK BUTTON
-      onRequestClose={() => {}}
-    >
+        visible={visible}
+        transparent
+        animationType="fade"
+        presentationStyle="overFullScreen"
+        onRequestClose={() => {}}
+      >
       {/* ❗ DO NOT ALLOW CLOSING BY TAPPING OUTSIDE */}
       <View style={styles.overlay}>
         <Animated.View
