@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       : phone;
 
     const trialStart = new Date();
-    const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const trialEnd = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000); // 7 days
 
     const { error } = await supabase
       .from("users")
