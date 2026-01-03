@@ -138,7 +138,9 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
           .eq("id", authUser.id)
           .maybeSingle();
 
-        if (!existing) setShowRegistrationModal(true);
+if (!profile?.name || !profile.name.trim()) {
+  setShowRegistrationModal(true);
+}
       }, 300);
     } catch (err) {
       console.error("OTP verify error:", err);
