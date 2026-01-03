@@ -109,8 +109,7 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
   // OTP HANDLERS
   const handleSendOTP = async (phone) => {
     try {
-      const formatted = phone.startsWith("+91") ? phone : `+91${phone}`;
-      await loginWithOTP(formatted);
+      await loginWithOTP(phone);
 
       setPhoneNumber(phone);
       setShowLoginModal(false);
