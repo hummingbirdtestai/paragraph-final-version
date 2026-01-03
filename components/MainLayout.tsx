@@ -189,6 +189,7 @@ export default function MainLayout({ children, isHeaderHidden = false }) {
             visible={drawerVisible}
             onClose={closeDrawer}
             onOpenAuth={() => {
+              if (isAuthLocked) return;   // ✅ FINAL MOBILE FIX
               closeDrawer();
               setShowLoginModal(true);
             }}
