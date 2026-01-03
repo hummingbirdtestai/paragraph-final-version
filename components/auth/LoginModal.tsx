@@ -61,7 +61,7 @@ export function LoginModal({ visible, onClose, onSendOTP }: LoginModalProps) {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      onSendOTP(`+91${phoneNumber}`);
+      onSendOTP(phoneNumber);
     }, 1000);
   };
 
