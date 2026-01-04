@@ -21,7 +21,11 @@ import LLMMCQCard from '@/components/chat/llm/LLMMCQCard';
 function stripControlBlocks(text: string) {
   return text
     // ❌ Remove diagnostic headings but KEEP content
-    .replace(/\[(GAP|EXPLANATION|COMMON_CONFUSION|MEMORY_HOOK|SUB_CONCEPT)\]:\s*/gi, "")
+    .replace(
+  /\[(CORE_CONCEPT|GAP|EXPLANATION|COMMON_CONFUSION|MEMORY_HOOK|SUB_CONCEPT)\]:\s*/gi,
+  ""
+)
+
 
     // ❌ Hide control tokens
     .replace(/\[STUDENT_REPLY_REQUIRED\]/g, "")
