@@ -17,6 +17,14 @@ import { StudentBubble } from '@/components/chat/StudentBubble';
 import MentorBubbleReply from '@/components/types/MentorBubbleReply';
 import { MessageInput } from '@/components/chat/MessageInput';
 import LLMMCQCard from '@/components/chat/llm/LLMMCQCard';
+// 🔒 Hide internal control blocks from UI (DO NOT affect backend logic)
+function stripControlBlocks(text: string) {
+  return text
+    .replace(/\[MCQ id=.*?\]/g, "")
+    .replace(/\[RECHECK_MCQ id=.*?\]/g, "")
+    .replace(/\[STUDENT_REPLY_REQUIRED\]/g, "")
+    .trim();
+}
 
 interface Dialog {
   role: 'student' | 'mentor';
@@ -224,10 +232,15 @@ setConversation(prev => {
     msg.role === 'student' ? (
       <StudentBubble key={index} text={msg.content} />
     ) : (
-      <MentorBubbleReply
-        key={index}
-        markdownText={typeof msg.content === "string" ? msg.content : ""}
-      />
+     <MentorBubbleReply
+  key={index}
+  markdownText={
+    typeof msg.content === "string"
+      ? stripControlBlocks(msg.content)
+      : ""
+  }
+/>
+
     )
 )}
 
