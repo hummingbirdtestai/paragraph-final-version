@@ -12,6 +12,17 @@ interface MentorBubbleProps {
 }
 
 const CLEANUP_REGEX = /\[STUDENT_REPLY_REQUIRED\]|\[FEEDBACK_CORRECT\]|\[FEEDBACK_WRONG\]|\[CLARIFICATION\]|\[RECHECK_MCQ.*?\]|\[FINAL_ANSWER\]|\[TAKEAWAYS\]|\[CONCEPT.*?\]|\[MCQ.*?\]/g;
+function transformExamBlocks(text: string) {
+  return text
+    .replace(
+      /\[HIGH_YIELD_FACTS\]/gi,
+      '### 📌 10 High Yield Facts You Should Memorise for Exam'
+    )
+    .replace(
+      /\[EXAM_COMPARISON_TABLE\]/gi,
+      '### 📊 NEETPG Memory Table'
+    );
+}
 
 function renderBlocks(blocks: any[]) {
   return blocks.map((block, idx) => {
@@ -85,14 +96,15 @@ export default function MentorBubbleReply({ markdownText, streaming = false }: M
     );
   }
 
-  let blocks = [];
+let blocks = [];
 
-  try {
-    blocks = parseLLMBlocks(rawText);
-  } catch (e) {
-    console.log("🔥 LLM block parse failed", e);
-    blocks = [{ type: 'TEXT', text: rawText }];
-  }
+try {
+  const transformedText = transformExamBlocks(rawText);
+  blocks = parseLLMBlocks(transformedText);
+} catch (e) {
+  console.log("🔥 LLM block parse failed", e);
+  blocks = [{ type: 'TEXT', text: rawText }];
+}
 
   if (isWeb) {
     const groupedContent: Array<{ type: 'bubble' | 'table'; content: any }> = [];
