@@ -20,11 +20,16 @@ import LLMMCQCard from '@/components/chat/llm/LLMMCQCard';
 // 🔒 Hide internal control blocks from UI (DO NOT affect backend logic)
 function stripControlBlocks(text: string) {
   return text
+    // 🔒 HIDE CORRECT ANSWER LINE (CRITICAL FIX)
+    .replace(/^Correct:\s*[A-D]\s*$/gim, "")
+
+    // existing sanitizers
     .replace(/\[MCQ id=.*?\]/g, "")
     .replace(/\[RECHECK_MCQ id=.*?\]/g, "")
     .replace(/\[STUDENT_REPLY_REQUIRED\]/g, "")
     .trim();
 }
+
 
 interface Dialog {
   role: 'student' | 'mentor';
