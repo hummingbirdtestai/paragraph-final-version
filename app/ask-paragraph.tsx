@@ -212,16 +212,19 @@ useEffect(() => {
 
 
           <View style={styles.conversationContainer}>
-{conversation.map((msg, index) =>
-  msg.role === 'student' ? (
-    <StudentBubble key={index} text={msg.content} />
-  ) : (
-    <MentorBubbleReply
-      key={index}
-      markdownText={msg.content}
-    />
-  )
+{conversation
+  .filter(msg => msg.role !== "system")   // 🔥 KEY LINE
+  .map((msg, index) =>
+    msg.role === 'student' ? (
+      <StudentBubble key={index} text={msg.content} />
+    ) : (
+      <MentorBubbleReply
+        key={index}
+        markdownText={typeof msg.content === "string" ? msg.content : ""}
+      />
+    )
 )}
+
 
             {/* ✅ ADD THIS BLOCK — EXACT LOCATION */}
   {loading && (
