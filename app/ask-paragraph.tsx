@@ -117,11 +117,12 @@ useEffect(() => {
   if (!message.trim() || !sessionId || isTyping) return;
 
   // 1️⃣ Immediately append student message
-  setConversation(prev => [
-    ...prev,
-    { role: "student", content: message },
-    { role: "mentor", content: "" }
-  ]);
+ // ✅ ONLY append student message
+setConversation(prev => [
+  ...prev,
+  { role: "student", content: message }
+]);
+
 
   setIsTyping(true);
 
@@ -153,17 +154,22 @@ useEffect(() => {
         const chunk = decoder.decode(value, { stream: true });
 
         // 2️⃣ Append streamed text to last mentor bubble
-        setConversation(prev => {
-          const updated = [...prev];
-          const lastIndex = updated.length - 1;
+       // ✅ CREATE mentor bubble only when stream starts
+setConversation(prev => {
+  const updated = [...prev];
+  const last = updated[updated.length - 1];
 
-          updated[lastIndex] = {
-            ...updated[lastIndex],
-            content: updated[lastIndex].content + chunk,
-          };
+  if (!last || last.role !== "mentor") {
+    updated.push({ role: "mentor", content: chunk });
+  } else {
+    updated[updated.length - 1] = {
+      ...last,
+      content: last.content + chunk,
+    };
+  }
 
-          return updated;
-        });
+  return updated;
+});
       }
     }
   } catch (e) {
