@@ -17,18 +17,24 @@ import { StudentBubble } from '@/components/chat/StudentBubble';
 import MentorBubbleReply from '@/components/types/MentorBubbleReply';
 import { MessageInput } from '@/components/chat/MessageInput';
 import LLMMCQCard from '@/components/chat/llm/LLMMCQCard';
-// 🔒 Hide internal control blocks from UI (DO NOT affect backend logic)
+// 🔒 Hide internal control + diagnostic labels (UI only)
 function stripControlBlocks(text: string) {
   return text
-    // 🔒 HIDE CORRECT ANSWER LINE (CRITICAL FIX)
+    // ❌ Remove diagnostic headings but KEEP content
+    .replace(/\[(GAP|EXPLANATION|COMMON_CONFUSION|MEMORY_HOOK|SUB_CONCEPT)\]:\s*/gi, "")
+
+    // ❌ Hide control tokens
+    .replace(/\[STUDENT_REPLY_REQUIRED\]/g, "")
+    .replace(/\[FEEDBACK_CORRECT\]/g, "")
+    .replace(/\[FEEDBACK_WRONG\]/g, "")
+    .replace(/\[SYSTEM_RETRY\]/g, "")
+
+    // ❌ Hide MCQ internals
     .replace(/^Correct:\s*[A-D]\s*$/gim, "")
 
-    // existing sanitizers
-    .replace(/\[MCQ id=.*?\]/g, "")
-    .replace(/\[RECHECK_MCQ id=.*?\]/g, "")
-    .replace(/\[STUDENT_REPLY_REQUIRED\]/g, "")
     .trim();
 }
+
 
 
 interface Dialog {
