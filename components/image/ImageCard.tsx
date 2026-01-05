@@ -172,6 +172,7 @@ function AskParagraphButton({
       student_id: studentId,
       mcq_id: mcqId,
       mcq_payload: phaseJson,
+        mode: "discussion",              // ✅ THIS IS THE MAGIC
     }),
   }
 );
