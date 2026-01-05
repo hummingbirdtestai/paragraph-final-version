@@ -299,7 +299,7 @@ export default function ReviewBattle() {
           body: JSON.stringify({
             student_id: user.id,
             mcq_id: mcq_id,
-            mcq_payload: phase,
+            mcq_payload: current.phase_json,
             mode: "discussion", // ✅ SAME MAGIC FLAG
           }),
         }
