@@ -122,7 +122,7 @@ React.useEffect(() => {
 )}
 
 {isMCQ && (
-  <>
+  <View style={{ paddingBottom: 20 }}>
     <ImageMCQScreen
       item={phase.phase_json}
       mcqId={phase.id}
@@ -137,12 +137,8 @@ React.useEffect(() => {
       mcqId={phase.id}
       phaseJson={phase.phase_json}
     />
-  </>
+  </View>
 )}
-
-
-
-
 
           </View>
   );
@@ -167,19 +163,23 @@ function AskParagraphButton({
     try {
       const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
-      const response = await fetch(`${API_BASE_URL}/ask-paragraph/start`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          student_id: studentId,
-          mcq_id: mcqId,
-          mcq_payload: phaseJson,
-        }),
-      });
+  const response = await fetch(
+  `${API_BASE_URL}/ask-paragraph/start`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      student_id: studentId,
+      mcq_id: mcqId,
+      mcq_payload: phaseJson,
+    }),
+  }
+);
 
-      if (!response.ok) {
-        throw new Error(`API error ${response.status}`);
-      }
+if (!response.ok) {
+  throw new Error(`API error ${response.status}`);
+}
+
 
       const data = await response.json();
 
