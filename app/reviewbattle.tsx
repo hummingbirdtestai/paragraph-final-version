@@ -29,6 +29,8 @@ export default function ReviewBattle() {
   const [localAttempts, setLocalAttempts] = useState<Record<string, string>>({});
   const [localResults, setLocalResults] = useState<Record<string, boolean>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAskLoading, setIsAskLoading] = useState(false);
+
 
   // ───────────────────────────────
   // 🔹 Fetch MCQs
@@ -311,9 +313,13 @@ const phaseForMCQScreen = {
     borderWidth: 1,
     borderColor: "#10b981",
     alignItems: "center",
+    opacity: isAskLoading ? 0.6 : 1,
   }}
+  disabled={isAskLoading}
   onPress={async () => {
     if (!user?.id) return;
+
+    setIsAskLoading(true);   // ✅ ADD
 
     try {
       const response = await fetch(
@@ -325,7 +331,7 @@ const phaseForMCQScreen = {
             student_id: user.id,
             mcq_id: mcq_id,
             mcq_payload: current.phase_json,
-            mode: "discussion", // ✅ SAME MAGIC FLAG
+            mode: "discussion",
           }),
         }
       );
@@ -347,13 +353,15 @@ const phaseForMCQScreen = {
       });
     } catch (err) {
       console.error(err);
+      setIsAskLoading(false);   // ✅ reset on error
     }
   }}
 >
   <Text style={{ color: "#10b981", fontWeight: "700" }}>
-    Ask Paragraph about this MCQ
+    {isAskLoading ? "Starting discussion..." : "Ask Paragraph about this MCQ"}
   </Text>
 </TouchableOpacity>
+
 
             {/* Navigation */}
             <View style={styles.navButtons}>
