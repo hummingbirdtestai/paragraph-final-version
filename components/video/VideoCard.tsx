@@ -18,53 +18,7 @@ export function VideoCard({ phase, refresh }) {
   const isVideo = phase.phase_type === "video";
 
   const { user } = useAuth();
-  /* ===========================
-   ASK PARAGRAPH (DITTO PRACTICE CARD)
-   =========================== */
-const router = useRouter();
-const [isAskLoading, setIsAskLoading] = React.useState(false);
-
-const handleAskParagraph = async () => {
-  if (!user?.id) return;
-
-  setIsAskLoading(true);
-
-  try {
-    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
-
-    const response = await fetch(`${API_BASE_URL}/ask-paragraph/start`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        student_id: user.id,
-        mcq_id: phase.id,
-        mcq_payload: phase.phase_json,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    router.push({
-      pathname: "/ask-paragraph",
-      params: {
-        session_id: data.session_id,
-        student_id: user.id,
-        mcq_id: phase.id,
-        mcq_json: JSON.stringify(phase.phase_json),
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    alert("Failed to start discussion");
-  } finally {
-    setIsAskLoading(false);
-  }
-};
-
+  
   // ORIGINAL bookmark for concept/mcq
   const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
 React.useEffect(() => {
@@ -358,26 +312,11 @@ React.useEffect(() => {
     />
 
     {/* 🔥 Ask Paragraph — DITTO PRACTICE CARD */}
-    <TouchableOpacity
-      style={{
-        marginTop: 12,
-        paddingVertical: 10,
-        borderRadius: 8,
-        backgroundColor: "#0d2017",
-        borderWidth: 1,
-        borderColor: "#10b981",
-        alignItems: "center",
-        opacity: isAskLoading ? 0.6 : 1,
-      }}
-      onPress={handleAskParagraph}
-      disabled={isAskLoading}
-    >
-      <Text style={{ color: "#10b981", fontWeight: "700" }}>
-        {isAskLoading
-          ? "Starting discussion..."
-          : "Ask Paragraph about this MCQ"}
-      </Text>
-    </TouchableOpacity>
+<AskParagraphButton
+  studentId={user?.id}
+  mcqId={phase.id}
+  phaseJson={phase.phase_json}
+/>
   </>
 )}
 
@@ -389,6 +328,85 @@ React.useEffect(() => {
     </View>
   );
 }
+function AskParagraphButton({
+  studentId,
+  mcqId,
+  subjectName,
+  phaseJson,
+  reactOrder,
+}: {
+  studentId: string | undefined;
+  mcqId: string;
+  subjectName: string;
+  phaseJson: any;
+  reactOrder: number;
+}) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleAskParagraph = async () => {
+    if (!studentId) return;
+
+    setIsLoading(true);
+
+    try {
+      const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
+
+      const response = await fetch(`${API_BASE_URL}/ask-paragraph/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          student_id: studentId,
+          mcq_id: mcqId,
+          mcq_payload: phaseJson,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      router.push({
+        pathname: "/ask-paragraph",
+        params: {
+          session_id: data.session_id,
+          student_id: studentId,
+          mcq_id: mcqId,
+          mcq_json: JSON.stringify(phaseJson),
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to start discussion");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <TouchableOpacity
+      style={{
+        marginTop: 12,
+        paddingVertical: 10,
+        borderRadius: 8,
+        backgroundColor: "#0d2017",
+        borderWidth: 1,
+        borderColor: "#10b981",
+        alignItems: "center",
+        opacity: isLoading ? 0.6 : 1,
+      }}
+      onPress={handleAskParagraph}
+      disabled={isLoading}
+    >
+      <Text style={{ color: "#10b981", fontWeight: "700" }}>
+        {isLoading ? "Starting discussion..." : "Ask Paragraph about this MCQ"}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
 
 // ============================================================================
 // STYLES — ONLY videoWrapper ADDED (SURGICAL)
