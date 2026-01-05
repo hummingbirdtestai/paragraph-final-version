@@ -4,9 +4,6 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
 import ImageMCQScreen from "@/components/types/ImageMCQScreen";
-import { StudentBubble } from "@/components/chat/StudentBubble";
-import MentorBubbleReply from "@/components/types/MentorBubbleReply";
-import { MessageInput } from "@/components/chat/MessageInput";
 
 import { TouchableOpacity } from "react-native";
 import { Bookmark } from "lucide-react-native";
@@ -24,9 +21,8 @@ export function ImageCard({ phase, refresh }) {
 
   const { user } = useAuth();
 
-  const [conversation, setConversation] = React.useState([]);
-  const [isSending, setIsSending] = React.useState(false);
-  const [isTyping, setIsTyping] = React.useState(false);
+
+
 
   // ORIGINAL bookmark for concept/mcq
   const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
@@ -54,8 +50,6 @@ React.useEffect(() => {
   }, [phase]);
 
   const router = useRouter();
-  const ORCHESTRATOR_URL =
-    "https://paragraph-pg-production.up.railway.app/orchestrate";
 
   return (
  <View style={styles.card}>
@@ -139,59 +133,9 @@ React.useEffect(() => {
 )}
 
 
-      {/* CHAT — UNTOUCHED */}
-      {conversation.map((msg, index) =>
-        msg.role === "student" ? (
-          <StudentBubble key={index} text={msg.content} />
-        ) : (
-          <MentorBubbleReply key={index} markdownText={msg.content} />
-        )
-      )}
 
-      {isTyping && (
-        <MentorBubbleReply markdownText={"💬 *Dr. Murali Bharadwaj is typing…*"} />
-      )}
 
-      <MessageInput
-        placeholder={isSending ? "Waiting for mentor..." : "Ask your doubt..."}
-        disabled={isSending}
-        onSend={async (text) => {
-          if (!text.trim()) return;
-
-          setConversation((prev) => [
-            ...prev,
-            { role: "student", content: text },
-          ]);
-          setIsSending(true);
-          setIsTyping(true);
-
-          try {
-            const res = await fetch(ORCHESTRATOR_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                action: "chat",
-                student_id: user?.id,
-                subject_id: phase.subject_id,
-                message: text,
-              }),
-            });
-
-            const data = await res.json();
-
-            if (data?.mentor_reply) {
-              setConversation((prev) => [
-                ...prev,
-                { role: "assistant", content: data.mentor_reply },
-              ]);
-            }
-          } finally {
-            setIsSending(false);
-            setIsTyping(false);
-          }
-        }}
-      />
-    </View>
+          </View>
   );
 }
 
