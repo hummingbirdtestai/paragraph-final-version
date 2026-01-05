@@ -331,15 +331,11 @@ React.useEffect(() => {
 function AskParagraphButton({
   studentId,
   mcqId,
-  subjectName,
   phaseJson,
-  reactOrder,
 }: {
   studentId: string | undefined;
   mcqId: string;
-  subjectName: string;
   phaseJson: any;
-  reactOrder: number;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
