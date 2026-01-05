@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
 
+
 export function PracticeCard({ phase }) {
    const { width } = useWindowDimensions();   // ✅ ADD
   const isWeb = width >= 1024;               // ✅ ADD
