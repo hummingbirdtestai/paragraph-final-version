@@ -5,7 +5,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 
 import ConceptChatScreen from "@/components/types/Conceptscreen";
 import VideoMCQScreen from "@/components/types/VideoMCQScreen";
-
+import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import { Bookmark, Heart } from "lucide-react-native";
 import { supabase } from "@/lib/supabaseClient";
@@ -18,6 +18,52 @@ export function VideoCard({ phase, refresh }) {
   const isVideo = phase.phase_type === "video";
 
   const { user } = useAuth();
+  /* ===========================
+   ASK PARAGRAPH (DITTO PRACTICE CARD)
+   =========================== */
+const router = useRouter();
+const [isAskLoading, setIsAskLoading] = React.useState(false);
+
+const handleAskParagraph = async () => {
+  if (!user?.id) return;
+
+  setIsAskLoading(true);
+
+  try {
+    const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
+
+    const response = await fetch(`${API_BASE_URL}/ask-paragraph/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        student_id: user.id,
+        mcq_id: phase.id,
+        mcq_payload: phase.phase_json,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    router.push({
+      pathname: "/ask-paragraph",
+      params: {
+        session_id: data.session_id,
+        student_id: user.id,
+        mcq_id: phase.id,
+        mcq_json: JSON.stringify(phase.phase_json),
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    alert("Failed to start discussion");
+  } finally {
+    setIsAskLoading(false);
+  }
+};
 
   // ORIGINAL bookmark for concept/mcq
   const [isBookmarked, setIsBookmarked] = React.useState(phase.is_bookmarked);
@@ -295,22 +341,46 @@ React.useEffect(() => {
         />
       )}
       
-      {/* MCQ — UNTOUCHED */}
-      {isMCQ && (
-      <VideoMCQScreen
-        item={phase.phase_json}
-        conceptId={phase.concept_id_before_this_mcq}
-        mcqId={phase.id}
-        correctAnswer={phase.phase_json?.correct_answer}
-        studentId={user?.id}
-        reviewMode={false}
-        hideInternalNext={true}
-        phaseUniqueId={phase.id}
-        onAnswered={() => {
-          refresh?.();   // ✅ ADD THIS LINE
-        }}
-      />
-    )}
+  {isMCQ && (
+  <>
+    <VideoMCQScreen
+      item={phase.phase_json}
+      conceptId={phase.concept_id_before_this_mcq}
+      mcqId={phase.id}
+      correctAnswer={phase.phase_json?.correct_answer}
+      studentId={user?.id}
+      reviewMode={false}
+      hideInternalNext={true}
+      phaseUniqueId={phase.id}
+      onAnswered={() => {
+        refresh?.();
+      }}
+    />
+
+    {/* 🔥 Ask Paragraph — DITTO PRACTICE CARD */}
+    <TouchableOpacity
+      style={{
+        marginTop: 12,
+        paddingVertical: 10,
+        borderRadius: 8,
+        backgroundColor: "#0d2017",
+        borderWidth: 1,
+        borderColor: "#10b981",
+        alignItems: "center",
+        opacity: isAskLoading ? 0.6 : 1,
+      }}
+      onPress={handleAskParagraph}
+      disabled={isAskLoading}
+    >
+      <Text style={{ color: "#10b981", fontWeight: "700" }}>
+        {isAskLoading
+          ? "Starting discussion..."
+          : "Ask Paragraph about this MCQ"}
+      </Text>
+    </TouchableOpacity>
+  </>
+)}
+
 
       {phase.image_url && (
         <Image source={{ uri: phase.image_url }} style={styles.image} />
