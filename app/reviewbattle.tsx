@@ -129,7 +129,15 @@ export default function ReviewBattle() {
 
   const isAnsweredRemotely = !!studentAnswer;
   const isCorrectRemote = studentAnswer && studentAnswer === correct;
-
+// 🔧 ADAPTER: make Battle MCQ compatible with MCQChatScreen
+const phaseForMCQScreen = {
+  ...phase,
+  feedback: {
+    correct: "",
+    wrong: "",
+  },
+  learning_gap: "",
+};
   // ───────────────────────────────
   // 🔹 Render One Question
   // ───────────────────────────────
@@ -278,9 +286,11 @@ export default function ReviewBattle() {
                 })}
             </View>
             {/* 🔥 REQUIRED: Hidden MCQ engine to prepare Ask-Paragraph state */}
+
+
 <View style={{ height: 0, overflow: "hidden" }}>
   <MCQChatScreen
-    item={phase}
+    item={phaseForMCQScreen}
     studentId={user?.id}
     mcqId={mcq_id}
     correctAnswer={correct}
@@ -289,6 +299,7 @@ export default function ReviewBattle() {
     mode="review"
   />
 </View>
+
 
 {/* 🔥 Ask Paragraph — SAME AS PRACTICE / IMAGE / VIDEO */}
 <TouchableOpacity
