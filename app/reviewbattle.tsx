@@ -16,6 +16,7 @@ import { ArrowLeft } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView, AnimatePresence } from "moti";
 import { useRouter } from "expo-router";
+import MCQChatScreen from "@/components/types/MCQScreen";
 
 const API_BASE_URL = "https://battlemcqs-production.up.railway.app";
 
@@ -276,6 +277,19 @@ export default function ReviewBattle() {
                   );
                 })}
             </View>
+            {/* 🔥 REQUIRED: Hidden MCQ engine to prepare Ask-Paragraph state */}
+<View style={{ height: 0, overflow: "hidden" }}>
+  <MCQChatScreen
+    item={phase}
+    studentId={user?.id}
+    mcqId={mcq_id}
+    correctAnswer={correct}
+    phaseUniqueId={mcq_id}
+    reviewMode={true}
+    mode="review"
+  />
+</View>
+
 {/* 🔥 Ask Paragraph — SAME AS PRACTICE / IMAGE / VIDEO */}
 <TouchableOpacity
   style={{
