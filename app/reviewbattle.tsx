@@ -9,19 +9,20 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import Markdown from "react-native-markdown-display";
 import { ArrowLeft } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView, AnimatePresence } from "moti";
+import { useRouter } from "expo-router";
 
 const API_BASE_URL = "https://battlemcqs-production.up.railway.app";
 
 export default function ReviewBattle() {
   const { title, scheduled_date } = useLocalSearchParams();
   const { user } = useAuth();
-
+  const router = useRouter(); // ✅ REQUIRED
   const [mcqs, setMcqs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [localAttempts, setLocalAttempts] = useState<Record<string, string>>({});
@@ -275,6 +276,59 @@ export default function ReviewBattle() {
                   );
                 })}
             </View>
+{/* 🔥 Ask Paragraph — SAME AS PRACTICE / IMAGE / VIDEO */}
+<TouchableOpacity
+  style={{
+    marginTop: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: "#0d2017",
+    borderWidth: 1,
+    borderColor: "#10b981",
+    alignItems: "center",
+  }}
+  onPress={async () => {
+    if (!user?.id) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/ask-paragraph/start`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            student_id: user.id,
+            mcq_id: mcq_id,
+            mcq_payload: phase,
+            mode: "discussion", // ✅ SAME MAGIC FLAG
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API error ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      router.push({
+        pathname: "/ask-paragraph",
+        params: {
+          session_id: data.session_id,
+          student_id: user.id,
+          mcq_id: mcq_id,
+          mcq_json: JSON.stringify(phase),
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }}
+>
+  <Text style={{ color: "#10b981", fontWeight: "700" }}>
+    Ask Paragraph about this MCQ
+  </Text>
+</TouchableOpacity>
 
             {/* Navigation */}
             <View style={styles.navButtons}>
