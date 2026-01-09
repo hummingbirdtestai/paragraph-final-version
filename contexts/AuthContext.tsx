@@ -12,6 +12,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
+
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
