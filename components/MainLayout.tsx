@@ -8,6 +8,9 @@ import AppHeader from "./AppHeader";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
+import { usePathname } from "expo-router";
+import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
@@ -166,6 +169,19 @@ const handleRegister = async (name) => {
   const isLoggedIn = !!user;
   console.log("🎯 showCelebration STATE =", showCelebration);
 
+  const pathname = usePathname();
+  const userProfile = useUserProfile(user?.id);
+  const subscriptionState = useSubscriptionStatus(userProfile);
+
+  const isProtectedRoute =
+    pathname !== "/" &&
+    pathname !== "/settings";
+
+  const shouldBlockContent =
+    isLoggedIn &&
+    isProtectedRoute &&
+    !subscriptionState.hasAccess;
+
   return (
     <View style={styles.container}>
       {/* MOBILE */}
@@ -211,7 +227,13 @@ const handleRegister = async (name) => {
               </View>
             )}
 
-            <View style={styles.desktopContent}>{injectedChild}</View>
+            <View style={styles.desktopContent}>
+              {shouldBlockContent ? (
+                <View style={{ flex: 1, backgroundColor: "#0D0D0D" }} />
+              ) : (
+                injectedChild
+              )}
+            </View>
           </View>
         </>
       )}

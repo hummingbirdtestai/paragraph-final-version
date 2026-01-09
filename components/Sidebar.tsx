@@ -119,27 +119,28 @@ export default function Sidebar({
           if (isMobile) onClose?.();
         }}
       >
-        <Link href={item.href} asChild>
+        {blocked ? (
           <View style={styles.navItemContent}>
             <View style={styles.iconWrapper}>
-              <Icon
-                size={20}
-                color={blocked ? '#555' : active ? '#25D366' : '#9A9A9A'}
-              />
+              <Icon size={20} color="#555" />
             </View>
-            <Text
-              style={
-                blocked
-                  ? styles.navLabel
-                  : active
-                  ? styles.navLabelActive
-                  : styles.navLabel
-              }
-            >
-              {item.label}
-            </Text>
+            <Text style={styles.navLabel}>{item.label}</Text>
           </View>
-        </Link>
+        ) : (
+          <Link href={item.href} asChild onPress={isMobile ? onClose : undefined}>
+            <View style={styles.navItemContent}>
+              <View style={styles.iconWrapper}>
+                <Icon
+                  size={20}
+                  color={active ? "#25D366" : "#9A9A9A"}
+                />
+              </View>
+              <Text style={active ? styles.navLabelActive : styles.navLabel}>
+                {item.label}
+              </Text>
+            </View>
+          </Link>
+        )}
         {active && !blocked && <View style={styles.activeIndicator} />}
       </Pressable>
     );
