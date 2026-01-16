@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native';
 import { Link, usePathname } from 'expo-router';
-import { Brain, BookOpen, CreditCard, FileText, Swords, ChartBar as BarChart3, Settings, X, Video, Crown, Image as ImageIcon, Calendar } from 'lucide-react-native';
+import { Brain, BookOpen, CreditCard, FileText, Swords, ChartBar as BarChart3, Settings, X, Crown, Calendar,Zap } from 'lucide-react-native';
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from './NotificationBell';
 import SubscribeModal from './SubscribeModal';
@@ -26,13 +26,29 @@ const navItems: NavItem[] = [
   { id: "home", label: "AI powered NEETPG Prep Strategy", href: "/", icon: Brain },
   { id: "practice", label: "10000 NEETPG PYQs", href: "/practice", icon: BookOpen },
   { id: "flash", label: "45000 Flash Cards", href: "/flashcard-feed-demo", icon: CreditCard },
-  { id: "videos", label: "Daily 20 NEETPG Reels", href: "/videos", icon: Video },
-  { id: "image", label: "Daily 50 Image Based MCQs", href: "/image", icon: ImageIcon },
+
+  // 🔁 CHANGE THIS
+  {
+    id: "hyfs",
+    label: "50000 Rapid Revision HYFs",
+    href: "/videos", // keep route SAME to avoid breaking
+    icon: Zap,
+  },
+
+  // 🔁 CHANGE THIS
+  {
+    id: "clinical-mcqs",
+    label: "5000 Clinical Vignette MCQs",
+    href: "/image", // keep route SAME to avoid breaking
+    icon: FileText,
+  },
+
   { id: "mocktests", label: "100 Bi-Weekly NEETPG Mock Tests", href: "/mocktests", icon: FileText },
   { id: "battle", label: "Daily 15 Live Group Quiz Battles", href: "/battle", icon: Swords },
   { id: "analytics", label: "1000 Hours NEETPG Study Progress", href: "/analyticspage", icon: BarChart3 },
   { id: "planner", label: "NEETPG Daily Study Planner", href: "/planner", icon: Calendar },
 ];
+
 
 export default function Sidebar({
   isOpen = true,
