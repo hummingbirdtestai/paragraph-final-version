@@ -227,13 +227,22 @@ const handleRegister = async (name) => {
               </View>
             )}
 
-            <View style={styles.desktopContent}>
-              {shouldBlockContent ? (
-                <View style={{ flex: 1, backgroundColor: "#0D0D0D" }} />
-              ) : (
-                injectedChild
-              )}
-            </View>
+         <View style={styles.desktopContent}>
+  {injectedChild}
+
+  {shouldBlockContent && (
+    <View
+      style={[
+        StyleSheet.absoluteFillObject,
+        {
+          backgroundColor: "rgba(13,13,13,0.95)",
+          zIndex: 100,
+          pointerEvents: "auto",
+        },
+      ]}
+    />
+  )}
+</View>
           </View>
         </>
       )}
