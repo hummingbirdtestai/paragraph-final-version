@@ -1,11 +1,15 @@
 // MainLayout.tsx
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, useWindowDimensions } from "react-native";
-
+import {
+  View,
+  StyleSheet,
+  useWindowDimensions,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import Sidebar from "./Sidebar";
 import MobileDrawer from "./MobileDrawer";
 import AppHeader from "./AppHeader";
-
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { usePathname } from "expo-router";
@@ -16,6 +20,7 @@ import { LoginModal } from "@/components/auth/LoginModal";
 import { OTPModal } from "@/components/auth/OTPModal";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import CelebrationPopup from "@/components/CelebrationPopup";
+
 
 const SIDEBAR_WIDTH = 340;
 const MOBILE_BREAKPOINT = 768;
@@ -230,17 +235,53 @@ const handleRegister = async (name) => {
          <View style={styles.desktopContent}>
   {injectedChild}
 
-  {shouldBlockContent && (
-    <View
-      style={[
-        StyleSheet.absoluteFillObject,
-        {
-          backgroundColor: "rgba(13,13,13,0.95)",
-          zIndex: 100,
-          pointerEvents: "auto",
-        },
-      ]}
-    />
+{shouldBlockContent && (
+  <View
+    style={[
+      StyleSheet.absoluteFillObject,
+      {
+        backgroundColor: "rgba(13,13,13,0.95)",
+        zIndex: 100,
+        pointerEvents: "auto", // 🔒 blocks mouse & scroll
+      },
+    ]}
+    accessible={true}
+    accessibilityViewIsModal={true} // 🔒 blocks keyboard/tab focus (WEB)
+  >
+      {/* Optional: upgrade CTA */}
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: "#fff",
+            fontSize: 18,
+            fontWeight: "700",
+            marginBottom: 12,
+          }}
+        >
+          Upgrade to access this content
+        </Text>
+
+        <TouchableOpacity
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: "#10b981",
+          }}
+          onPress={() => setShowLoginModal(true)}
+        >
+          <Text style={{ color: "#000", fontWeight: "700" }}>
+            View Plans
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   )}
 </View>
           </View>
