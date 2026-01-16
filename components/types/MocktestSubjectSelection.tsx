@@ -9,7 +9,6 @@ import {
   Platform,
   UIManager,
   Alert,
-  ScrollView,   // ✅ ADD THIS
 } from "react-native";
 import { ChevronDown, ChevronRight, FlaskConical, BookOpen, TrendingUp } from "lucide-react-native";
 import { MockTestCard } from "@/components/types/MockTestCard";
@@ -235,15 +234,7 @@ function Accordion({
         )}
       </TouchableOpacity>
 
-      {isExpanded && (
-  <ScrollView
-    style={styles.content}
-    nestedScrollEnabled
-    showsVerticalScrollIndicator={false}
-  >
-    {children}
-  </ScrollView>
-)}
+      {isExpanded && <View style={styles.content}>{children}</View>}
     </View>
   );
 }
@@ -285,7 +276,6 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
     paddingTop: 12,
-    maxHeight: 420, // 👈 KEY LINE (tweak if needed)
   },
   emptyText: {
     fontSize: 14,
