@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
   TextInput,
 } from 'react-native';
-import { X, Check, Zap, BookOpen, Brain, Image as ImageIcon, Video, FileText, MessageSquare, Users } from 'lucide-react-native';
+import { X, Check, Zap, BookOpen, Brain, FileText, MessageSquare, Users } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SubscribeModalProps {
@@ -177,32 +177,34 @@ async function handleSubscribe(
                 isDesktop={isDesktop}
               />
 
-              <FeatureBlock
-                icon={<Video size={24} color="#10b981" />}
-                title="Daily Short Videos"
-                subtitle="3-Minute Reels"
-                time="100 hours of visual revision"
-                bullets={[
-                  '20 videos every day',
-                  '6,000 reels total',
-                  '60,000 high-yield facts',
-                  '6,000 MCQs for instant testing',
-                ]}
-                description="Learn anywhere. Revise anytime. Zero burnout."
-                isDesktop={isDesktop}
-              />
+            <FeatureBlock
+  icon={<Zap size={24} color="#10b981" />}
+  title="50,000 Rapid Revision HYFs"
+  time="200 hours of ultra-high yield recall"
+  bullets={[
+    'Exam-focused distilled facts',
+    'Mapped to PYQs & concepts',
+    'Ideal for last-minute revision',
+    'Zero fluff. Only scoring points',
+  ]}
+  description="Designed to maximise recall speed and retention under exam pressure."
+  isDesktop={isDesktop}
+/>
 
-              <FeatureBlock
-                icon={<ImageIcon size={24} color="#10b981" />}
-                title="Daily Image-Based Learning"
-                time="100 hours of image-based mastery"
-                bullets={[
-                  '4,500 clinical images',
-                  '4,500 case-based vignettes',
-                  '50 images daily',
-                ]}
-                isDesktop={isDesktop}
-              />
+
+<FeatureBlock
+  icon={<FileText size={24} color="#10b981" />}
+  title="5,000 Clinical Vignette MCQs"
+  time="High-impact clinical decision training"
+  bullets={[
+    'Real exam-style clinical stems',
+    'History + investigation driven questions',
+    'Sharpens diagnostic & management thinking',
+    'Exact NEET-PG vignette pattern',
+  ]}
+  isDesktop={isDesktop}
+/>
+
 
               <FeatureBlock
                 icon={<FileText size={24} color="#10b981" />}
@@ -245,7 +247,7 @@ async function handleSubscribe(
 
               <FeatureBlock
                 icon={<MessageSquare size={24} color="#10b981" />}
-                title="24×7 AI Chat"
+                title="24×7 Conversational AI Tutor"
                 description="Clear doubts instantly. No waiting. No teachers' availability issues."
                 isDesktop={isDesktop}
               />
@@ -268,12 +270,12 @@ async function handleSubscribe(
                 duration="3 Months"
                 basePrice={12000}
                 color="#10b981"
-                features={[
-                  'Ideal for focused revision phase',
-                  'PYQs + Concepts + Flashcards',
-                  'Videos, Images & AI Chat',
-                  'Mock tests included',
-                ]}
+features={[
+  'Ideal for focused revision phase',
+  'PYQs + Concepts + Flashcards',
+  'Rapid Revision HYFs + Clinical Vignette MCQs + Conversational AI Tutor',
+  'Mock tests included',
+]}
                 onSubscribe={(finalPrice, promoCode) => {
                   handleSubscribe('3', finalPrice, promoCode);
                 }}
@@ -302,11 +304,12 @@ async function handleSubscribe(
                 color="#8b5cf6"
                 recommended
                 features={[
-                  'Complete NEET-PG preparation cycle',
-                  '100 Grand Tests included',
-                  'Daily videos, images & revisions',
-                  'Maximum rank optimisation',
-                ]}
+  'Complete NEET-PG preparation cycle',
+  '100 Grand Tests included',
+  'Daily Rapid Revision HYFs & Clinical Vignette MCQs',
+  'Maximum rank optimisation',
+]}
+
                 onSubscribe={(finalPrice, promoCode) => {
                   handleSubscribe('12', finalPrice, promoCode);
                 }}
