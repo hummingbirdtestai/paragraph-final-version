@@ -13,6 +13,7 @@ interface AuthContextType {
 }
 
 
+
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
